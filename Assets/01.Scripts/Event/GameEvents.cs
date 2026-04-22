@@ -88,3 +88,19 @@ public struct PlaySFXEvent
 /// 구독자 예: PauseManager
 /// </summary>
 public struct PausePressedEvent { }
+
+// ============================================================================
+// [전투 및 승패 판정 트리거 이벤트]
+// 전투 중 발생하는 주요 이벤트들 (타 파트에서 발행)
+// ============================================================================
+
+/// <summary>
+/// 코어 파괴 시 발행
+/// [발행 위치] GridBoard 또는 Base 스크립트 (타 파트 작업 필요)
+/// [구독자] GameFlowManager (패배 판정)
+/// [사용법] EventBus.Instance.Publish(new CoreDestroyedEvent());
+/// </summary>
+public struct CoreDestroyedEvent 
+{
+    public bool IsPlayerBase;
+}
