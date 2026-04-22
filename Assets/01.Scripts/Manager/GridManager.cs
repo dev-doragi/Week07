@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 // ================================================================
@@ -193,15 +195,9 @@ public class GridManager : MonoBehaviour
         if (unit == null) return false;
         if (unit.Data.PlacementRule == PlacementRule.InitialOnly) return false;
 
-        // 이 유닛이 차지한 모든 셀을 비움
-        for (int x = 0; x < unit.Data.Size.x; x++)
-        {
-            for (int y = 0; y < unit.Data.Size.y; y++)
-            {
-                _cells[unit.OriginCell.x + x, unit.OriginCell.y + y] = null;
-            }
-        }
-        Destroy(unit.Instance);
+        StartCollapse(unit);
+        ScheduleCollapseCheck();
+
         return true;
     }
 
@@ -238,6 +234,165 @@ public class GridManager : MonoBehaviour
                 _origin + new Vector3(_width * _cellSize, y * _cellSize, 0));
         }
     }
+#region 연쇄붕괴 시스템
+    //! ==========================================================
+    //! 연쇄 붕괴 시스템
+    //! ==========================================================
+    private const float COLLAPSE_DELAY = 0.15f;
+    private bool _collapseScheduled = false;
+    
+    //유닛 하나를 그리드에서 제거하고 떨어지는 연출로 전환
+    private void StartCollapse(PlacedUnit unit)
+    {
+        // 1 그리드 배열에서 즉시 제거 (셀 비움 -> 재설치 가능 & 재검증에서 제외)
+        for(int x = 0; x < unit.Data.Size.x; x++)
+        {
+            for(int y = 0; y < unit.Data.Size.y; y++)
+            {
+                _cells[unit.OriginCell.x + x, unit.OriginCell.y + y] = null;
+            }
+        }
+        // 2 오브젝트를 그리드에서 분리 (그리드 이동과 독립)
+        var go = unit.Instance;
+        go.transform.SetParent(null, true);     //월드 좌표 유지
+        
+        // 3. 콜라이더 비활성화 (다른 유닛과 간섭 방지)
+        var col = go.GetComponent<Collider2D>();
+        if(col != null) col.enabled = false;
+
+        // 4. 낙하 연출 시작
+        var falling = go.AddComponent<FallingUnit>();
+        falling.Begin();
+    }
+
+    //한 층이 연쇄 체크 (이미 돌고 있으면 중복 실행 방지)
+    private void ScheduleCollapseCheck()
+    {
+        if(_collapseScheduled) return;
+        _collapseScheduled = true;
+        StartCoroutine(CollapseCheckLoop());
+    }
+    
+    private IEnumerator CollapseCheckLoop()
+    {
+        while(true)
+        {
+            yield return new WaitForSeconds(COLLAPSE_DELAY);
+            //전역 연결성 체크 (엥커로부터 flood fill)
+            var toCollapse = FindUnsupportedUnits();
+
+            if(toCollapse.Count == 0) break;
+
+            //같은 층의 위반 유닛들은 도잇에 붕괴 (도미노 한 단계)
+            foreach (var unit in toCollapse) StartCollapse(unit);
+        }
+        _collapseScheduled = false;
+    }
+
+    //이 유닛이 현재도 규칙을 만족하는가? (재 검증용)
+    
+
+    private List<PlacedUnit> CollectAllPlaced()
+    {
+        var set = new HashSet<PlacedUnit>();
+        for(int x = 0; x < _width; x++)
+        {
+            for(int y = 0; y < _height; y++)
+            {
+                if(_cells[x, y] != null) set.Add(_cells[x, y]);
+            }
+        }
+        return new List<PlacedUnit>(set);
+    }
+
+    private List<PlacedUnit> FindUnsupportedUnits()
+    {
+        var allPlaced = CollectAllPlaced();
+        var supported = new HashSet<PlacedUnit>();
+
+        // 1단계 : 앵커(Wheel/Core)는 항상 지지됨
+        foreach(var unit in allPlaced)
+        {
+            if(unit.Data.PlacementRule == PlacementRule.InitialOnly)
+                supported.Add(unit);
+        }
+
+        // 2단계 : 지지됨 유닛으로 부터 전파, 더 이상 추가 안될 때까지 반복
+        bool changed = true;
+        while (changed)
+        {
+            changed = false;
+            foreach(var unit in allPlaced)
+            {
+                if(supported.Contains(unit)) continue;
+                if(IsSupportedBy(unit, supported))
+                {
+                    supported.Add(unit);
+                    changed = true;
+                }
+            }
+        }
+
+        // 3단계 : 지지됨 집합에 못 들어간 유닛들을 붕괴 대상으로 반환
+        var result = new List<PlacedUnit>();
+        foreach(var unit in allPlaced)
+        {
+            if(!supported.Contains(unit)) result.Add(unit);
+        }
+        return result;
+    }
+
+    // 이 유닛이 "이미 지지됨"으로 확정된 유닛들에 의해 지지받는가
+    private bool IsSupportedBy(PlacedUnit unit, HashSet<PlacedUnit> supported)
+    {
+        return unit.Data.PlacementRule switch
+        {
+            PlacementRule.InitialOnly          => true,
+            PlacementRule.NeedsFoundationBelow => HasSupportedFoundationBelow(unit, supported),
+            PlacementRule.NeedsAdjacent        => HasSupportedAdjacent(unit, supported),
+            _ => false
+        };
+    }
+
+    // footprint 최하단 셀 바로 아래가 전부 "지지됨 Foundation"인지
+    private bool HasSupportedFoundationBelow(PlacedUnit unit, HashSet<PlacedUnit> supported)
+    {
+        for (int x = 0; x < unit.Data.Size.x; x++)
+        {
+            var below = new Vector2Int(unit.OriginCell.x + x, unit.OriginCell.y - 1);
+            var belowUnit = GetUnitAt(below);
+            if (belowUnit == null) return false;
+            if (!belowUnit.Data.ActsAsFoundation) return false;
+            if (!supported.Contains(belowUnit)) return false;
+        }
+        return true;
+    }
+
+    // footprint 주변 4방향에 "지지됨" 유닛이 하나라도 있는지
+    private bool HasSupportedAdjacent(PlacedUnit unit, HashSet<PlacedUnit> supported)
+    {
+        for (int x = 0; x < unit.Data.Size.x; x++)
+        {
+            for (int y = 0; y < unit.Data.Size.y; y++)
+            {
+                var cell = new Vector2Int(unit.OriginCell.x + x, unit.OriginCell.y + y);
+                for (int i = 0; i < _fourDirections.Length; i++)
+                {
+                    var n = cell + _fourDirections[i];
+
+                    // 자기 footprint 내부면 스킵
+                    if (n.x >= unit.OriginCell.x && n.x < unit.OriginCell.x + unit.Data.Size.x
+                     && n.y >= unit.OriginCell.y && n.y < unit.OriginCell.y + unit.Data.Size.y) continue;
+
+                    var neighbor = GetUnitAt(n);
+                    if (neighbor != null && supported.Contains(neighbor)) return true;
+                }
+            }
+        }
+        return false;
+    }
+
+#endregion
 }
 
 // ================================================================
