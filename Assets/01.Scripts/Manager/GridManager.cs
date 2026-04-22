@@ -26,8 +26,9 @@ public class GridManager : MonoBehaviour
     // 각 셀에 어떤 유닛이 있는지. null이면 비어있음.
     // 같은 유닛이 여러 셀을 차지하면 그 셀들 전부에 동일 참조가 들어감.
     private PlacedUnit[,] _cells;
+    private Rigidbody2D _rb;
 
-    // 인접 방향 (static 대신 인스턴스 readonly 필드)
+    // 인접 방향
     private readonly Vector2Int[] _fourDirections =
     {
         Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right
@@ -44,6 +45,7 @@ public class GridManager : MonoBehaviour
     private void Awake()
     {
         _cells = new PlacedUnit[_width, _height];
+        _rb = GetComponent<Rigidbody2D>();
     }
 
     // ==========================================
@@ -206,7 +208,7 @@ public class GridManager : MonoBehaviour
     // 실제 프리팹 생성 + 그리드 배열에 등록 (TryPlace/PlaceInitial 공용)
     private void CreateAndRegister(UnitDataSO data, Vector2Int origin)
     {
-        var instance = Instantiate(data.Prefab, CellToWorld(origin), Quaternion.identity);
+        var instance = Instantiate(data.Prefab, CellToWorld(origin), Quaternion.identity, transform);
         var placed = new PlacedUnit(data, origin, instance);
         for (int x = 0; x < data.Size.x; x++)
         {
