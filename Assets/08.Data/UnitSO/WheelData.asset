@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 550f97df3c4ad9d44a36190b24e47c3b, type: 3}
+  m_Name: WheelData
+  m_EditorClassIdentifier: Assembly-CSharp::UnitDataSO
+  _unitName: Wheel
+  _category: 0
+  _size: {x: 1, y: 1}
+  _placementRule: 0
+  _actsAsFoundation: 1
+  _prefab: {fileID: 3519972494905233886, guid: 95d41fc40e542684ba6a531d0577ac93, type: 3}
