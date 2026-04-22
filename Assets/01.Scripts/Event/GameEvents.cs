@@ -1,32 +1,90 @@
-// 전역 및 흐름 상태 이벤트
+// 전역 및 인게임 흐름 이벤트 정의
 using UnityEngine;
 
+/// <summary>
+/// 전역 게임 상태(GameState)가 변경되었음을 알리는 이벤트.
+/// 발행: GameManager.ChangeState
+/// 구독자 예: UIManager, SoundManager, PauseManager
+/// </summary>
 public struct GameStateChangedEvent { public GameState NewState; }
+
+/// <summary>
+/// 인게임 흐름 상태(InGameState)가 변경되었음을 알리는 이벤트.
+/// 발행: GameFlowManager.ChangeFlowState
+/// 구독자 예: UIManager, SoundManager
+/// </summary>
 public struct InGameStateChangedEvent { public InGameState NewState; }
 
-// 스테이지 및 전투 흐름 이벤트 (그리드 방식에 맞춤)
+// --------------------------------------------------
+// 스테이지 및 전투 흐름 이벤트
+// --------------------------------------------------
+
+/// <summary>
+/// 스테이지가 로드되었음을 알립니다. (StageManager.LoadStage에서 발행)
+/// 구독자 예: VehicleSaveLoader(차량 복구), GameManager(게임 상태 변경)
+/// </summary>
 public struct StageLoadedEvent { public int StageIndex; }
-public struct StageGenerateCompleteEvent { } // 그리드 및 유닛 배치가 끝났을 때 발행
-public struct WaveStartedEvent { public int WaveIndex; } // 배치 완료 후 유저가 '전투 시작'을 눌렀을 때 발행
-public struct WaveEndedEvent { public bool IsWin; } // 전투 승패가 결정되었을 때 발행
+
+/// <summary>
+/// 스테이지 레이아웃 및 오브젝트 배치가 모두 완료되었음을 알립니다.
+/// (StageManager.LoadStage가 배치 완료 후 발행)
+/// 구독자 예: GameFlowManager (Prepare 상태 진입)
+/// </summary>
+public struct StageGenerateCompleteEvent { }
+
+/// <summary>
+/// 웨이브가 시작되었음을 알립니다. (StageManager.StartWave에서 발행)
+/// 구독자 예: GameFlowManager, StageLayout(스폰 트리거)
+/// </summary>
+public struct WaveStartedEvent { public int WaveIndex; }
+
+/// <summary>
+/// 웨이브가 종료되었음을 알립니다. (StageManager.EndWave 또는 전투 시스템에서 발행)
+/// IsWin 플래그로 승패를 전달합니다.
+/// 구독자 예: GameFlowManager (연출/결과 처리)
+/// </summary>
+public struct WaveEndedEvent { public bool IsWin; }
+
+/// <summary>
+/// 스테이지가 클리어되었음을 알립니다. (GameFlowManager 발행)
+/// IsFinalStage가 true면 전체 게임 클리어 처리로 이어집니다.
+/// 구독자 예: ProgressManager(저장), GameManager(최종 클리어 상태 전환)
+/// </summary>
 public struct StageClearedEvent { public int StageIndex; public bool IsFinalStage; }
+
+/// <summary>
+/// 스테이지 실패(게임오버)를 알립니다. (GameFlowManager 발행)
+/// 구독자 예: GameManager
+/// </summary>
 public struct StageFailedEvent { public int StageIndex; }
-// 스테이지 진행도 관련 이벤트
-// - 발행 시점: 저장된 클리어/해금 정보가 변경되었거나 로드되었을 때 발행
-// - 처리 방법: UI(스테이지 버튼 등)는 이 이벤트를 수신하여 ProgressManager에서 현재 HighestCleared를 조회하고
-//   버튼 상태를 갱신합니다. 예: StageButtonUnlocker는 이 이벤트를 받아 ApplyLockState()를 호출하여
-//   버튼의 interactable 과 LockedOverlay를 갱신합니다.
+
+// --------------------------------------------------
+// 진행도 / 튜토리얼 / 유틸 이벤트
+// --------------------------------------------------
+
+/// <summary>
+/// ProgressManager가 현재 최고 클리어 정보를 저장/갱신한 후 발행합니다.
+/// UI(스테이지 버튼)는 이 이벤트를 수신하여 버튼 상태를 갱신합니다.
+/// </summary>
 public struct StageProgressUpdatedEvent { public int HighestCleared; }
 
-// 튜토리얼 완료 이벤트
-// - 발행 시점: 플레이어가 튜토리얼을 완료하고 보상을 수령했을 때 발행
-// - 처리 방법: ProgressManager는 이 이벤트를 받아 튜토리얼 플래그를 설정하거나 보상으로 주어진 스테이지를 해금합니다.
+/// <summary>
+/// 튜토리얼 완료 시 발행되는 이벤트. RewardStageIndex로 보상 해금 대상을 전달합니다.
+/// 구독자 예: ProgressManager
+/// </summary>
 public struct TutorialCompletedEvent { public int RewardStageIndex; }
 
+/// <summary>
+/// SFX 재생 요청 이벤트. PlaySFXEvent를 발행하면 SoundManager가 효과음을 재생합니다.
+/// </summary>
 public struct PlaySFXEvent
 {
     public AudioClip Clip;
     public float Volume;
 }
 
+/// <summary>
+/// 일시정지 토글 입력(예: 키 입력 또는 UI)이 발생했음을 알리는 이벤트입니다.
+/// 구독자 예: PauseManager
+/// </summary>
 public struct PausePressedEvent { }
