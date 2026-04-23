@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 // ================================================================
@@ -223,6 +224,35 @@ public class GridManager : MonoBehaviour
             }
         }
     }
+    /// <summary>
+    /// 돌진 데미지 계산 (가장 오른쪽 열의 공격력 합)
+    /// </summary>
+    /// <returns></returns>
+    public int CalculateRightmostColumnDamage()
+    {
+        var counted = new HashSet<PlacedUnit>();
+        int totalDamage = 0;
+
+        // 각 행y 마다 맨 오른쪽에 있는 Attack 유닛을 찾음
+        for(int y = 0; y < _height; y++)
+        {
+            for(int x = _width - 1; x >= 0; x--)
+            {
+                var unit = _cells[x, y];
+                if(unit == null) continue;
+
+                // 이 행에서 맨 오른쪽 유닛 발견 -> Attack 이면 카운트
+                if(unit.Data.Category == E_UnitCategory.Attack && counted.Add(unit))
+                {
+                    totalDamage += unit.Data.Attack != null ? (int)unit.Data.Attack.Damage : 0;
+                }
+                break;
+            }
+        }
+        return totalDamage;
+    }
+
+#region 디버그 시각화
 
     // ==========================================
     // 디버그 시각화 (에디터에서 그리드 라인)
@@ -243,6 +273,8 @@ public class GridManager : MonoBehaviour
                 _origin + new Vector3(_width * _cellSize, y * _cellSize, 0));
         }
     }
+#endregion
+
 #region 연쇄붕괴 시스템
     //! ==========================================================
     //! 연쇄 붕괴 시스템
