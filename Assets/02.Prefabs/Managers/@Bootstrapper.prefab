@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &9186062086568456197
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7332593818289557169}
+  - component: {fileID: 8761254742845928811}
+  m_Layer: 0
+  m_Name: '@Bootstrapper'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7332593818289557169
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9186062086568456197}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8761254742845928811
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9186062086568456197}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d393184d06caa32498cc5f3d25bc59bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Bootstrapper
+  _gameLoggerPrefab: {fileID: 6317548953186311692, guid: 9b9ad89a67201b84bb25ea8f3e4195f1, type: 3}
+  _progressManagerPrefab: {fileID: 5130905138477828575, guid: a82ca883a8d9b0a47976e2dd3c09e16e, type: 3}
+  _sceneLoaderPrefab: {fileID: 763655693601502932, guid: 39b77fb31af5d5b4f899e7f4d7ab89b4, type: 3}
+  _gameManagerPrefab: {fileID: 1839109323731264746, guid: ed723d361e82f614ab09f96a41c937ba, type: 3}
+  _stageManagerPrefab: {fileID: 1678471197080052893, guid: 209d714c60f4eb74c84688b9962df88a, type: 3}
+  _gameFlowManagerPrefab: {fileID: 6611862976572892348, guid: 9b0b6d791503e1448ae5c5c902017908, type: 3}
+  _pauseManagerPrefab: {fileID: 1657164305244555072, guid: c312c8e6d5e9b4342bf4536a553f7c56, type: 3}
+  _soundManagerPrefab: {fileID: 5597600636126026080, guid: 635241bb106b5884cb5af510095d1d18, type: 3}
+  _uiManagerPrefab: {fileID: 4717495467631824295, guid: cc28bb3f33c941241ba23eb796cdf475, type: 3}
+  _poolManagerPrefab: {fileID: 5296992969310506774, guid: 810ff77847dc926408aa668c6034d877, type: 3}
