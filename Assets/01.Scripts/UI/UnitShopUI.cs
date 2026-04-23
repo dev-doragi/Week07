@@ -25,7 +25,7 @@ public class UnitShopUI : MonoBehaviour
     [SerializeField] private float _panelOpenX = 80f;
     [SerializeField] private float _panelClosedX = -220f;
 
-    private E_UnitCategory _currentCategory = E_UnitCategory.None;
+    private UnitCategory _currentCategory = UnitCategory.None;
     private bool _isOpen = false;
     private Coroutine _slideCoroutine;
 
@@ -36,12 +36,12 @@ public class UnitShopUI : MonoBehaviour
 
         _slidePanel.anchoredPosition = new Vector2(_panelClosedX, _slidePanel.anchoredPosition.y);
 
-        _attackBtn.onClick.AddListener(() => OnCategoryClicked(E_UnitCategory.Attack));
-        _defenseBtn.onClick.AddListener(() => OnCategoryClicked(E_UnitCategory.Defense));
-        _supportBtn.onClick.AddListener(() => OnCategoryClicked(E_UnitCategory.Support));
+        _attackBtn.onClick.AddListener(() => OnCategoryClicked(UnitCategory.Attack));
+        _defenseBtn.onClick.AddListener(() => OnCategoryClicked(UnitCategory.Defense));
+        _supportBtn.onClick.AddListener(() => OnCategoryClicked(UnitCategory.Support));
     }
 
-    private void OnCategoryClicked(E_UnitCategory category)
+    private void OnCategoryClicked(UnitCategory category)
     {
         if (_isOpen && _currentCategory == category)
         {
@@ -56,7 +56,7 @@ public class UnitShopUI : MonoBehaviour
             OpenPanel();
     }
 
-    private void PopulateCards(E_UnitCategory category)
+    private void PopulateCards(UnitCategory category)
     {
         foreach (Transform child in _cardContainer)
             Destroy(child.gameObject);
@@ -83,7 +83,7 @@ public class UnitShopUI : MonoBehaviour
     private void ClosePanel()
     {
         _isOpen = false;
-        _currentCategory = E_UnitCategory.None;
+        _currentCategory = UnitCategory.None;
         SlideToX(_panelClosedX);
     }
 
