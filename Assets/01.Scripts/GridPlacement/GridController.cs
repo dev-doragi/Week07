@@ -151,6 +151,16 @@ public class GridController : MonoBehaviour
         ShowGhost(_selected.Size, prefabSprite != null ? prefabSprite.sprite : null);
     }
 
+    public void SelectByData(UnitDataSO data)
+    {
+        if (data == null) { Deselect(); return; }
+        _selected = data;
+        Sprite sprite = null;
+        if (data.Prefab != null && data.Prefab.TryGetComponent(out SpriteRenderer sr))
+            sprite = sr.sprite;
+        ShowGhost(data.Size, sprite);
+    }
+
     private void Deselect()
     {
         _selected = null;
