@@ -15,6 +15,8 @@ using UnityEngine;
 /// - Subscribe: (내부 모듈 조립 시 데이터 참조)
 /// - Publish: CoreDestroyedEvent, (OnHpChanged/OnDead C# 이벤트)
 /// </remarks>
+
+[RequireComponent(typeof(EntityStatReceiver))]
 public class Unit : MonoBehaviour
 {
     [Header("Data Reference")]

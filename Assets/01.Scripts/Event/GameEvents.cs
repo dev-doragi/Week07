@@ -81,3 +81,10 @@ public struct StageProgressUpdatedEvent { public int HighestCleared; }
 /// <summary> 튜토리얼 전체 시퀀스 완료 이벤트 </summary>
 /// <remarks> [발행지] TutorialManager </remarks>
 public struct TutorialCompletedEvent { public int RewardStageIndex; }
+
+/// <summary>
+/// 스테이지 오브젝트 정리(삭제) 완료 시 발행
+/// [발행 위치] StageManager.ClearCurrentStage()
+/// [구독자] 정리 작업이 필요한 시스템 (파티클, 오브젝트 풀 등)
+/// </summary>
+public struct StageCleanedUpEvent { public int StageIndex; }
