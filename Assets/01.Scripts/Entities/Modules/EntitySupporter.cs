@@ -42,7 +42,7 @@ public class EntitySupporter : MonoBehaviour
 
         if (_altar != null && !_altar.IsAltarActive) return;
 
-        int allyLayer = (_owner.Team == E_TeamType.Player) ? LayerMask.GetMask("Ally") : LayerMask.GetMask("Enemy");
+        int allyLayer = (_owner.Team == TeamType.Player) ? LayerMask.GetMask("Ally") : LayerMask.GetMask("Enemy");
 
         // 반경 내 아군 콜라이더 탐색
         Collider2D[] allies = Physics2D.OverlapCircleAll(transform.position, _data.Radius, allyLayer);
@@ -66,15 +66,15 @@ public class EntitySupporter : MonoBehaviour
     /// <summary>
     /// 대상 유닛의 역할군이 버프 적용 대상인지 판별합니다.
     /// </summary>
-    private bool IsTargetRoleMatch(Unit ally, E_SupportTargetRoleType targetCategory)
+    private bool IsTargetRoleMatch(Unit ally, SupportTargetRoleType targetCategory)
     {
         switch (targetCategory)
         {
-            case E_SupportTargetRoleType.All:
+            case SupportTargetRoleType.All:
                 return true;
-            case E_SupportTargetRoleType.Attack:
+            case SupportTargetRoleType.Attack:
                 return ally.Data.CanAttack;
-            case E_SupportTargetRoleType.Defense:
+            case SupportTargetRoleType.Defense:
                 return ally.Data.CanCollide;
             default:
                 return false;

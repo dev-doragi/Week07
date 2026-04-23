@@ -16,25 +16,22 @@ public class EntityDefender : MonoBehaviour
     private Unit _owner;
     private DefenseModule _data;
 
-    /// <summary>
-    /// Unit 컨트롤러에 의해 호출되어 모듈을 초기화합니다.
-    /// </summary>
     public void Setup(Unit owner, DefenseModule data)
     {
+        if (owner == null)
+        {
+            Debug.LogError($"[EntityDefender] {gameObject.name}: Owner Unit이 null입니다.");
+            return;
+        }
         _owner = owner;
         _data = data;
     }
 
-    /// <summary>
-    /// 물리적 충돌이 발생했을 때 호출됩니다. (PartCell 또는 자체 Collider에서 연동)
-    /// </summary>
-    /// <param name="target">충돌한 대상 Unit</param>
     public void OnCollisionDetected(Unit target)
     {
         if (_owner == null || _owner.IsDead || _data == null) return;
         if (target == null || target.IsDead) return;
 
-        // 상대방과 팀이 다를 경우에만 데미지 적용
         if (target.Team != _owner.Team)
         {
             ApplyCollisionDamage(target);
@@ -43,9 +40,18 @@ public class EntityDefender : MonoBehaviour
 
     private void ApplyCollisionDamage(Unit target)
     {
-        // DefenseModule에 설정된 CollisionPower만큼 상대방에게 데미지 전달
-        target.TakeDamage(_data.CollisionPower);
+        // 변경된 규격에 따라 DamageData 구조체 생성
+        DamageData damageData = new DamageData
+        {
+            Damage = _data.CollisionPower,
+            AttackerTeam = _owner.Team,
+            HitPoint = transform.position,
+            IsPiercing = false // 충돌 공격은 기본적으로 관통 판정 제외
+        };
 
-        Debug.Log($"[{_owner.Data.UnitName}]이 [{target.Data.UnitName}]에게 충돌 데미지({_data.CollisionPower})를 입혔습니다.");
+        // 수정한 TakeDamage 메서드 호출
+        target.TakeDamage(damageData);
+
+        Debug.Log($"[{_owner.Data.UnitName}] 충돌 공격 -> [{target.Data.UnitName}] 피해량: {_data.CollisionPower}");
     }
 }

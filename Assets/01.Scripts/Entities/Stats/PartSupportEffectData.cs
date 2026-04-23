@@ -4,20 +4,20 @@ using UnityEngine;
 [Serializable]
 public class PartSupportEffectData
 {
-    [SerializeField] private E_SupportTargetRoleType _targetRoleType;
-    [SerializeField] private E_SupportStatType _targetStatType;
-    [SerializeField] private E_ModifierType _modifierType;
+    [SerializeField] private SupportTargetRoleType _targetRoleType;
+    [SerializeField] private SupportStatType _targetStatType;
+    [SerializeField] private ModifierType _modifierType;
     [SerializeField] private float _value;
     [SerializeField] private string _description;
-    public E_SupportTargetRoleType TargetRoleType => _targetRoleType;
-    public E_SupportStatType TargetStatType => _targetStatType;
-    public E_ModifierType ModifierType => _modifierType;
+    public SupportTargetRoleType TargetRoleType => _targetRoleType;
+    public SupportStatType TargetStatType => _targetStatType;
+    public ModifierType ModifierType => _modifierType;
     public float Value => _value;
     public string Description => _description;
     public PartSupportEffectData(
-        E_SupportTargetRoleType targetRoleType,
-        E_SupportStatType targetStatType,
-        E_ModifierType modifierType,
+        SupportTargetRoleType targetRoleType,
+        SupportStatType targetStatType,
+        ModifierType modifierType,
         float value)
     {
         // 지원 대상 역할 저장
@@ -35,19 +35,19 @@ public class PartSupportEffectData
     public string EffectDescription()
     {
         string description = "";
-        if (_targetRoleType == E_SupportTargetRoleType.Attack)
+        if (_targetRoleType == SupportTargetRoleType.Attack)
             description += "공격 쥐의 ";
-        else if (_targetRoleType == E_SupportTargetRoleType.Defense)
+        else if (_targetRoleType == SupportTargetRoleType.Defense)
             description += "방어 쥐의 ";
-        else if (_targetRoleType == E_SupportTargetRoleType.All)
+        else if (_targetRoleType == SupportTargetRoleType.All)
             description += "모든 쥐의 ";
-        if (_targetStatType == E_SupportStatType.AttackSpeed)
+        if (_targetStatType == SupportStatType.AttackSpeed)
             description += "공격 속도를 ";
-        else if (_targetStatType == E_SupportStatType.AttackDamage)
+        else if (_targetStatType == SupportStatType.AttackDamage)
             description += "공격력을 ";
-        else if (_targetStatType == E_SupportStatType.DefenseRate)
+        else if (_targetStatType == SupportStatType.DefenseRate)
             description += "방어력을 ";
-        else if (_targetStatType == E_SupportStatType.PenetrationRate)
+        else if (_targetStatType == SupportStatType.PenetrationRate)
             description += "관통력을 ";
         if (_value >= 1)
             description += $"{_value} ";

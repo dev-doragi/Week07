@@ -108,7 +108,7 @@ public class DropRat : MonoBehaviour
 
         if (other.TryGetComponent(out Unit unit))
         {
-            if (unit.Team == E_TeamType.Player)
+            if (unit.Team == TeamType.Player)
             {
                 Collect();
             }

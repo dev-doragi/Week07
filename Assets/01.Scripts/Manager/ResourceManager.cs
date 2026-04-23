@@ -6,6 +6,10 @@ using UnityEngine.UI;
 /// <summary>
 /// 게임 내 핵심 재화(Mouse) 및 시스템 활성화를 관리하는 경제 매니저입니다.
 /// </summary>
+/// <remarks>
+/// [최적화 사항]
+/// - Dirty Flag 패턴: 자원 변경 시 즉시 UI를 갱신하지 않고, 프레임 끝에 한 번만 갱신하여 CPU 부하를 방지합니다.
+/// </remarks>
 [DefaultExecutionOrder(-100)]
 public class ResourceManager : Singleton<ResourceManager>
 {
@@ -21,6 +25,7 @@ public class ResourceManager : Singleton<ResourceManager>
     private int _activeAltarCount = 0; // 활성화된 스펠/제단 개수
     private float _genTimer;
     private float _subTimer;
+    private bool _isDirty = false; // UI 갱신이 필요한지 체크하는 플래그
 
     [Header("State")]
     private bool _isAltarSupportEnabled = true;
@@ -36,19 +41,29 @@ public class ResourceManager : Singleton<ResourceManager>
     protected override void Awake()
     {
         base.Awake();
-
-        UpdateUI();
+        _isDirty = true; // 시작 시 UI 초기 갱신 예약
     }
 
     private void Update()
     {
+        // 웨이브 진행 중이 아니면 자원 로직 정지
         if (StageManager.Instance == null || GameFlowManager.Instance.CurrentInGameState != InGameState.WavePlaying) return;
 
         HandleGeneration();
         HandleConsumption();
     }
 
-    #region 핵심 로직 (Generation / Consumption) -> 생성 로직은 변경되어야 함!!!!
+    private void LateUpdate()
+    {
+        // 이번 프레임에 자원 수치가 변했다면 한 번만 UI를 업데이트
+        if (_isDirty)
+        {
+            UpdateUI();
+            _isDirty = false;
+        }
+    }
+
+    #region 핵심 로직 (Generation / Consumption)
 
     private void HandleGeneration()
     {
@@ -65,7 +80,7 @@ public class ResourceManager : Singleton<ResourceManager>
         if (_genTimer >= _genInterval)
         {
             _genTimer = 0;
-            AddMouseCount(_generatorCount);
+            AddMouseCount(_generatorCount); // 자원 추가
         }
     }
 
@@ -86,7 +101,7 @@ public class ResourceManager : Singleton<ResourceManager>
         if (_subTimer >= _subInterval)
         {
             _subTimer = 0;
-            // 자원이 부족하면 소비하지 못하고 버프가 꺼짐
+            // 자원 소모 체크
             if (_currentMouseCount >= _activeAltarCount)
             {
                 SubtractMouseCount(_activeAltarCount);
@@ -94,7 +109,7 @@ public class ResourceManager : Singleton<ResourceManager>
             }
             else
             {
-                _isAltarSupportEnabled = false;
+                _isAltarSupportEnabled = false; // 자원 부족 시 버프 비활성화
             }
         }
     }
@@ -105,7 +120,7 @@ public class ResourceManager : Singleton<ResourceManager>
     public void AddMouseCount(int amount)
     {
         _currentMouseCount = Mathf.Min(_currentMouseCount + amount, _maxMouseCount);
-        UpdateUI();
+        _isDirty = true; // 변경됨을 알림
     }
 
     public bool SubtractMouseCount(int amount)
@@ -117,10 +132,11 @@ public class ResourceManager : Singleton<ResourceManager>
         }
 
         _currentMouseCount -= amount;
-        UpdateUI();
+        _isDirty = true; // 변경됨을 알림
         return true;
     }
 
+    // TODO: 나중에 생성기 유닛이 추가되면 이 메서드들을 호출하게 됩니다.
     public void AddGenerator(int count) => _generatorCount += count;
     public void SubtractGenerator(int count) => _generatorCount = Mathf.Max(0, _generatorCount - count);
 

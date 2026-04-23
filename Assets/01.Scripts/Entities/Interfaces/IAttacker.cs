@@ -4,7 +4,7 @@ using UnityEngine;
 /// 투사체 생성 및 발사(직사, 곡사 등)의 실제 물리적 처리를 담당하는 인터페이스
 /// 기존 BaseAttackPerformer를 대체합니다.
 /// </summary>
-public interface IAttackPerformer
+public interface IAttacker
 {
     /// <summary>
     /// 공격을 물리적으로 실행(투사체 생성 등)합니다.

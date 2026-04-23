@@ -1,14 +1,15 @@
 using System.Collections;
 using UnityEngine;
 
-/// <summary>
-/// 모든 투사체의 최상위 베이스 클래스입니다. 오직 수명 관리와 풀링(회수) 로직만 담당합니다.
-/// </summary>
 public abstract class ProjectileBase : MonoBehaviour
 {
     [Header("Lifecycle Settings")]
     [SerializeField] protected float _lifeTime = 5f;
 
+    protected AttackModule _attackData;
+    protected TeamType _attackerTeam;
+    protected float _currentDamage;
+    protected int _remainingPiercing;
     private Coroutine _lifeTimeCoroutine;
 
     protected virtual void OnEnable()
@@ -20,11 +21,58 @@ public abstract class ProjectileBase : MonoBehaviour
     protected virtual void OnDisable()
     {
         EventBus.Instance.Unsubscribe<StageCleanedUpEvent>(HandleStageCleanedUp);
+        if (_lifeTimeCoroutine != null) StopCoroutine(_lifeTimeCoroutine);
+    }
 
-        if (_lifeTimeCoroutine != null)
+    public virtual void Launch(AttackModule data, TeamType team)
+    {
+        _attackData = data;
+        _attackerTeam = team;
+        _currentDamage = data.Damage;
+        _remainingPiercing = data.PiercingCount;
+    }
+
+    protected virtual void ProcessHit(IDamageable target, Vector2 hitPoint)
+    {
+        if (target.Team == _attackerTeam || target.IsDead) return;
+
+        DamageData data = new DamageData
         {
-            StopCoroutine(_lifeTimeCoroutine);
-            _lifeTimeCoroutine = null;
+            Damage = _currentDamage,
+            AttackerTeam = _attackerTeam,
+            HitPoint = hitPoint
+        };
+
+        switch (_attackData.Area)
+        {
+            case AreaType.Single:
+                target.TakeDamage(data);
+                Despawn();
+                break;
+
+            case AreaType.Splash:
+                Explode(hitPoint);
+                Despawn();
+                break;
+
+            case AreaType.Piercing:
+                data.IsPiercing = true;
+                target.TakeDamage(data);
+                _currentDamage *= _attackData.PiercingDecay;
+                if (_remainingPiercing-- <= 0) Despawn();
+                break;
+        }
+    }
+
+    private void Explode(Vector2 center)
+    {
+        Collider2D[] targets = Physics2D.OverlapCircleAll(center, _attackData.RangeRadius);
+        foreach (var col in targets)
+        {
+            if (col.TryGetComponent(out IDamageable target) && target.Team != _attackerTeam)
+            {
+                target.TakeDamage(new DamageData { Damage = _currentDamage, HitPoint = center });
+            }
         }
     }
 
@@ -34,22 +82,10 @@ public abstract class ProjectileBase : MonoBehaviour
         Despawn();
     }
 
-    private void HandleStageCleanedUp(StageCleanedUpEvent evt)
-    {
-        Despawn();
-    }
+    private void HandleStageCleanedUp(StageCleanedUpEvent evt) => Despawn();
 
     protected virtual void Despawn()
     {
-        if (gameObject.activeInHierarchy)
-        {
-            PoolManager.Instance.Despawn(gameObject);
-        }
-    }
-
-    public void SpawnBullet(string _bulletName)
-    {
-        Vector3 spawnPos = new Vector3(transform.position.x - 0.5f, transform.position.y, transform.position.z);
-        PoolManager.Instance.Spawn(_bulletName, spawnPos, Quaternion.identity);
+        if (gameObject.activeInHierarchy) PoolManager.Instance.Despawn(gameObject);
     }
 }

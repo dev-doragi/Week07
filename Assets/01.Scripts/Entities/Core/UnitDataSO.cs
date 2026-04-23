@@ -10,8 +10,8 @@ public class UnitDataSO : ScriptableObject
     [Header("Identity (기본 식별 정보)")]
     public int Key;
     public string UnitName;
-    public E_TeamType Team;
-    public E_UnitCategory Category;
+    public TeamType Team;
+    public UnitCategory Category;
     public GameObject Prefab;
     public Sprite Icon;
 
@@ -27,10 +27,15 @@ public class UnitDataSO : ScriptableObject
 
     [Header("Core Stats (공통 스탯)")]
     public float MaxHp;
+
+    [Tooltip("기본 피해 경감률(0~1). 0.2 = 20% 감소")]
     [Range(0f, 1f)] public float BaseDefenseRate;
+
+    [Tooltip("설치 코스트")]
     public int Cost;
 
     [Header("Death Event Data")]
+    [Tooltip("유닛 사망시 스폰시킬 개체 코어면 DropRat, 일반 개체면 파티클 프리팹 하나")]
     public string DeathSpawnKey = "DropRat";
     public int BaseDeathSpawnCount = 25;
 
@@ -64,13 +69,44 @@ public class UnitDataSO : ScriptableObject
 [System.Serializable]
 public class AttackModule
 {
+    [Header("Base Stats")]
+    [Tooltip("기본 피해량입니다.")]
     public float Damage;
+
+    [Tooltip("공격 속도 (공격 간격 = 1 / Speed)")]
     public float Speed;
-    public float Distance;       // 사거리 (거리 계산용)
-    public int RangeRadius;      // 광역 공격 반경 (0이면 단일 타겟)
-    public E_AttackTrajectoryType Trajectory; // Direct / Arc
-    [Range(0f, 1f)] public float Penetration; // 방어력 관통 비율
-    public int AttackCost; // 공격 시 소모 비용
+
+    [Tooltip("공격 사거리. 1단위당 그리드 한 칸")]
+    public float Distance;
+
+    [Tooltip("코스트")]
+    public int AttackCost;
+
+    [Header("Combat Policy")]
+    [Tooltip("투사체가 날아가는 물리적 궤적 방식")]
+    public AttackTrajectoryType Trajectory;
+
+    [Tooltip("적을 탐색하는 AI 규칙")]
+    public TargetingPolicy Targeting;
+
+    [Tooltip("공격의 타격 범위 판정 방식")]
+    public AreaType Area;
+
+    [Header("Area Options")]
+    [Tooltip("범위(Splash) 공격 시, 충돌 지점을 기준으로 타격을 입힐 원형 반경")]
+    public float RangeRadius;
+
+    [Tooltip("관통(Piercing) 공격 시, 투사체가 사라지기 전까지 관통할 수 있는 최대 타겟 수")]
+    public int PiercingCount;
+
+    [Tooltip("상대방의 방어력을 무시하는 비율(0~1)입니다. 1에 가까울수록 방어력을 완전무시")]
+    [Range(0f, 1f)] public float Penetration;
+
+    [Tooltip("관통 시마다 적용되는 데미지 감쇠율입니다. (예: 0.8이면 관통할 때마다 이전 데미지의 80%만 적용)")]
+    [Range(0f, 1f)] public float PiercingDecay;
+
+    [Tooltip("공격 실행 시 실제로 생성되어 날아갈 투사체 오브젝트")]
+    public GameObject ProjectilePrefab;
 }
 
 [System.Serializable]
