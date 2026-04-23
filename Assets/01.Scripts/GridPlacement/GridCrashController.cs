@@ -92,12 +92,18 @@ public class GridCrashController : MonoBehaviour
             layerMask    = _enemyLayer,
             useTriggers  = true
         };
-        _overlapBuffer.Clear();
+        float lookAhead = (_crashDistance / _crashDuration) * Time.deltaTime + 0.05f;
+        var hits = new RaycastHit2D[1];
+        int hitCount = _crashCollider.Cast(Vector2.right, filter, hits, lookAhead);
 
-        if (Physics2D.OverlapCollider(_crashCollider, filter, _overlapBuffer) > 0)
-        {
-            OnEnemyHit();
-        }
+        if(hitCount > 0) OnEnemyHit();
+
+        // _overlapBuffer.Clear();
+
+        // if (Physics2D.OverlapCollider(_crashCollider, filter, _overlapBuffer) > 0)
+        // {
+        //     OnEnemyHit();
+        // }
     }
 
     //돌진 실행 — UI 버튼 OnClick에 연결
@@ -181,7 +187,7 @@ public class GridCrashController : MonoBehaviour
 
         _sequence.Append(gridTransform.DOShakePosition(
             _shakeDuration,
-            new Vector3(_shakeStrength, _shakeStrength, 0f),
+            new Vector3(_shakeStrength, 0f, 0f),
             _shakeVibrato, _shakeRandomness, false, true));
 
         _sequence.Append(gridTransform.DOMove(_startPosition, _returnDuration)
