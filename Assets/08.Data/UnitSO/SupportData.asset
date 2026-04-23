@@ -12,9 +12,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 550f97df3c4ad9d44a36190b24e47c3b, type: 3}
   m_Name: SupportData
   m_EditorClassIdentifier: Assembly-CSharp::UnitDataSO
-  _unitName: Support
-  _category: 4
-  _size: {x: 1, y: 1}
-  _placementRule: 1
-  _actsAsFoundation: 0
-  _prefab: {fileID: 9018852567463571919, guid: 758806949627fb1428feb4432b4d68ec, type: 3}
+  Key: 0
+  UnitName: 
+  Team: 1
+  Category: 4
+  Prefab: {fileID: 994972766376619284, guid: b8ea08534d4c1004d8bfe3d228f3d211, type: 3}
+  Icon: {fileID: 0}
+  Size: {x: 1, y: 1}
+  PlacementRule: 1
+  ActsAsFoundation: 0
+  MaxHp: 0
+  BaseDefenseRate: 0
+  Cost: 0
+  DeathSpawnKey: DropRat
+  BaseDeathSpawnCount: 25
+  Attack:
+    Damage: 0
+    Speed: 0
+    Distance: 0
+    RangeRadius: 0
+    Trajectory: 0
+    Penetration: 0
+    AttackCost: 0
+  Defense:
+    CollisionPower: 0
+  Support:
+    Radius: 0
+    Effects: []

@@ -12,9 +12,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 550f97df3c4ad9d44a36190b24e47c3b, type: 3}
   m_Name: WheelData
   m_EditorClassIdentifier: Assembly-CSharp::UnitDataSO
-  _unitName: Wheel
-  _category: 0
-  _size: {x: 1, y: 1}
-  _placementRule: 0
-  _actsAsFoundation: 1
-  _prefab: {fileID: 3519972494905233886, guid: 95d41fc40e542684ba6a531d0577ac93, type: 3}
+  Key: 0
+  UnitName: 
+  Team: 1
+  Category: 0
+  Prefab: {fileID: 4836224405004236146, guid: 8bcd0c3dca3ca0f4f870b6bdc8d2e45a, type: 3}
+  Icon: {fileID: 0}
+  Size: {x: 1, y: 1}
+  PlacementRule: 0
+  ActsAsFoundation: 1
+  MaxHp: 0
+  BaseDefenseRate: 0
+  Cost: 0
+  DeathSpawnKey: DropRat
+  BaseDeathSpawnCount: 25
+  Attack:
+    Damage: 0
+    Speed: 0
+    Distance: 0
+    RangeRadius: 0
+    Trajectory: 0
+    Penetration: 0
+    AttackCost: 0
+  Defense:
+    CollisionPower: 0
+  Support:
+    Radius: 0
+    Effects: []

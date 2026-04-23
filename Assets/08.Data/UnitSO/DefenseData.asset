@@ -12,9 +12,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 550f97df3c4ad9d44a36190b24e47c3b, type: 3}
   m_Name: DefenseData
   m_EditorClassIdentifier: Assembly-CSharp::UnitDataSO
-  _unitName: Defense
-  _category: 3
-  _size: {x: 1, y: 1}
-  _placementRule: 2
-  _actsAsFoundation: 1
-  _prefab: {fileID: 5190789298202641923, guid: 3c859868db0ed68429515c881bdb3907, type: 3}
+  Key: 0
+  UnitName: 
+  Team: 1
+  Category: 3
+  Prefab: {fileID: 2485539623840192102, guid: a0a7fb258d25de0438caf2fcc42a294f, type: 3}
+  Icon: {fileID: 0}
+  Size: {x: 1, y: 1}
+  PlacementRule: 2
+  ActsAsFoundation: 1
+  MaxHp: 0
+  BaseDefenseRate: 0
+  Cost: 0
+  DeathSpawnKey: DropRat
+  BaseDeathSpawnCount: 25
+  Attack:
+    Damage: 0
+    Speed: 0
+    Distance: 0
+    RangeRadius: 0
+    Trajectory: 0
+    Penetration: 0
+    AttackCost: 0
+  Defense:
+    CollisionPower: 0
+  Support:
+    Radius: 0
+    Effects: []
