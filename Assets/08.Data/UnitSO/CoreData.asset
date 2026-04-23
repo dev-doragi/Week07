@@ -15,7 +15,7 @@ MonoBehaviour:
   Key: 0
   UnitName: 
   Team: 1
-  Category: 1
+  Category: 2
   Prefab: {fileID: 3197281350173304387, guid: 4907d5b45352e534783e3a533561faa7, type: 3}
   Icon: {fileID: 0}
   Size: {x: 1, y: 1}

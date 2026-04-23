@@ -10,20 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 550f97df3c4ad9d44a36190b24e47c3b, type: 3}
-  m_Name: WheelData
+  m_Name: SupportData_2
   m_EditorClassIdentifier: Assembly-CSharp::UnitDataSO
   Key: 0
-  UnitName: 
+  UnitName: "\uC131\uC951\uC790"
   Team: 1
-  Category: 1
-  Prefab: {fileID: 4836224405004236146, guid: 8bcd0c3dca3ca0f4f870b6bdc8d2e45a, type: 3}
-  Icon: {fileID: 0}
+  Category: 5
+  Prefab: {fileID: 585201898478558424, guid: be5606c044e9cee42881f9d4cdf35d7b, type: 3}
+  Icon: {fileID: -2417847074671435042, guid: 739b85737b59dfc4eb8a9335d18aba72, type: 3}
   Size: {x: 1, y: 1}
-  PlacementRule: 0
-  ActsAsFoundation: 1
-  MaxHp: 0
+  PlacementRule: 1
+  ActsAsFoundation: 0
+  MaxHp: 25
   BaseDefenseRate: 0
-  Cost: 0
+  Cost: 20
   DeathSpawnKey: DropRat
   BaseDeathSpawnCount: 25
   Attack:
@@ -37,5 +37,5 @@ MonoBehaviour:
   Defense:
     CollisionPower: 0
   Support:
-    Radius: 0
+    Radius: 20
     Effects: []

@@ -1,25 +1,22 @@
 fileFormatVersion: 2
-guid: 34f3abc17a75b0d4d81fe69030e8201c
+guid: 739b85737b59dfc4eb8a9335d18aba72
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7084957924513991936
-    second: Thrower_Idle&Attack_0
+      213: -2417847074671435042
+    second: bishop_0
   - first:
-      213: -1181758033296657942
-    second: Thrower_Idle&Attack_1
+      213: 2271363463249633613
+    second: bishop_1
   - first:
-      213: -7284762572288012843
-    second: Thrower_Idle&Attack_2
+      213: 7180056873152389656
+    second: bishop_2
   - first:
-      213: 7470514433298124588
-    second: Thrower_Idle&Attack_3
+      213: 8974744836144455243
+    second: bishop_3
   - first:
-      213: -1374138028266087243
-    second: Thrower_Idle&Attack_4
-  - first:
-      213: -5930963349282440069
-    second: Thrower_Idle&Attack_5
+      213: 2388881503075478227
+    second: bishop_4
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -52,7 +49,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -63,10 +60,10 @@ TextureImporter:
   compressionQuality: 50
   spriteMode: 2
   spriteExtrude: 1
-  spriteMeshType: 1
+  spriteMeshType: 0
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 60
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -90,7 +87,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -115,133 +112,111 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Thrower_Idle&Attack_0
+      name: bishop_0
       rect:
         serializedVersion: 2
-        x: 4
+        x: 0
         y: 0
-        width: 52
-        height: 54
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 00dce33d1b3d25260800000000000000
-      internalID: 7084957924513991936
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Thrower_Idle&Attack_1
-      rect:
-        serializedVersion: 2
-        x: 68
-        y: 0
-        width: 52
-        height: 54
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: ae173e6745d899fe0800000000000000
-      internalID: -1181758033296657942
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Thrower_Idle&Attack_2
-      rect:
-        serializedVersion: 2
-        x: 132
-        y: 0
-        width: 52
-        height: 52
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 5dd46bd690357ea90800000000000000
-      internalID: -7284762572288012843
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Thrower_Idle&Attack_3
-      rect:
-        serializedVersion: 2
-        x: 196
-        y: 0
-        width: 52
-        height: 52
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: c2fc92eeb499ca760800000000000000
-      internalID: 7470514433298124588
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Thrower_Idle&Attack_4
-      rect:
-        serializedVersion: 2
-        x: 264
-        y: 0
-        width: 49
-        height: 49
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 5bc18d86eb41eece0800000000000000
-      internalID: -1374138028266087243
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Thrower_Idle&Attack_5
-      rect:
-        serializedVersion: 2
-        x: 323
-        y: 0
-        width: 56
+        width: 64
         height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: b7cb826e14cf0bda0800000000000000
-      internalID: -5930963349282440069
+      spriteID: ed2edf855e4127ed0800000000000000
+      internalID: -2417847074671435042
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bishop_1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d41abce1901858f10800000000000000
+      internalID: 2271363463249633613
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bishop_2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 812a95f3fafa4a360800000000000000
+      internalID: 7180056873152389656
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bishop_3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b4e5924d0e2bc8c70800000000000000
+      internalID: 8974744836144455243
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bishop_4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3daa059f113072120800000000000000
+      internalID: 2388881503075478227
       vertices: []
       indices: 
       edges: []
@@ -250,7 +225,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 58d24460433365f47a38f406084b82ab
     internalID: 0
     vertices: []
     indices: 
@@ -258,14 +233,15 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      Thrower_Idle&Attack_0: 7084957924513991936
-      Thrower_Idle&Attack_1: -1181758033296657942
-      Thrower_Idle&Attack_2: -7284762572288012843
-      Thrower_Idle&Attack_3: 7470514433298124588
-      Thrower_Idle&Attack_4: -1374138028266087243
-      Thrower_Idle&Attack_5: -5930963349282440069
+      bishop_0: -2417847074671435042
+      bishop_1: 2271363463249633613
+      bishop_2: 7180056873152389656
+      bishop_3: 8974744836144455243
+      bishop_4: 2388881503075478227
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
