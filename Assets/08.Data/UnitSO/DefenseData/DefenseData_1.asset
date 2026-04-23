@@ -16,7 +16,7 @@ MonoBehaviour:
   UnitName: "\uBCBD\uC950"
   Team: 1
   Category: 4
-  Prefab: {fileID: 222437602671857465, guid: 52a0801140431a04b8bb035286499f3e, type: 3}
+  Prefab: {fileID: 2492668928636133370, guid: 2b0937d354847024ca675b27740cf4db, type: 3}
   Icon: {fileID: 5865935373905670686, guid: 59e5b73b1b9200f42a69176348aa41d8, type: 3}
   Size: {x: 1, y: 1}
   PlacementRule: 2
@@ -30,10 +30,15 @@ MonoBehaviour:
     Damage: 0
     Speed: 0
     Distance: 0
-    RangeRadius: 0
-    Trajectory: 0
-    Penetration: 0
     AttackCost: 0
+    Trajectory: 0
+    Targeting: 0
+    Area: 0
+    RangeRadius: 0
+    PiercingCount: 0
+    Penetration: 0
+    PiercingDecay: 0
+    ProjectilePrefab: {fileID: 0}
   Defense:
     CollisionPower: 1
   Support:

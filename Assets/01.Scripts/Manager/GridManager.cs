@@ -166,6 +166,16 @@ public class GridManager : MonoBehaviour
     public bool TryPlace(UnitDataSO data, Vector2Int origin)
     {
         if (!CanPlace(data, origin)) return false;
+        if (data.Cost > 0 && ResourceManager.Instance != null)
+        {
+            int before = ResourceManager.Instance.CurrentMouse;
+            if (!ResourceManager.Instance.SubtractMouseCount(data.Cost))
+            {
+                Debug.Log($"[GridManager] {data.UnitName} 배치 실패 | 보유: {before} / 필요: {data.Cost}");
+                return false;
+            }
+            Debug.Log($"[GridManager] {data.UnitName} 배치 완료 | 사용: {data.Cost} | {before} → {ResourceManager.Instance.CurrentMouse}");
+        }
         CreateAndRegister(data, origin);
         return true;
     }

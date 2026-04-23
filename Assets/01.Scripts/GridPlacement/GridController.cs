@@ -36,10 +36,10 @@ public class GridController : MonoBehaviour
     // 디버그 입력 (1/2/3 키로 설치할 유닛 선택)
     // 실제 게임에선 UI 버튼으로 교체 예정
     // ==========================================
-    [Header("Debug Unit Prefabs")]
-    [SerializeField] private GameObject _attackPrefab;   // 1번 키
-    [SerializeField] private GameObject _defensePrefab;  // 2번 키
-    [SerializeField] private GameObject _supportPrefab;  // 3번 키
+    // [Header("Debug Unit Prefabs")]
+    // [SerializeField] private GameObject _attackPrefab;   // 1번 키
+    // [SerializeField] private GameObject _defensePrefab;  // 2번 키
+    // [SerializeField] private GameObject _supportPrefab;  // 3번 키
 
     // ==========================================
     // 고스트 프리뷰 설정
@@ -106,10 +106,10 @@ public class GridController : MonoBehaviour
         var kb = Keyboard.current;
         if (kb == null) return;
 
-        if (kb.digit1Key.wasPressedThisFrame)      Select(_attackPrefab);
-        else if (kb.digit2Key.wasPressedThisFrame) Select(_defensePrefab);
-        else if (kb.digit3Key.wasPressedThisFrame) Select(_supportPrefab);
-        else if (kb.escapeKey.wasPressedThisFrame) Deselect();
+        // if (kb.digit1Key.wasPressedThisFrame)      Select(_attackPrefab);
+        // else if (kb.digit2Key.wasPressedThisFrame) Select(_defensePrefab);
+        // else if (kb.digit3Key.wasPressedThisFrame) Select(_supportPrefab);
+        // else if (kb.escapeKey.wasPressedThisFrame) Deselect();
     }
 
     // 좌클릭 → 설치, 우클릭 → 제거

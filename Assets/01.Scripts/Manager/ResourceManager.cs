@@ -47,7 +47,7 @@ public class ResourceManager : Singleton<ResourceManager>
     private void Update()
     {
         // 웨이브 진행 중이 아니면 자원 로직 정지
-        if (StageManager.Instance == null || GameFlowManager.Instance.CurrentInGameState != InGameState.WavePlaying) return;
+        //if (StageManager.Instance == null || GameFlowManager.Instance.CurrentInGameState != InGameState.WavePlaying) return;
 
         HandleGeneration();
         HandleConsumption();
