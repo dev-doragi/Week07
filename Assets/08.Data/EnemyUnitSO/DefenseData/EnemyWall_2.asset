@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 550f97df3c4ad9d44a36190b24e47c3b, type: 3}
+  m_Name: EnemyWall_2
+  m_EditorClassIdentifier: Assembly-CSharp::UnitDataSO
+  Key: 102
+  UnitName: "\uC801\uBCBD\uBCBD"
+  Team: 2
+  Category: 4
+  Prefab: {fileID: 222437602671857465, guid: 316d267d6c862174ca7085fe30b29c3a, type: 3}
+  Icon: {fileID: -8292029180777887580, guid: c01be677c27ee1a4d9c22bf6d5a23fef, type: 3}
+  Size: {x: 1, y: 1}
+  PlacementRule: 2
+  ActsAsFoundation: 1
+  MaxHp: 150
+  BaseDefenseRate: 0
+  Cost: 0
+  DeathSpawnKey: 
+  BaseDeathSpawnCount: 0
+  Attack:
+    Damage: 0
+    Speed: 0
+    Distance: 0
+    AttackCost: 0
+    Trajectory: 0
+    Targeting: 0
+    Area: 0
+    RangeRadius: 0
+    PiercingCount: 0
+    Penetration: 0
+    PiercingDecay: 0
+    ProjectilePrefab: {fileID: 0}
+  Defense:
+    CollisionPower: 1
+  Support:
+    Radius: 0
+    Effects: []

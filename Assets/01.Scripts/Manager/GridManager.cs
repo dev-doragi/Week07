@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 // ================================================================
@@ -167,6 +166,16 @@ public class GridManager : MonoBehaviour
     public bool TryPlace(UnitDataSO data, Vector2Int origin)
     {
         if (!CanPlace(data, origin)) return false;
+        if (data.Cost > 0 && ResourceManager.Instance != null)
+        {
+            int before = ResourceManager.Instance.CurrentMouse;
+            if (!ResourceManager.Instance.SubtractMouseCount(data.Cost))
+            {
+                Debug.Log($"[GridManager] {data.UnitName} 배치 실패 | 보유: {before} / 필요: {data.Cost}");
+                return false;
+            }
+            Debug.Log($"[GridManager] {data.UnitName} 배치 완료 | 사용: {data.Cost} | {before} → {ResourceManager.Instance.CurrentMouse}");
+        }
         CreateAndRegister(data, origin);
         return true;
     }
@@ -242,7 +251,7 @@ public class GridManager : MonoBehaviour
                 if(unit == null) continue;
 
                 // 이 행에서 맨 오른쪽 유닛 발견 -> Attack 이면 카운트
-                if(unit.Data.Category == E_UnitCategory.Attack && counted.Add(unit))
+                if(unit.Data.Category == UnitCategory.Attack && counted.Add(unit))
                 {
                     totalDamage += unit.Data.Attack != null ? (int)unit.Data.Attack.Damage : 0;
                 }
