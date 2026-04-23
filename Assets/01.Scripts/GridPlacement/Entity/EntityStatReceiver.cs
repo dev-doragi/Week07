@@ -13,6 +13,12 @@ public class EntityStatReceiver : MonoBehaviour
         _percentBonuses.Clear();
     }
 
+    public void ApplyModifier(PartSupportEffectData effect)
+    {
+        if (effect == null) return;
+        ApplyModifier(effect.TargetStatType, effect.ModifierType, effect.Value);
+    }
+
     public void ApplyModifier(E_SupportStatType type, E_ModifierType mod, float value)
     {
         if (mod == E_ModifierType.Flat)

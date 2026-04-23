@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -19,6 +20,11 @@ public class Unit : MonoBehaviour
     [Header("Data Reference")]
     [SerializeField] private UnitDataSO _data;
 
+    [Header("Visual Feedback")]
+    [SerializeField] private SpriteRenderer _renderer;
+    private Coroutine _hitEffectCo;
+
+    private EntityStatReceiver _statReceiver;
     private float _currentHp;
     private E_TeamType _team;
     private bool _isInitialized = false;
@@ -27,6 +33,7 @@ public class Unit : MonoBehaviour
     public E_TeamType Team => _team;
     public float CurrentHp => _currentHp;
     public bool IsDead => _currentHp <= 0f;
+    public EntityStatReceiver StatReceiver => _statReceiver;
 
     public event Action<float, float> OnHpChanged;
     public event Action<Unit> OnDead;
@@ -75,16 +82,42 @@ public class Unit : MonoBehaviour
     {
         if (!_isInitialized || IsDead) return;
 
-        float defenseRate = Mathf.Clamp01(_data.BaseDefenseRate);
-        float finalDamage = rawDamage * (1f - defenseRate);
+        float baseDefense = _data.BaseDefenseRate;
+        float finalDefense = _statReceiver.GetModifiedValue(E_SupportStatType.DefenseRate, baseDefense);
+
+        float finalDamage = rawDamage * (1f - Mathf.Clamp01(finalDefense));
 
         _currentHp -= Mathf.Max(0f, finalDamage);
 
+        UpdateVisualFeedback();
         OnHpChanged?.Invoke(_currentHp, _data.MaxHp);
 
         if (IsDead)
         {
             HandleDeath();
+        }
+    }
+
+    private void UpdateVisualFeedback()
+    {
+        if (_renderer == null) return;
+
+        float ratio = _currentHp / _data.MaxHp;
+        float colorVal = 0.5f + (ratio / 2f);
+        Color baseColor = new Color(1f, colorVal, colorVal, 1f);
+
+        if (_hitEffectCo != null) StopCoroutine(_hitEffectCo);
+        _hitEffectCo = StartCoroutine(HitFlashRoutine(baseColor));
+    }
+
+    private IEnumerator HitFlashRoutine(Color targetColor)
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            _renderer.color = new Color(1f, 1f, 1f, 0.75f); // Flash
+            yield return new WaitForSeconds(0.05f);
+            _renderer.color = targetColor;
+            yield return new WaitForSeconds(0.05f);
         }
     }
 

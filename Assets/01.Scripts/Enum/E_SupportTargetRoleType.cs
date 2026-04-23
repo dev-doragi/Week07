@@ -1,4 +1,4 @@
-public enum SupportTargetRoleType
+public enum E_SupportTargetRoleType
 {
     None = 0,
     All = 1,
