@@ -22,14 +22,6 @@ public struct PlaySFXEvent
     public float Volume;
 }
 
-<<<<<<< Updated upstream
-/// <summary>
-/// 일시정지 토글 입력(예: 키 입력 또는 UI)이 발생했음을 알리는 이벤트입니다.
-/// 구독자 예: PauseManager
-/// </summary>
-public struct PausePressedEvent { }
-=======
-
 // ============================================================================
 // [2] 스테이지 준비 이벤트 (Stage Setup)
 // 씬 로드 후 실제 플레이 환경이 구축되는 단계
@@ -89,4 +81,3 @@ public struct StageProgressUpdatedEvent { public int HighestCleared; }
 /// <summary> 튜토리얼 전체 시퀀스 완료 이벤트 </summary>
 /// <remarks> [발행지] TutorialManager </remarks>
 public struct TutorialCompletedEvent { public int RewardStageIndex; }
->>>>>>> Stashed changes

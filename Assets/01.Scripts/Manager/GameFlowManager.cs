@@ -1,33 +1,6 @@
 using UnityEngine;
 using System.Collections;
 
-<<<<<<< Updated upstream
-public enum InGameState
-{
-    None,
-    Prepare,       // 그리드 배치 대기 상태
-    WavePlaying,   // 웨이브 진행 상태
-    WaveEnded,     // 웨이브 종료 (결과 연출 중)
-    StageCleared,  // 스테이지 클리어
-    StageFailed    // 스테이지 실패
-}
-
-[DefaultExecutionOrder(-100)]
-=======
->>>>>>> Stashed changes
-/// <summary>
-/// 인게임 전투의 세부 흐름(InGameState)과 연출을 제어하는 흐름 관리자입니다.
-/// </summary>
-/// <remarks>
-/// [주요 역할]
-/// - 스테이지 내부의 상태(Prepare -> WavePlaying -> WaveEnded 등) 전환 관리
-/// - 전투 종료 시 슬로우 모션 등 트랜지션 연출 후 결과 이벤트 발행
-///
-/// [이벤트 흐름]
-/// - Subscribe: GameStateChangedEvent, StageGenerateCompleteEvent, WaveStartedEvent, WaveEndedEvent
-/// - Publish: InGameStateChangedEvent, StageClearedEvent, StageFailedEvent
-/// </remarks>
-
 [DefaultExecutionOrder(-150)]
 public class GameFlowManager : Singleton<GameFlowManager>
 {
