@@ -161,8 +161,9 @@ MonoBehaviour:
   _defensePrefab: {fileID: 5190789298202641923, guid: 3c859868db0ed68429515c881bdb3907, type: 3}
   _supportPrefab: {fileID: 9018852567463571919, guid: 758806949627fb1428feb4432b4d68ec, type: 3}
   _ghostCellPrefab: {fileID: 2027468391}
-  _validColor: {r: 0.2, g: 0.5, b: 1, a: 0.5}
+  _validColor: {r: 0, g: 0, b: 0, a: 0}
   _invalidColor: {r: 1, g: 0.2, b: 0.2, a: 0.5}
+  _spritePreviewAlpha: 0.3
 --- !u!4 &803066230
 Transform:
   m_ObjectHideFlags: 0
@@ -382,9 +383,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4fb10b73d11d0c4a9aae414654975ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GridManager
-  _width: 16
+  _width: 8
   _height: 10
-  _cellSize: 1
+  _cellSize: 0.8
   _origin: {x: -8, y: -5, z: 0}
 --- !u!4 &2116091379
 Transform:

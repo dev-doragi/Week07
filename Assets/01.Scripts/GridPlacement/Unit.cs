@@ -1,14 +1,127 @@
+using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
-// ================================================================
-// 유닛 프리팹 루트에 붙는 컴포넌트
-// 역할: "이 프리팹이 어떤 UnitDataSO를 쓰는지" 연결하는 다리
-// 사용처:
-//   - GridController가 프리팹에서 Unit을 꺼내 → Unit.Data로 SO 획득
-//   - 나중에 전투 시스템이 런타임 HP/쿨다운 같은 인스턴스 상태를 여기 들고 있게 확장 가능
-// ================================================================
+/// <summary>
+/// 유닛 및 건물의 실제 런타임 인스턴스를 관리하는 핵심 엔티티 컨트롤러입니다.
+/// </summary>
+/// <remarks>
+/// [주요 역할]
+/// - UnitDataSO 기반의 스탯 초기화 및 전투 모듈(Attack, Defender, Supporter) 자동 조립
+/// - 팀 소속(E_TeamType) 및 생명주기 관리
+/// 
+/// [이벤트 흐름]
+/// - Subscribe: (내부 모듈 조립 시 데이터 참조)
+/// - Publish: CoreDestroyedEvent, (OnHpChanged/OnDead C# 이벤트)
+/// </remarks>
 public class Unit : MonoBehaviour
 {
+    [Header("Data Reference")]
     [SerializeField] private UnitDataSO _data;
+
+    private float _currentHp;
+    private E_TeamType _team;
+    private bool _isInitialized = false;
+
     public UnitDataSO Data => _data;
+    public E_TeamType Team => _team;
+    public float CurrentHp => _currentHp;
+    public bool IsDead => _currentHp <= 0f;
+
+    public event Action<float, float> OnHpChanged;
+    public event Action<Unit> OnDead;
+
+    public void InitializeRuntime()
+    {
+        if (_data == null)
+        {
+            Debug.LogError($"[{name}] UnitDataSO가 누락되었습니다.");
+            return;
+        }
+
+        _team = _data.Team;
+        _currentHp = _data.MaxHp;
+        _isInitialized = true;
+
+        OnHpChanged?.Invoke(_currentHp, _data.MaxHp);
+
+        AssembleModules();
+
+        Debug.Log($"[{_data.UnitName}] 초기화 완료 (Team: {_team}, HP: {_currentHp})");
+    }
+
+    private void AssembleModules()
+    {
+        if (_data.CanAttack)
+        {
+            var attacker = gameObject.GetOrAddComponent<EntityAttacker>();
+            attacker.Setup(this, _data.Attack);
+        }
+
+        if (_data.CanCollide)
+        {
+            var defender = gameObject.GetOrAddComponent<EntityDefender>();
+            defender.Setup(this, _data.Defense);
+        }
+
+        if (_data.CanSupport)
+        {
+            var supporter = gameObject.GetOrAddComponent<EntitySupporter>();
+            supporter.Setup(this, _data.Support);
+        }
+    }
+
+    public void TakeDamage(float rawDamage)
+    {
+        if (!_isInitialized || IsDead) return;
+
+        float defenseRate = Mathf.Clamp01(_data.BaseDefenseRate);
+        float finalDamage = rawDamage * (1f - defenseRate);
+
+        _currentHp -= Mathf.Max(0f, finalDamage);
+
+        OnHpChanged?.Invoke(_currentHp, _data.MaxHp);
+
+        if (IsDead)
+        {
+            HandleDeath();
+        }
+    }
+
+    private void HandleDeath()
+    {
+        Debug.Log($"[{_data.UnitName}] 파괴됨.");
+
+        // 적 코어 파괴
+        if (_data.Category == E_UnitCategory.Core && _team == E_TeamType.Enemy)
+        {
+            SpawnEnemyDeathRats();
+            EventBus.Instance?.Publish(new CoreDestroyedEvent { IsPlayerBase = false });
+        }
+        // 아군 코어 파괴
+        else if (_data.Category == E_UnitCategory.Core && _team == E_TeamType.Player)
+        {
+            EventBus.Instance?.Publish(new CoreDestroyedEvent { IsPlayerBase = true });
+        }
+
+        OnDead?.Invoke(this);
+
+        if (PoolManager.Instance != null)
+            PoolManager.Instance.Despawn(gameObject);
+        else
+            Destroy(gameObject);
+    }
+
+    private void SpawnEnemyDeathRats()
+    {
+        if (StageManager.Instance == null || PoolManager.Instance == null) return;
+
+        int additionalRats = (StageManager.Instance.CurrentWaveIndex * 15) + (StageManager.Instance.CurrentStageIndex * 20);
+        int totalSpawnCount = _data.BaseDeathSpawnCount + additionalRats;
+
+        for (int i = 0; i < totalSpawnCount; i++)
+        {
+            PoolManager.Instance.Spawn("DropRat", transform.position, Quaternion.identity);
+        }
+    }
 }

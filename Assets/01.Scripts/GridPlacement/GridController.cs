@@ -50,12 +50,15 @@ public class GridController : MonoBehaviour
     [SerializeField] private Color _validColor = new(0.2f, 0.5f, 1f, 0.5f);   // 설치 가능
     [SerializeField] private Color _invalidColor = new(1f, 0.2f, 0.2f, 0.5f); // 설치 불가
 
+    [Tooltip("설치 가능 시 표시되는 유닛 스프라이트 프리뷰의 알파값 (0~1)")]
+    [SerializeField, Range(0f, 1f)] private float _spritePreviewAlpha = 0.7f;
     // ==========================================
     // 런타임 상태
     // ==========================================
     private UnitDataSO _selected;              // 현재 선택된 설치용 데이터
     private Transform _ghostRoot;              // 고스트 셀들의 부모 오브젝트
     private readonly List<SpriteRenderer> _ghostCells = new(); // 풀링된 고스트 셀들
+    private SpriteRenderer _spritePreview;  // 유닛 미리보기 스프라이트
 
     // ==========================================
     // Unity 생명주기
@@ -63,9 +66,7 @@ public class GridController : MonoBehaviour
     // 시작 시: 고스트 루트 생성 + 초기 유닛 배치
     private void Start()
     {
-        _ghostRoot = new GameObject("GhostRoot").transform;
-        _ghostRoot.SetParent(transform);
-        _ghostRoot.gameObject.SetActive(false);
+        BuildGhostHierarchy();
 
         foreach (var pos in _wheelCells)
             _grid.PlaceInitial(_wheelData, pos);
@@ -81,6 +82,19 @@ public class GridController : MonoBehaviour
         var cell = GetCellUnderMouse();
         UpdateGhost(cell);
         HandleClicks(cell);
+    }
+
+    private void BuildGhostHierarchy()
+    {
+        _ghostRoot = new GameObject("GhostRoot").transform;
+        _ghostRoot.SetParent(transform);
+        _ghostRoot.gameObject.SetActive(false);
+
+        // 유닛 스프라이트 프리뷰용 오브젝트 (1개만 필요함)
+        var previewGo = new GameObject("SpritePreview");
+        previewGo.transform.SetParent(_ghostRoot, false);
+        _spritePreview = previewGo.AddComponent<SpriteRenderer>();
+        _spritePreview.sortingOrder = 11;   //배경 셀보다 위        
     }
 
     // ==========================================
@@ -130,7 +144,11 @@ public class GridController : MonoBehaviour
             return;
         }
         _selected = unit.Data;
-        ShowGhost(_selected.Size);
+        var prefabSprite = prefab.GetComponent<SpriteRenderer>();
+
+        Debug.Log($"[Select] {prefab.name} / SpriteRenderer : {prefabSprite} / Sprite : {prefabSprite?.sprite}");
+        //프리팹에서 스프라이트 추출
+        ShowGhost(_selected.Size, prefabSprite != null ? prefabSprite.sprite : null);
     }
 
     private void Deselect()
@@ -144,8 +162,9 @@ public class GridController : MonoBehaviour
     // ==========================================
     // footprint 크기에 맞춰 고스트 셀 개수를 조정하고 배치
     // 이미 만들어진 셀은 재활용 (풀링)
-    private void ShowGhost(Vector2Int size)
+    private void ShowGhost(Vector2Int size, Sprite unitSprite)
     {
+        float cellSize = _grid.CellSize;
         int needed = size.x * size.y;
 
         // 부족한 개수만큼 생성
@@ -160,15 +179,25 @@ public class GridController : MonoBehaviour
         for (int x = 0; x < size.x; x++)
         {
             for (int y = 0; y < size.y; y++)
-            {
+            {   //셀 위치 : 좌하단 기준 + 셀 중앙 오프셋
                 _ghostCells[i].transform.localPosition = new Vector3(
-                    x * _grid.CellSize, y * _grid.CellSize, 0f);
+                    x * cellSize + cellSize * 0.5f,
+                    y * cellSize + cellSize * 0.5f, 0f);
+                // 셀 자체도 CellSize에 맞춤
+                _ghostCells[i].transform.localScale = new Vector3(cellSize, cellSize, 1f);
                 _ghostCells[i].gameObject.SetActive(true);
                 i++;
             }
         }
         for (; i < _ghostCells.Count; i++)
             _ghostCells[i].gameObject.SetActive(false);
+        
+        // -- 유닛 스프라이트 프리뷰 --
+        _spritePreview.sprite = unitSprite;
+        // footprint 전체 크기에 맞춤
+        _spritePreview.transform.localScale = new Vector3(size.x * cellSize, size.y * cellSize, 1f);
+        // footprint 중앙에 배치
+        _spritePreview.transform.localPosition = new Vector3(size.x * cellSize * 0.5f, size.y * cellSize * 0.5f, 0f);
 
         _ghostRoot.gameObject.SetActive(true);
     }
@@ -178,13 +207,30 @@ public class GridController : MonoBehaviour
     {
         if (_selected == null) return;
 
-        _ghostRoot.position = _grid.CellToWorld(cell);
-        var color = _grid.CanPlace(_selected, cell) ? _validColor : _invalidColor;
+        //고스트 위치 : 셀의 좌하단 코너 (중앙 오프셋은 ShowGhost 내부 셀 배치에서 처리하기)
+        _ghostRoot.position = _grid.CellToWorld(cell)
+                            - new Vector3(_grid.CellSize * 0.5f, _grid.CellSize * 0.5f, 0f);
+        
+        bool CanPlace = _grid.CanPlace(_selected, cell); 
+        var color = CanPlace ? _validColor : _invalidColor;
 
         for (int i = 0; i < _ghostCells.Count; i++)
         {
             if (_ghostCells[i].gameObject.activeSelf)
                 _ghostCells[i].color = color;
+        }
+
+        // 스프라이트 프리뷰 : 설치 가능할 때만 표시
+        if(CanPlace && _spritePreview.sprite != null)
+        {
+            _spritePreview.enabled = true;
+            var c = Color.white;
+            c.a = _spritePreviewAlpha;
+            _spritePreview.color = c;
+        }
+        else
+        {
+            _spritePreview.enabled = false;
         }
     }
 }

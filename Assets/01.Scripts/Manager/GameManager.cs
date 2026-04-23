@@ -1,14 +1,5 @@
 using UnityEngine;
 
-public enum GameState
-{
-    Ready,
-    Playing,
-    Paused,
-    GameOver,
-    GameClear
-}
-
 /// <summary>
 /// 게임의 전역 생명주기 및 최고 수준의 상태(GameState)를 관리하는 코어 매니저입니다.
 /// </summary>
