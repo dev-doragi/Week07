@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[DefaultExecutionOrder(-100)]
+[DefaultExecutionOrder(-160)]
 /// <summary>
 /// 스테이지 데이터 로드, 환경(Grid/Layout) 생성 및 웨이브 진행을 총괄하는 매니저입니다.
 /// </summary>
@@ -28,7 +28,7 @@ public class StageManager : Singleton<StageManager>
 
     public bool IsFinalStage => _stageDatas != null && CurrentStageIndex >= _stageDatas.Length - 1;
 
-    protected override void Init()
+    protected override void OnBootstrap()
     {
         if (_stageParent == null)
         {
@@ -36,12 +36,6 @@ public class StageManager : Singleton<StageManager>
             _stageParent = parentObj.transform;
             DontDestroyOnLoad(parentObj);
         }
-    }
-
-    private void Start()
-    {
-        // TODO: 세이브 데이터 연동 시 타겟 인덱스 수정
-        LoadStage(0);
     }
 
     public void LoadStage(int stageIndex)

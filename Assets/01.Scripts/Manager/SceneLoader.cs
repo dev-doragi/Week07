@@ -2,7 +2,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-[DefaultExecutionOrder(-99)]
 /// <summary>
 /// Unity 씬(Scene) 전환과 관련된 컨텍스트 설정을 담당하는 유틸리티 매니저입니다.
 /// </summary>
@@ -11,6 +10,8 @@ using UnityEngine.SceneManagement;
 /// - 로비, 튜토리얼, 스테이지 선택, 인게임 간의 안전한 씬 이동
 /// - 씬 이동 전 StageLoadContext를 통한 데이터(타겟 스테이지 인덱스 등) 주입
 /// </remarks>
+
+[DefaultExecutionOrder(-180)]
 public class SceneLoader : Singleton<SceneLoader>
 {
     [Header("Scene Settings")]

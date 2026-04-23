@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
+<<<<<<< Updated upstream
 public enum InGameState
 {
     None,
@@ -12,6 +13,8 @@ public enum InGameState
 }
 
 [DefaultExecutionOrder(-100)]
+=======
+>>>>>>> Stashed changes
 /// <summary>
 /// 인게임 전투의 세부 흐름(InGameState)과 연출을 제어하는 흐름 관리자입니다.
 /// </summary>
@@ -24,9 +27,24 @@ public enum InGameState
 /// - Subscribe: GameStateChangedEvent, StageGenerateCompleteEvent, WaveStartedEvent, WaveEndedEvent
 /// - Publish: InGameStateChangedEvent, StageClearedEvent, StageFailedEvent
 /// </remarks>
+
+[DefaultExecutionOrder(-150)]
 public class GameFlowManager : Singleton<GameFlowManager>
 {
     public InGameState CurrentInGameState { get; private set; } = InGameState.None;
+
+    protected override void OnBootstrap()
+    {
+        // OnBootstrap 시점에 현재 전역 게임 상태를 확인하고 필요하면 플로우 상태를 동기화합니다.
+        if (GameManager.Instance != null)
+        {
+            // GameManager의 현재 상태가 Ready 또는 GameOver/ Clear인 경우 플로우를 None으로 유지.
+            if (GameManager.Instance.CurrentState == GameState.Ready)
+            {
+                ChangeFlowState(InGameState.None);
+            }
+        }
+    }
 
     private void OnEnable()
     {

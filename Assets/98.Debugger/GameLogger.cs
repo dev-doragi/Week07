@@ -6,7 +6,6 @@ using System.Threading;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-[DefaultExecutionOrder(-110)]
 /// <summary>
 /// 중앙 로그 기록기입니다. 게임 세션 동안 발생하는 핵심 이벤트와 Unity 로그를 비동기 파일로 기록합니다.
 /// </summary>
@@ -20,6 +19,8 @@ using UnityEngine.SceneManagement;
 ///              StageClearedEvent, StageFailedEvent, GameStateChangedEvent, InGameStateChangedEvent
 /// - Publish: (없음)
 /// </remarks>
+ 
+[DefaultExecutionOrder(-200)]
 public class GameLogger : Singleton<GameLogger>
 {
     private string _logFilePath;
@@ -30,7 +31,7 @@ public class GameLogger : Singleton<GameLogger>
     private Thread _writeThread;
     private bool _isRunning = false;
 
-    protected override void Init()
+    protected override void OnBootstrap()
     {
         try
         {
@@ -163,14 +164,32 @@ public class GameLogger : Singleton<GameLogger>
         EnqueueLog(formatted);
     }
 
-    // ---------------------- Event handlers ----------------------
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode) => Log($"SceneLoaded: {scene.name} (mode={mode})");
-    private void OnStageLoaded(StageLoadedEvent evt) => Log($"StageLoaded: index={evt.StageIndex}");
-    private void OnStageGenerated(StageGenerateCompleteEvent evt) => Log("StageGenerateComplete: grid and objects placement finished");
-    private void OnWaveStarted(WaveStartedEvent evt) => Log($"WaveStarted: index={evt.WaveIndex}");
-    private void OnWaveEnded(WaveEndedEvent evt) => Log($"WaveEnded: isWin={evt.IsWin}");
-    private void OnStageCleared(StageClearedEvent evt) => Log($"StageCleared: index={evt.StageIndex}, isFinal={evt.IsFinalStage}");
-    private void OnStageFailed(StageFailedEvent evt) => Log($"StageFailed: index={evt.StageIndex}");
-    private void OnGameStateChanged(GameStateChangedEvent evt) => Log($"GameStateChanged: {evt.NewState}");
-    private void OnInGameStateChanged(InGameStateChangedEvent evt) => Log($"InGameStateChanged: {evt.NewState}");
+    // ---------------------- 상세 이벤트 핸들러 (상세 포맷 버전) ----------------------
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        => Log($"[SCENE] Load Completed >> Name: {scene.name} | Mode: {mode.ToString()}");
+
+    private void OnStageLoaded(StageLoadedEvent evt)
+        => Log($"[STAGE] Load Process Started >> Target Index: {evt.StageIndex}");
+
+    private void OnStageGenerated(StageGenerateCompleteEvent evt)
+        => Log("[STAGE] Generation Completed >> All Grid and Objects are placed in the scene.");
+
+    private void OnWaveStarted(WaveStartedEvent evt)
+        => Log($"[WAVE] Battle Started >> Current Wave Index: {evt.WaveIndex}");
+
+    private void OnWaveEnded(WaveEndedEvent evt)
+        => Log($"[WAVE] Battle Ended >> Result: {(evt.IsWin ? "SUCCESS" : "FAILED")}");
+
+    private void OnStageCleared(StageClearedEvent evt)
+        => Log($"[RESULT] Stage Cleared >> Index: {evt.StageIndex} | Total Game Clear: {evt.IsFinalStage}");
+
+    private void OnStageFailed(StageFailedEvent evt)
+        => Log($"[RESULT] Stage Failed >> Player defeated at Stage Index: {evt.StageIndex}");
+
+    private void OnGameStateChanged(GameStateChangedEvent evt)
+        => Log($"[SYSTEM] Global Game State Changed >> New State: {evt.NewState.ToString()}");
+
+    private void OnInGameStateChanged(InGameStateChangedEvent evt)
+        => Log($"[SYSTEM] In-Game Flow State Changed >> New Flow: {evt.NewState.ToString()}");
 }
