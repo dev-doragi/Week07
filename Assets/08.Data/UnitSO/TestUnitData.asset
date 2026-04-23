@@ -10,17 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 550f97df3c4ad9d44a36190b24e47c3b, type: 3}
-  m_Name: WheelData
+  m_Name: TestUnitData
   m_EditorClassIdentifier: Assembly-CSharp::UnitDataSO
   Key: 0
   UnitName: 
-  Team: 1
-  Category: 1
-  Prefab: {fileID: 4836224405004236146, guid: 8bcd0c3dca3ca0f4f870b6bdc8d2e45a, type: 3}
+  Team: 0
+  Category: 0
+  Prefab: {fileID: 0}
   Icon: {fileID: 0}
   Size: {x: 1, y: 1}
   PlacementRule: 0
-  ActsAsFoundation: 1
+  ActsAsFoundation: 0
   MaxHp: 0
   BaseDefenseRate: 0
   Cost: 0
@@ -30,10 +30,15 @@ MonoBehaviour:
     Damage: 0
     Speed: 0
     Distance: 0
-    RangeRadius: 0
-    Trajectory: 0
-    Penetration: 0
     AttackCost: 0
+    Trajectory: 0
+    Targeting: 0
+    Area: 0
+    RangeRadius: 0
+    PiercingCount: 0
+    Penetration: 0
+    PiercingDecay: 0
+    ProjectilePrefab: {fileID: 0}
   Defense:
     CollisionPower: 0
   Support:

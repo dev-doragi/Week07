@@ -10,30 +10,30 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 550f97df3c4ad9d44a36190b24e47c3b, type: 3}
-  m_Name: WheelData
+  m_Name: Attack_2Data
   m_EditorClassIdentifier: Assembly-CSharp::UnitDataSO
   Key: 0
-  UnitName: 
+  UnitName: "\uD22C\uCC99\uBCD1"
   Team: 1
-  Category: 1
-  Prefab: {fileID: 4836224405004236146, guid: 8bcd0c3dca3ca0f4f870b6bdc8d2e45a, type: 3}
-  Icon: {fileID: 0}
+  Category: 3
+  Prefab: {fileID: 3706094150338852253, guid: 69f25a0cdc9ff5e41897d1fe98c5498c, type: 3}
+  Icon: {fileID: -7810328370443580990, guid: c43ed17b5c5992c4a89a51723c0f79e7, type: 3}
   Size: {x: 1, y: 1}
-  PlacementRule: 0
-  ActsAsFoundation: 1
-  MaxHp: 0
+  PlacementRule: 1
+  ActsAsFoundation: 0
+  MaxHp: 25
   BaseDefenseRate: 0
-  Cost: 0
+  Cost: 10
   DeathSpawnKey: DropRat
   BaseDeathSpawnCount: 25
   Attack:
-    Damage: 0
-    Speed: 0
-    Distance: 0
+    Damage: 10
+    Speed: 5
+    Distance: 10
     RangeRadius: 0
-    Trajectory: 0
+    Trajectory: 1
     Penetration: 0
-    AttackCost: 0
+    AttackCost: 1
   Defense:
     CollisionPower: 0
   Support:

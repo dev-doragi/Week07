@@ -21,11 +21,9 @@ public class StageManager : Singleton<StageManager>
     private StageLayout _currentLayout;
 
     public int CurrentStageIndex { get; private set; } = 0;
-    public StageDataSO CurrentStageData => _stageDatas != null && CurrentStageIndex >= 0 && CurrentStageIndex < _stageDatas.Length ? _stageDatas[CurrentStageIndex] : null;
-
-    // 현재 웨이브 인덱스(Stage 내 진행 중인 웨이브). 기본 0.
     public int CurrentWaveIndex { get; private set; } = 0;
-
+    public InGameState CurrentState { get; private set; } = InGameState.None;
+    public StageDataSO CurrentStageData => _stageDatas != null && CurrentStageIndex >= 0 && CurrentStageIndex < _stageDatas.Length ? _stageDatas[CurrentStageIndex] : null;
     public bool IsFinalStage => _stageDatas != null && CurrentStageIndex >= _stageDatas.Length - 1;
 
     protected override void OnBootstrap()
@@ -81,6 +79,12 @@ public class StageManager : Singleton<StageManager>
             Destroy(_currentLayout.gameObject);
             _currentLayout = null;
         }
+
+        // 스테이지가 정리되었음을 알림
+        EventBus.Instance.Publish(new StageCleanedUpEvent { StageIndex = CurrentStageIndex });
+
+        CurrentState = InGameState.None;
+        Debug.Log($"[StageManager] Stage {CurrentStageIndex} 정리 완료");
     }
 
     public void StartWave(int waveIndex)

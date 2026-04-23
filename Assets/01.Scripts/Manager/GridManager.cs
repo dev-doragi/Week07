@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 // ================================================================
@@ -242,7 +241,7 @@ public class GridManager : MonoBehaviour
                 if(unit == null) continue;
 
                 // 이 행에서 맨 오른쪽 유닛 발견 -> Attack 이면 카운트
-                if(unit.Data.Category == E_UnitCategory.Attack && counted.Add(unit))
+                if(unit.Data.Category == UnitCategory.Attack && counted.Add(unit))
                 {
                     totalDamage += unit.Data.Attack != null ? (int)unit.Data.Attack.Damage : 0;
                 }
