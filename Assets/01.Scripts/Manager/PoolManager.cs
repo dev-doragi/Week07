@@ -15,7 +15,7 @@ public class PoolManager : Singleton<PoolManager>
     [Tooltip("게임 내내 쓰일 공통 투사체와 이펙트를 여기에 한 번만 등록하세요")]
     [SerializeField] private List<PoolSetupData> _globalPools = new List<PoolSetupData>();
 
-    protected override void Init()
+    protected override void OnBootstrap()
     {
         if (_poolRoot == null)
         {

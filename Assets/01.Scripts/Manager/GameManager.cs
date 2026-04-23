@@ -12,12 +12,13 @@ using UnityEngine;
 /// - Subscribe: StageLoadedEvent, StageClearedEvent, StageFailedEvent
 /// - Publish: GameStateChangedEvent
 /// </remarks>
-[DefaultExecutionOrder(-105)]
+
+[DefaultExecutionOrder(-170)]
 public class GameManager : Singleton<GameManager>
 {
     public GameState CurrentState { get; private set; } = GameState.Ready;
 
-    protected override void Init()
+    protected override void OnBootstrap()
     {
         Application.targetFrameRate = 60;
     }

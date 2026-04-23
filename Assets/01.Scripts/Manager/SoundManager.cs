@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-[DefaultExecutionOrder(-96)]
+[DefaultExecutionOrder(-120)]
 /// <summary>
 /// 전역 배경음(BGM)과 효과음(SFX) 재생을 담당하는 오디오 관리자입니다.
 /// </summary>
@@ -27,12 +27,23 @@ public class SoundManager : Singleton<SoundManager>
     [SerializeField] private AudioClip _waveBGM;
     [SerializeField] private AudioClip _winBGM;
 
-    protected override void Init()
+    protected override void OnBootstrap()
     {
         if (_bgmSource == null)
         {
             _bgmSource = gameObject.AddComponent<AudioSource>();
             _bgmSource.loop = true;
+        }
+
+        // 초기화 시점에 현재 전역 상태와 인게임 상태를 확인해 BGM을 동기화합니다.
+        if (GameManager.Instance != null)
+        {
+            OnGameStateChanged(new GameStateChangedEvent { NewState = GameManager.Instance.CurrentState });
+        }
+
+        if (GameFlowManager.Instance != null)
+        {
+            OnInGameStateChanged(new InGameStateChangedEvent { NewState = GameFlowManager.Instance.CurrentInGameState });
         }
     }
 

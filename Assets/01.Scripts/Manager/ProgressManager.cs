@@ -15,7 +15,8 @@ using UnityEngine;
 /// - Subscribe: StageClearedEvent, TutorialCompletedEvent
 /// - Publish: StageProgressUpdatedEvent
 /// </remarks>
-[DefaultExecutionOrder(-95)]
+
+[DefaultExecutionOrder(-190)]
 public class ProgressManager : Singleton<ProgressManager>
 {
     private const string PREF_KEY = "ClearedStages_v1";
@@ -27,7 +28,7 @@ public class ProgressManager : Singleton<ProgressManager>
     // 튜토리얼 완료 여부 (튜토리얼 보상으로 첫 스테이지만 해금할 때 사용)
     private bool _tutorialCompleted = false;
 
-    protected override void Init()
+    protected override void OnBootstrap()
     {
         // 초기화하고 저장된 진행 정보를 로드합니다.
         _clearedStages.Clear();

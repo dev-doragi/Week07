@@ -146,4 +146,18 @@ public class UIManager : Singleton<UIManager>
         HideAllPanels();
         SceneLoader.Instance.GoToStageSelect();
     }
+
+    protected override void OnBootstrap()
+    {
+        // 부트스트랩 시점에 현재 전역 및 인게임 상태를 읽어 UI를 동기화합니다.
+        if (GameManager.Instance != null)
+        {
+            OnGameStateChanged(new GameStateChangedEvent { NewState = GameManager.Instance.CurrentState });
+        }
+
+        if (GameFlowManager.Instance != null)
+        {
+            OnInGameStateChanged(new InGameStateChangedEvent { NewState = GameFlowManager.Instance.CurrentInGameState });
+        }
+    }
 }

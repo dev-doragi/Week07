@@ -11,6 +11,7 @@ using UnityEngine;
 /// [이벤트 흐름]
 /// - Subscribe: PausePressedEvent, GameStateChangedEvent
 /// </remarks>
+[DefaultExecutionOrder(-140)]
 public class PauseManager : Singleton<PauseManager>
 {
     private bool _isPaused = false;
