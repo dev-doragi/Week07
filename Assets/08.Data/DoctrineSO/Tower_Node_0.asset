@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a2a31816c2f0e94d94131a83a99f99c, type: 3}
+  m_Name: Tower_Node_0
+  m_EditorClassIdentifier: Assembly-CSharp::DoctrineNodeData
+  nodeId: 1
+  nodeName: 1
+  description: "\uC774\uAC83\uC774 "
+  doctrineType: 0
+  rowIndex: 0
+  columnIndex: 0
+  effectId: aab
+  effectSummary: "\uC0C1\uC704 \uBC29\uC5B4 \uD0C0\uC6CC \uD574\uAE08"

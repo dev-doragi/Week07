@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8a2a31816c2f0e94d94131a83a99f99c, type: 3}
-  m_Name: DoctrineNodeData
+  m_Name: Tower_Node_4
   m_EditorClassIdentifier: Assembly-CSharp::DoctrineNodeData
-  nodeId: 1
+  nodeId: 5
   nodeName: 1
   description: "\uAC1C\uCA4C\uB294 \uC758\uC2DD"
   doctrineType: 0
-  rowIndex: 1
+  rowIndex: 4
   columnIndex: 0
   effectId: aab
-  effectSummary: "\uC758\uC2DD +5"
+  effectSummary: "\uAC00\uC7A5 \uD749\uC545\uD55C \uC950 \uD0C0\uC6CC \uD574\uAE08"
