@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 // ================================================================
@@ -55,6 +56,8 @@ public class GridController : MonoBehaviour
     // ==========================================
     // 런타임 상태
     // ==========================================
+    public bool IsPlacingUnit => _selected != null;
+
     private UnitDataSO _selected;              // 현재 선택된 설치용 데이터
     private Transform _ghostRoot;              // 고스트 셀들의 부모 오브젝트
     private readonly List<SpriteRenderer> _ghostCells = new(); // 풀링된 고스트 셀들
@@ -112,17 +115,25 @@ public class GridController : MonoBehaviour
         // else if (kb.escapeKey.wasPressedThisFrame) Deselect();
     }
 
-    // 좌클릭 → 설치, 우클릭 → 제거
+    // 좌클릭 → 설치, 우클릭 → 배치 모드 해제(선택 중) 또는 제거
     private void HandleClicks(Vector2Int cell)
     {
         var mouse = Mouse.current;
         if (mouse == null) return;
 
         if (mouse.leftButton.wasPressedThisFrame && _selected != null)
-            _grid.TryPlace(_selected, cell);
+        {
+            if (!EventSystem.current.IsPointerOverGameObject())
+                _grid.TryPlace(_selected, cell);
+        }
 
         if (mouse.rightButton.wasPressedThisFrame)
-            _grid.TryRemove(cell);
+        {
+            if (_selected != null)
+                Deselect();
+            else
+                _grid.TryRemove(cell);
+        }
     }
 
     // 마우스 화면 좌표 → 셀 좌표

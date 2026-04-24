@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class UnitShopUI : MonoBehaviour
@@ -28,6 +30,21 @@ public class UnitShopUI : MonoBehaviour
     private UnitCategory _currentCategory = UnitCategory.None;
     private bool _isOpen = false;
     private Coroutine _slideCoroutine;
+
+    private void Update()
+    {
+        if (!_isOpen) return;
+        if (_gridController.IsPlacingUnit) return;
+
+        var mouse = Mouse.current;
+        if (mouse == null) return;
+
+        if (mouse.leftButton.wasPressedThisFrame &&
+            !EventSystem.current.IsPointerOverGameObject())
+        {
+            ClosePanel();
+        }
+    }
 
     private void Start()
     {

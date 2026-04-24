@@ -16,13 +16,13 @@ public class UnitCardUI : MonoBehaviour
     {
         _onSelect = onSelect;
 
-        Debug.Log($"[UnitCardUI] Setup 호출 | 유닛={data.UnitName} | _icon null={_icon == null} | data.Icon null={data.Icon == null}");
+        //Debug.Log($"[UnitCardUI] Setup 호출 | 유닛={data.UnitName} | _icon null={_icon == null} | data.Icon null={data.Icon == null}");
 
         if (_icon != null)
         {
             _icon.sprite = data.Icon;
             _icon.enabled = data.Icon != null;
-            Debug.Log($"[UnitCardUI] 스프라이트 설정 완료 | sprite={_icon.sprite} | enabled={_icon.enabled} | size={_icon.rectTransform.sizeDelta}");
+            //Debug.Log($"[UnitCardUI] 스프라이트 설정 완료 | sprite={_icon.sprite} | enabled={_icon.enabled} | size={_icon.rectTransform.sizeDelta}");
         }
         if (_nameText != null) _nameText.text = data.UnitName;
         if (_costText != null) _costText.text = data.Cost.ToString();
