@@ -45,4 +45,10 @@ public class DirectProjectile : ProjectileBase
             ProcessHit(target, transform.position);
         }
     }
+
+    protected override void Despawn()
+    {
+        _isInitialized = false;
+        base.Despawn();
+    }
 }

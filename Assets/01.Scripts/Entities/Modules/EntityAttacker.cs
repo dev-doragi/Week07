@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -15,9 +17,31 @@ public class EntityAttacker : MonoBehaviour
         _owner = owner;
         _data = data;
 
-        var performers = GetComponents<IAttacker>();
-        _arcPerformer = performers.FirstOrDefault(p => p.GetType().Name.Contains("Arc"));
-        _directPerformer = performers.FirstOrDefault(p => p.GetType().Name.Contains("Direct"));
+        switch (data.Trajectory)
+        {
+            case AttackTrajectoryType.Arc:
+                {
+                    var arc = GetComponent<ArcAttacker>();
+                    if (arc == null) arc = gameObject.AddComponent<ArcAttacker>();
+                    arc.EnsureSpawnPoint("Muzzle");
+                    _arcPerformer = arc;
+                    break;
+                }
+            case AttackTrajectoryType.Direct:
+                {
+                    var direct = GetComponent<DirectAttacker>();
+                    if (direct == null) direct = gameObject.AddComponent<DirectAttacker>();
+                    _directPerformer = direct;
+                    break;
+                }
+            default:
+                {
+                    var performers = GetComponents<IAttacker>();
+                    _arcPerformer = performers.FirstOrDefault(p => p.GetType().Name.Contains("Arc"));
+                    _directPerformer = performers.FirstOrDefault(p => p.GetType().Name.Contains("Direct"));
+                    break;
+                }
+        }
     }
 
     public bool SearchAndCheckTarget()
@@ -66,28 +90,36 @@ public class EntityAttacker : MonoBehaviour
     private Unit SearchBestTarget()
     {
         int mask = (_owner.Team == TeamType.Player) ? LayerMask.GetMask("Enemy") : LayerMask.GetMask("Ally");
-        var hits = Physics2D.OverlapCircleAll(transform.position, _data.Distance, mask);
+        Vector2 searchOrigin = transform.position;
+
+        var hits = Physics2D.OverlapCircleAll(searchOrigin, _data.Distance, mask);
+
+        if (hits.Length == 0) return null;
 
         var candidates = hits
             .Select(h => h.GetComponentInParent<Unit>())
-            .Where(u => u != null && !u.IsDead)
+            .Where(u => u != null && !u.IsDead && u.Category != UnitCategory.Wheel) // Wheel 제외
             .Distinct()
             .ToList();
+
+        if (candidates.Count == 0) return null;
 
         return _data.Targeting switch
         {
             TargetingPolicy.Closest =>
-                candidates.OrderBy(u => Vector2.Distance(transform.position, u.transform.position))
+                candidates.OrderBy(u => Vector2.Distance(searchOrigin, u.transform.position))
                           .FirstOrDefault(),
 
             TargetingPolicy.TowardCore =>
                 candidates.OrderByDescending(u => u.Category == UnitCategory.Core)
-                          .ThenByDescending(u => u.transform.position.y)
+                          .ThenBy(u => _owner.Team == TeamType.Player
+                              ? -u.transform.position.y   // 아군: Y 큰 것(음수로 역순)
+                              : u.transform.position.y)   // 적: Y 작은 것(정순)
                           .FirstOrDefault(),
 
             TargetingPolicy.PriorityAttacker =>
                 candidates.OrderByDescending(u => u.Data.CanAttack)
-                          .ThenBy(u => Vector2.Distance(transform.position, u.transform.position))
+                          .ThenBy(u => Vector2.Distance(searchOrigin, u.transform.position))
                           .FirstOrDefault(),
 
             _ => candidates.FirstOrDefault()
