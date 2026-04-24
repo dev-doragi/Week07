@@ -25,7 +25,7 @@ MonoBehaviour:
   BaseDefenseRate: 0
   Cost: 0
   DeathSpawnKey: 
-  BaseDeathSpawnCount: 25
+  BaseDeathSpawnCount: 0
   Attack:
     Damage: 0
     Speed: 0
