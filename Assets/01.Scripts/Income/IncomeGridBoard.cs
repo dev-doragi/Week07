@@ -33,16 +33,7 @@ public class IncomeGridBoard : MonoBehaviour
 
     private void Awake()
     {
-        if (_gridRoot == null)
-            _gridRoot = transform as RectTransform;
-
-        if (_width <= 0) _width = 5;
-        if (_height <= 0) _height = 5;
-        if (_cellSize <= 1f) _cellSize = 72f;
-
-        _occupied = new IncomeBlockPiece[_width, _height];
-        _cellImages = new Image[_width, _height];
-        _previewImages = new Image[_width, _height];
+        EnsureInitialized();
 
         if (_buildVisualCellsOnAwake)
             BuildVisualGrid();
@@ -51,6 +42,8 @@ public class IncomeGridBoard : MonoBehaviour
     [ContextMenu("Rebuild Grid Visual")]
     public void BuildVisualGrid()
     {
+        EnsureInitialized();
+
         if (_isRebuildingVisual)
             return;
 
@@ -374,6 +367,8 @@ public class IncomeGridBoard : MonoBehaviour
 
     private void OnRectTransformDimensionsChange()
     {
+        EnsureInitialized();
+
         if (_gridRoot == null || _gridRoot != transform as RectTransform)
             return;
 
@@ -424,5 +419,28 @@ public class IncomeGridBoard : MonoBehaviour
     private bool IsInBounds(Vector2Int cell)
     {
         return cell.x >= 0 && cell.x < _width && cell.y >= 0 && cell.y < _height;
+    }
+
+    private void EnsureInitialized()
+    {
+        if (_gridRoot == null)
+            _gridRoot = transform as RectTransform;
+
+        if (_width <= 0) _width = 5;
+        if (_height <= 0) _height = 5;
+        if (_cellSize <= 1f) _cellSize = 72f;
+
+        bool sizeMismatch =
+            _occupied == null || _occupied.GetLength(0) != _width || _occupied.GetLength(1) != _height ||
+            _cellImages == null || _cellImages.GetLength(0) != _width || _cellImages.GetLength(1) != _height ||
+            _previewImages == null || _previewImages.GetLength(0) != _width || _previewImages.GetLength(1) != _height;
+
+        if (sizeMismatch)
+        {
+            _occupied = new IncomeBlockPiece[_width, _height];
+            _cellImages = new Image[_width, _height];
+            _previewImages = new Image[_width, _height];
+        }
+
     }
 }
