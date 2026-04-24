@@ -32,7 +32,7 @@ public class Unit : MonoBehaviour, IDamageable
     private Coroutine _hitEffectCo;
     private EntityStatReceiver _statReceiver;
     private EntityAttacker _attacker; // 공격 로직 참조
-
+    private UnitAnimator _animator;     // 애니메이션
     private float _currentHp;
     private TeamType _team;
     private bool _isInitialized = false;
@@ -59,6 +59,7 @@ public class Unit : MonoBehaviour, IDamageable
             return;
         }
 
+        _animator = GetComponent<UnitAnimator>();
         _statReceiver = GetComponent<EntityStatReceiver>();
         _team = _data.Team;
         _currentHp = _data.MaxHp;
@@ -124,8 +125,10 @@ public class Unit : MonoBehaviour, IDamageable
         switch (_currentState)
         {
             case UnitState.Idle:
+                _animator?.PlayIdle();
                 break;
             case UnitState.Attack:
+                _animator?.PlayAttack();
                 // 공격 상태 진입 시의 로직은 EntityAttacker의 루프에서 처리됨
                 break;
             case UnitState.Stun:
