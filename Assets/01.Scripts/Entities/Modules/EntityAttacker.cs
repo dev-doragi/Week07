@@ -81,7 +81,8 @@ public class EntityAttacker : MonoBehaviour
                           .FirstOrDefault(),
 
             TargetingPolicy.TowardCore =>
-                candidates.OrderBy(u => u.transform.position.y)
+                candidates.OrderByDescending(u => u.Category == UnitCategory.Core)
+                          .ThenByDescending(u => u.transform.position.y)
                           .FirstOrDefault(),
 
             TargetingPolicy.PriorityAttacker =>
