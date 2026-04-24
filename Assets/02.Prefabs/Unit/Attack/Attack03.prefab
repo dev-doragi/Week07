@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8068187422609471916}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Attack03
-  m_TagString: Untagged
+  m_TagString: Ally
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -41,7 +41,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 587656166232336827}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Muzzle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -77,10 +77,9 @@ GameObject:
   - component: {fileID: 3655477759498388410}
   - component: {fileID: 8919971880577163967}
   - component: {fileID: 8037950217366978637}
-  - component: {fileID: 2140057669548211836}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Attack3
-  m_TagString: Untagged
+  m_TagString: Ally
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -248,25 +247,3 @@ MonoBehaviour:
   _arcHeight: 3
   _travelTime: 0.7
   _spawnPoint: {fileID: 587656166232336827}
---- !u!114 &2140057669548211836
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8951399676191386460}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 66fb84c84f667e64db386d8d3da3db94, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::UnitAnimator
-  _idleFrames:
-  - {fileID: 7084957924513991936, guid: 34f3abc17a75b0d4d81fe69030e8201c, type: 3}
-  - {fileID: -1181758033296657942, guid: 34f3abc17a75b0d4d81fe69030e8201c, type: 3}
-  - {fileID: -7284762572288012843, guid: 34f3abc17a75b0d4d81fe69030e8201c, type: 3}
-  _idleFrameRate: 12
-  _attackFrames:
-  - {fileID: 7470514433298124588, guid: 34f3abc17a75b0d4d81fe69030e8201c, type: 3}
-  - {fileID: -1374138028266087243, guid: 34f3abc17a75b0d4d81fe69030e8201c, type: 3}
-  - {fileID: -5930963349282440069, guid: 34f3abc17a75b0d4d81fe69030e8201c, type: 3}
-  _attackFrameRate: 12
