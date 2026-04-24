@@ -13,4 +13,5 @@
   <Project Path="Wingman.csproj" />
   <Project Path="VInspector.csproj" />
   <Project Path="Lofelt.NiceVibrations.csproj" />
+  <Project Path="Assembly-CSharp-Editor.csproj" />
 </Solution>

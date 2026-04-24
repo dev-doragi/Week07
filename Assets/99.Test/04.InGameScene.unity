@@ -4413,7 +4413,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GridManager
   _width: 9
   _height: 12
-  _cellSize: 1
+  _cellSize: 0.8
   _origin: {x: -7, y: -5, z: 0}
 --- !u!4 &1950871295
 Transform:
