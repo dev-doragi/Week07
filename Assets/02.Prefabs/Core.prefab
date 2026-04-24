@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 9019930440329990238}
   - component: {fileID: -8992915273179841229}
   - component: {fileID: 8646237645568497134}
+  - component: {fileID: 8267856334396104546}
   m_Layer: 0
   m_Name: Core
   m_TagString: Untagged
@@ -167,3 +168,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18ace60422855744e86a29ead21bf44f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EntityStatReceiver
+--- !u!114 &8267856334396104546
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3197281350173304387}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66fb84c84f667e64db386d8d3da3db94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitAnimator
+  _idleFrames:
+  - {fileID: -72023901011608304, guid: 6bfbef71832540d45aa0b86bf6e5f403, type: 3}
+  - {fileID: -1558541349, guid: 6bfbef71832540d45aa0b86bf6e5f403, type: 3}
+  _idleFrameRate: 6
+  _attackFrames: []
+  _attackFrameRate: 12
