@@ -21,6 +21,7 @@ public class StageManager : Singleton<StageManager>
     [SerializeField] private Transform _stageContainer;
 
     private StageLayout _currentLayout;
+    private bool _isWaveEnding;
 
     public int CurrentStageIndex { get; private set; } = 0;
     public int CurrentWaveIndex { get; private set; } = 0;
@@ -48,6 +49,7 @@ public class StageManager : Singleton<StageManager>
         if (EventBus.Instance != null)
         {
             EventBus.Instance.Subscribe<WaveStartedEvent>(OnWaveStarted);
+            EventBus.Instance.Subscribe<CoreDestroyedEvent>(OnCoreDestroyed);
         }
     }
 
@@ -56,7 +58,18 @@ public class StageManager : Singleton<StageManager>
         if (EventBus.Instance != null)
         {
             EventBus.Instance.Unsubscribe<WaveStartedEvent>(OnWaveStarted);
+            EventBus.Instance.Unsubscribe<CoreDestroyedEvent>(OnCoreDestroyed);
         }
+    }
+
+    private void OnCoreDestroyed(CoreDestroyedEvent evt)
+    {
+        if (GameFlowManager.Instance != null && GameFlowManager.Instance.CurrentInGameState != InGameState.WavePlaying)
+        {
+            return;
+        }
+
+        EndWave(!evt.IsPlayerBase);
     }
 
     /// <summary>
@@ -152,6 +165,8 @@ public class StageManager : Singleton<StageManager>
         }
 
         CurrentWaveIndex = waveIndex;
+        CurrentState = InGameState.WavePlaying;
+        _isWaveEnding = false;
         Debug.Log($"[StageManager] Starting Wave {waveIndex}");
         EventBus.Instance?.Publish(new WaveStartedEvent { WaveIndex = waveIndex });
     }
@@ -163,6 +178,10 @@ public class StageManager : Singleton<StageManager>
 
     public void EndWave(bool isWin)
     {
+        if (_isWaveEnding) return;
+
+        _isWaveEnding = true;
+        CurrentState = InGameState.WaveEnded;
         Debug.Log($"[StageManager] Wave {CurrentWaveIndex} 종료 - isWin: {isWin}");
         EventBus.Instance?.Publish(new WaveEndedEvent { IsWin = isWin });
     }
