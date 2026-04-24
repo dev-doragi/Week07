@@ -43,4 +43,9 @@ MonoBehaviour:
     CollisionPower: 0
   Support:
     Radius: 10
-    Effects: []
+    Effects:
+    - _targetRoleType: 2
+      _targetStatType: 2
+      _modifierType: 2
+      _value: 50
+      _description: 
