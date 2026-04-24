@@ -170,13 +170,11 @@ public class Unit : MonoBehaviour, IDamageable
         {
             if (_baseRenderer == null) yield break;
             _baseRenderer.color = new Color(1f, 1f, 1f, 0.75f);
-            yield return new WaitForSeconds(0.05f);
-
+            yield return new WaitForSecondsRealtime(0.05f);
             if (_baseRenderer == null) yield break;
             _baseRenderer.color = targetColor;
-            yield return new WaitForSeconds(0.05f);
+            yield return new WaitForSecondsRealtime(0.05f);
         }
-
         _hitEffectCo = null;
     }
 

@@ -46,7 +46,7 @@ public class ResourceManager : Singleton<ResourceManager>
 
     private void Update()
     {
-        // 웨이브 진행 중이 아니면 자원 로직 정지
+        // TODO: 웨이브 진행 중이 아니면 자원 로직 정지, 현재는 디버깅 용으로 주석 처리해놓음!!
         //if (StageManager.Instance == null || GameFlowManager.Instance.CurrentInGameState != InGameState.WavePlaying) return;
 
         HandleGeneration();
