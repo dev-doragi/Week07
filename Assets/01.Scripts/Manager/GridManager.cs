@@ -215,14 +215,21 @@ public class GridManager : MonoBehaviour
     private void CreateAndRegister(UnitDataSO data, Vector2Int origin)
     {
         var instance = Instantiate(data.Prefab, CellToWorld(origin), Quaternion.identity, transform);
-        
-        //프리팹 크기를 그리드 셀 크기에 맞춤
-        // footprint 크기 x cellSize로 스케일링 
-        
+
         instance.transform.localScale = new Vector3(
             data.Size.x * _cellSize,
             data.Size.y * _cellSize, 1f
         );
+
+        var unit = instance.GetComponentInChildren<Unit>();
+        if (unit != null)
+        {
+            unit.InitializeRuntime();
+        }
+        else
+        {
+            Debug.LogError($"[GridManager] 배치된 프리팹에 Unit 컴포넌트가 없습니다: {data.UnitName}");
+        }
 
         var placed = new PlacedUnit(data, origin, instance);
         for (int x = 0; x < data.Size.x; x++)
