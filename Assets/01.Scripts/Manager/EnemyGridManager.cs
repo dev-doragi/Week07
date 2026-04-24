@@ -76,6 +76,24 @@ public class EnemyGridManager : MonoBehaviour
         return IsInBounds(cell) ? _cells[cell.x, cell.y] : null;
     }
 
+    public List<EnemyPlacedUnit> GetAllPlacedUnitsSnapshot()
+    {
+        EnsureGridStorage();
+        var set = new HashSet<EnemyPlacedUnit>();
+        for (int x = 0; x < _width; x++)
+        {
+            for (int y = 0; y < _height; y++)
+            {
+                if (_cells[x, y] != null)
+                {
+                    set.Add(_cells[x, y]);
+                }
+            }
+        }
+
+        return new List<EnemyPlacedUnit>(set);
+    }
+
     public bool CanPlace(UnitDataSO data, Vector2Int origin)
     {
         if (data == null) return false;
