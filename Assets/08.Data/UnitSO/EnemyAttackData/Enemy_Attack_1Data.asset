@@ -32,7 +32,7 @@ MonoBehaviour:
     Distance: 10
     AttackCost: 1
     Trajectory: 1
-    Targeting: 0
+    Targeting: 1
     Area: 0
     RangeRadius: 0
     PiercingCount: 0

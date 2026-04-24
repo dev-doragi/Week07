@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 4519740160012041411}
   - component: {fileID: 1281420133146010710}
   - component: {fileID: 7926477205052744961}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: EnemyDefense2
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -118,7 +118,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2099099187032947098}
   - component: {fileID: 1261833125852255633}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: GameObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}

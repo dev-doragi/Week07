@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 2500876650774566691}
   - component: {fileID: 5277728024459135944}
   - component: {fileID: 6418454903563819956}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Wheel
   m_TagString: Ally
   m_Icon: {fileID: 0}
@@ -197,9 +197,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 981395700955005430}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Wheel
-  m_TagString: Ally
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

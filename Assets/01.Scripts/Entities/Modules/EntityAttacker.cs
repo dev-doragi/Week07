@@ -68,14 +68,30 @@ public class EntityAttacker : MonoBehaviour
         int mask = (_owner.Team == TeamType.Player) ? LayerMask.GetMask("Enemy") : LayerMask.GetMask("Ally");
         var hits = Physics2D.OverlapCircleAll(transform.position, _data.Distance, mask);
 
-        return hits
-            // ✅ 버그 1 수정: 콜라이더가 자식에 있어도 부모의 Unit 탐색
+        var candidates = hits
             .Select(h => h.GetComponentInParent<Unit>())
             .Where(u => u != null && !u.IsDead)
-            .Distinct()  // ✅ 같은 유닛의 자식 콜라이더 여러 개가 히트될 경우 중복 제거
-            .OrderBy(u => u.transform.position.y)
-            .ThenBy(u => Vector2.Distance(transform.position, u.transform.position))
-            .FirstOrDefault();
+            .Distinct()
+            .ToList();
+
+        return _data.Targeting switch
+        {
+            TargetingPolicy.Closest =>
+                candidates.OrderBy(u => Vector2.Distance(transform.position, u.transform.position))
+                          .FirstOrDefault(),
+
+            TargetingPolicy.TowardCore =>
+                candidates.OrderByDescending(u => u.Category == UnitCategory.Core)
+                          .ThenByDescending(u => u.transform.position.y)
+                          .FirstOrDefault(),
+
+            TargetingPolicy.PriorityAttacker =>
+                candidates.OrderByDescending(u => u.Data.CanAttack)
+                          .ThenBy(u => Vector2.Distance(transform.position, u.transform.position))
+                          .FirstOrDefault(),
+
+            _ => candidates.FirstOrDefault()
+        };
     }
 
 #if UNITY_EDITOR
