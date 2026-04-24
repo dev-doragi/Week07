@@ -235,6 +235,26 @@ public class EnemyGridManager : MonoBehaviour
                 _cells[origin.x + x, origin.y + y] = placed;
             }
         }
+
+        var unit = instance.GetComponentInChildren<Unit>();
+        if (unit != null)
+        {
+            unit.InitializeRuntime();
+            unit.OnDead += _ => OnUnitDied(placed);
+        }
+    }
+
+    private void OnUnitDied(EnemyPlacedUnit placed)
+    {
+        if (GetUnitAt(placed.OriginCell) != placed) return;
+        ForceRemove(placed);
+    }
+
+    public void ForceRemove(EnemyPlacedUnit unit)
+    {
+        if (unit == null) return;
+        StartCollapse(unit);
+        ScheduleCollapseCheck();
     }
 
     public int CalculateRightmostColumnDamage()
