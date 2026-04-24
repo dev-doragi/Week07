@@ -13,7 +13,7 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
         {
             if (_instance == null)
             {
-                Debug.LogError($"[{typeof(T).Name}] 인스턴스가 씬에 존재하지 않습니다.");
+                Debug.LogWarning($"[{typeof(T).Name}] 인스턴스가 씬에 존재하지 않습니다.");
             }
             return _instance;
         }

@@ -16,7 +16,7 @@ public class StageManager : Singleton<StageManager>
 {
     [Header("Stage Settings")]
     [SerializeField] private StageDataSO[] _stageDatas;
-    [SerializeField] private Transform _stageParent;
+    [SerializeField] private Transform _stageContainer;
 
     private StageLayout _currentLayout;
 
@@ -28,11 +28,17 @@ public class StageManager : Singleton<StageManager>
 
     protected override void OnBootstrap()
     {
-        if (_stageParent == null)
+        if (_stageContainer == null)
         {
             GameObject parentObj = new GameObject("StageContainer");
-            _stageParent = parentObj.transform;
-            DontDestroyOnLoad(parentObj);
+            _stageContainer = parentObj.transform;
+        }
+
+        // 씬 전환 시 전달된 스테이지 인덱스에 따라 스테이지 로드
+        if (StageLoadContext.HasValue && !StageLoadContext.IsTutorial)
+        {
+            int stageIndex = StageLoadContext.GetStageIndex();
+            LoadStage(stageIndex);
         }
     }
 
@@ -50,7 +56,7 @@ public class StageManager : Singleton<StageManager>
 
         if (nextData.StageLayoutPrefab != null)
         {
-            _currentLayout = Instantiate(nextData.StageLayoutPrefab, _stageParent);
+            _currentLayout = Instantiate(nextData.StageLayoutPrefab, _stageContainer);
             // TODO: 여기서 그리드를 초기화하고 SO 데이터를 기반으로 몬스터나 환경 프리팹을 배치합니다.
         }
 
