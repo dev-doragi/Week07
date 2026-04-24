@@ -19,9 +19,9 @@ public abstract class ProjectileBase : MonoBehaviour
 
         var rb = GetComponent<Rigidbody2D>();
         var col = GetComponent<Collider2D>();
-        Debug.Log($"[ProjectileBase.OnEnable] Rigidbody2D: {(rb != null ? $"✓ {rb.bodyType}" : "✗ NULL")}, " +
-                  $"Collider2D: {(col != null ? $"✓ IsTrigger={col.isTrigger}" : "✗ NULL")}, " +
-                  $"GameObject: {gameObject.name}", gameObject);
+        //Debug.Log($"[ProjectileBase.OnEnable] Rigidbody2D: {(rb != null ? $"✓ {rb.bodyType}" : "✗ NULL")}, " +
+        //          $"Collider2D: {(col != null ? $"✓ IsTrigger={col.isTrigger}" : "✗ NULL")}, " +
+        //          $"GameObject: {gameObject.name}", gameObject);
     }
 
     protected virtual void OnDisable()
@@ -43,7 +43,7 @@ public abstract class ProjectileBase : MonoBehaviour
         // 방어: target이 null일 수 있으므로 먼저 검사
         if (target == null || target.Team == _attackerTeam || target.IsDead) return;
 
-        Debug.Log($"[ProcessHit] Damage: {_currentDamage}, Target Team: {target.Team}, Attacker Team: {_attackerTeam}", gameObject);
+        //Debug.Log($"[ProcessHit] Damage: {_currentDamage}, Target Team: {target.Team}, Attacker Team: {_attackerTeam}", gameObject);
 
         DamageData data = new DamageData
         {

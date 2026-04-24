@@ -82,7 +82,7 @@ public class EntityAttacker : MonoBehaviour
         IAttacker performer = (_data.Trajectory == AttackTrajectoryType.Arc) ? _arcPerformer : _directPerformer;
         if (performer != null && performer.TryPerformAttack(_owner, _currentTarget, _data))
         {
-            _lastAttackTime = Time.deltaTime;
+            _lastAttackTime = Time.time;
             _owner.ChangeState(UnitState.Idle);
         }
     }
