@@ -31,7 +31,7 @@ MonoBehaviour:
     Speed: 5
     Distance: 10
     AttackCost: 1
-    Trajectory: 1
+    Trajectory: 2
     Targeting: 0
     Area: 0
     RangeRadius: 0
