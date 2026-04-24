@@ -216,6 +216,6 @@ MonoBehaviour:
   - {fileID: -2132995636211010893, guid: e8d5b49934a0c5e488b624dec09914f4, type: 3}
   - {fileID: -8440165483005212548, guid: e8d5b49934a0c5e488b624dec09914f4, type: 3}
   - {fileID: 1696394255486085444, guid: e8d5b49934a0c5e488b624dec09914f4, type: 3}
-  _idleFrameRate: 12
+  _idleFrameRate: 8
   _attackFrames: []
   _attackFrameRate: 12
