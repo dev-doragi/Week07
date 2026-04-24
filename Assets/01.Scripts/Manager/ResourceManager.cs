@@ -151,7 +151,6 @@ public class ResourceManager : Singleton<ResourceManager>
 
     private void UpdateUI()
     {
-        Debug.Log($"[ResourceManager] UpdateUI 호출됨: {_currentMouseCount} / {_maxMouseCount}");
         if (_countDisplayText != null)
             _countDisplayText.text = $"남은쥐 : {_currentMouseCount} / {_maxMouseCount}";
     }
