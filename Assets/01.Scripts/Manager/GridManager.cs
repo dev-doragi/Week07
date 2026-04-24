@@ -282,16 +282,6 @@ public class GridManager : MonoBehaviour
             instance.transform.localScale = new Vector3(targetW, targetH, 1f);
         }
 
-        var unit = instance.GetComponentInChildren<Unit>();
-        if (unit != null)
-        {
-            unit.InitializeRuntime();
-        }
-        else
-        {
-            Debug.LogError($"[GridManager] 배치된 프리팹에 Unit 컴포넌트가 없습니다: {data.UnitName}");
-        }
-
         var placed = new PlacedUnit(data, origin, instance);
         for (int x = 0; x < data.Size.x; x++)
         {
@@ -300,6 +290,31 @@ public class GridManager : MonoBehaviour
                 _cells[origin.x + x, origin.y + y] = placed;
             }
         }
+
+        // Uit의 사망 이벤트 구독 -> 전투 파괴 시 연쇄 붕괴 발동
+        var unit = instance.GetComponentInChildren<Unit>();
+        if(unit != null)
+        {
+            unit.InitializeRuntime();
+            unit.OnDead += (deadUnit) => OnUnitDied(placed);
+        }
+    }
+
+    private void OnUnitDied(PlacedUnit placed)
+    {
+        if(GetUnitAt(placed.OriginCell) != placed) return;
+        
+        ForceRemove(placed);
+    }
+
+    public void ForceRemove(PlacedUnit unit)
+    {
+        if (unit == null) return;
+
+        Debug.Log($"[Gridmanager] {unit.Data.UnitName} 전투 파괴 | 연쇄 붕괴 체크 시작");
+        
+        StartCollapse(unit);
+        ScheduleCollapseCheck();
     }
     /// <summary>
     /// 돌진 데미지 계산 (가장 오른쪽 열의 공격력 합)
