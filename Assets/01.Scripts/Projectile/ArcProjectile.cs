@@ -18,6 +18,8 @@ public class ArcProjectile : ProjectileBase
         _arcHeight = arcHeight;
         _elapsedTime = 0f;
         _isInitialized = true;
+        // 풀에서 꺼낼 때 이전 위치가 남아 있을 수 있으므로 초기 위치를 명시적으로 설정
+        transform.position = _startPos;
     }
 
     private void Update()
@@ -33,10 +35,10 @@ public class ArcProjectile : ProjectileBase
 
         if (t >= 1f)
         {
-            // TODO: 곡선 공격의 데미지 타입을 어떻게 할 지 정해야 함
+            // 도착 시 Splash인 경우 직접 폭발 처리(부모의 Explode를 호출)
             if (_attackData.Area == AreaType.Splash)
             {
-                ProcessHit(null, transform.position);
+                Explode(transform.position);
             }
             Despawn();
         }
@@ -51,5 +53,11 @@ public class ArcProjectile : ProjectileBase
         {
             ProcessHit(target, transform.position);
         }
+    }
+
+    protected override void Despawn()
+    {
+        _isInitialized = false;
+        base.Despawn();
     }
 }

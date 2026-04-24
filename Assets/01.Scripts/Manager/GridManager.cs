@@ -46,20 +46,8 @@ public class GridManager : MonoBehaviour
     // 그리드 배열을 주어진 크기로 초기화. 모든 셀은 null 상태로 시작.
     private void Awake()
     {
-        EnsureGridStorage();
-    }
-
-    private void EnsureGridStorage()
-    {
-        if (_cells == null || _cells.GetLength(0) != _width || _cells.GetLength(1) != _height)
-        {
-            _cells = new PlacedUnit[_width, _height];
-        }
-
-        if (_rb == null)
-        {
-            _rb = GetComponent<Rigidbody2D>();
-        }
+        _cells = new PlacedUnit[_width, _height];
+        _rb = GetComponent<Rigidbody2D>();
     }
 
     // ==========================================
@@ -98,14 +86,12 @@ public class GridManager : MonoBehaviour
     // 셀이 비어있는지 (범위 밖이면 false)
     public bool IsEmpty(Vector2Int cell)
     {
-        EnsureGridStorage();
         return IsInBounds(cell) && _cells[cell.x, cell.y] == null;
     }
 
     // 셀에 있는 유닛 반환 (비어있거나 범위 밖이면 null)
     public PlacedUnit GetUnitAt(Vector2Int cell)
     {
-        EnsureGridStorage();
         return IsInBounds(cell) ? _cells[cell.x, cell.y] : null;
     }
 
@@ -225,20 +211,46 @@ public class GridManager : MonoBehaviour
         return true;
     }
 
+    // footprint 전체의 월드 중심 좌표 반환
+    private Vector3 FootprintCenter(UnitDataSO data, Vector2Int origin)
+    {
+        return _origin + new Vector3(
+            (origin.x + data.Size.x * 0.5f) * _cellSize,
+            (origin.y + data.Size.y * 0.5f) * _cellSize,
+            0f);
+    }
+
     // 실제 프리팹 생성 + 그리드 배열에 등록 (TryPlace/PlaceInitial 공용)
     private void CreateAndRegister(UnitDataSO data, Vector2Int origin)
     {
-        Vector3 footprintCenterOffset = new Vector3(
-            (data.Size.x - 1) * _cellSize * 0.5f,
-            (data.Size.y - 1) * _cellSize * 0.5f,
-            0f);
-        Vector3 spawnPosition = CellToWorld(origin) + footprintCenterOffset;
-        var instance = Instantiate(data.Prefab, spawnPosition, Quaternion.identity, transform);
-        
-        //프리팹 크기를 그리드 셀 크기에 맞춤
-        // footprint 크기 x cellSize로 스케일링 
-        
-        // Keep prefab scale as-authored to avoid sprite/collider distortion.
+        var instance = Instantiate(data.Prefab, FootprintCenter(data, origin), Quaternion.identity, transform);
+
+        float targetW = data.Size.x * _cellSize;
+        float targetH = data.Size.y * _cellSize;
+
+        var sr = instance.GetComponent<SpriteRenderer>();
+        if (sr != null && sr.sprite != null)
+        {
+            // 스프라이트 고유 월드 크기(scale=1일 때)로 나눠서 정규화
+            var natural = sr.sprite.bounds.size;
+            instance.transform.localScale = new Vector3(
+                targetW / natural.x,
+                targetH / natural.y, 1f);
+        }
+        else
+        {
+            instance.transform.localScale = new Vector3(targetW, targetH, 1f);
+        }
+
+        var unit = instance.GetComponentInChildren<Unit>();
+        if (unit != null)
+        {
+            unit.InitializeRuntime();
+        }
+        else
+        {
+            Debug.LogError($"[GridManager] 배치된 프리팹에 Unit 컴포넌트가 없습니다: {data.UnitName}");
+        }
 
         var placed = new PlacedUnit(data, origin, instance);
         for (int x = 0; x < data.Size.x; x++)
@@ -360,7 +372,6 @@ public class GridManager : MonoBehaviour
 
     private List<PlacedUnit> CollectAllPlaced()
     {
-        EnsureGridStorage();
         var set = new HashSet<PlacedUnit>();
         for(int x = 0; x < _width; x++)
         {
