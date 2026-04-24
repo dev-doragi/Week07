@@ -56,9 +56,7 @@ public class IncomeSystemAutoSetup : MonoBehaviour
     {
         if (_targetCanvas == null)
         {
-#pragma warning disable CS0618
-            _targetCanvas = FindObjectOfType<Canvas>();
-#pragma warning restore CS0618
+            _targetCanvas = FindSceneObject<Canvas>();
         }
 
         if (_targetCanvas == null)
@@ -154,9 +152,7 @@ public class IncomeSystemAutoSetup : MonoBehaviour
 
         _resourceProducer.SetGridBoard(_gridBoard);
 
-#pragma warning disable CS0618
-        var resourceManager = FindObjectOfType<ResourceManager>();
-#pragma warning restore CS0618
+        var resourceManager = FindSceneObject<ResourceManager>();
         _resourceProducer.SetResourceManager(resourceManager);
     }
 
@@ -168,9 +164,7 @@ public class IncomeSystemAutoSetup : MonoBehaviour
             return _gridBoard.transform as RectTransform;
         }
 
-#pragma warning disable CS0618
-        _gridBoard = FindObjectOfType<IncomeGridBoard>();
-#pragma warning restore CS0618
+        _gridBoard = FindSceneObject<IncomeGridBoard>();
         if (_gridBoard != null)
         {
             created = false;
@@ -188,9 +182,7 @@ public class IncomeSystemAutoSetup : MonoBehaviour
             return _inventory.transform as RectTransform;
         }
 
-#pragma warning disable CS0618
-        _inventory = FindObjectOfType<IncomeInventory>();
-#pragma warning restore CS0618
+        _inventory = FindSceneObject<IncomeInventory>();
         if (_inventory != null)
         {
             created = false;
@@ -405,6 +397,11 @@ public class IncomeSystemAutoSetup : MonoBehaviour
                 handleImage.raycastTarget = true;
             }
         }
+    }
+
+    private static T FindSceneObject<T>() where T : Object
+    {
+        return Object.FindFirstObjectByType<T>();
     }
 
 #if UNITY_EDITOR

@@ -702,11 +702,11 @@ PlayerSettings:
   captureStartupLogs: {}
   activeInputHandler: 1
   windowsGamepadBackendHint: 0
-  cloudProjectId: f91528a4-cddf-4095-88aa-2f298c665852
+  cloudProjectId: f119f0f6-fc08-43ee-9792-18309fdffe89
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
   projectName: Week07U
-  organizationId: choijaein0125
+  organizationId: socjs3
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}
