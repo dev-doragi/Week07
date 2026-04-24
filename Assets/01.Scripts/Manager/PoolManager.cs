@@ -108,7 +108,7 @@ public class PoolManager : Singleton<PoolManager>
         string key = obj.name;
         if (!_pools.TryGetValue(key, out var pool))
         {
-            Debug.LogError($"[PoolManager] '{key}' 오브젝트를 반환할 풀이 없습니다. 파괴 처리합니다.");
+            // 풀에 등록되지 않은 오브젝트는 단순히 파괴 처리합니다.
             Destroy(obj);
             return;
         }
