@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 [DisallowMultipleComponent]
@@ -15,7 +15,11 @@ public class BackgroundManager : MonoBehaviour
     {
         backgrounds.Clear();
 
-        ParallaxBackground[] foundBackgrounds = FindObjectsOfType<ParallaxBackground>(true);
+        ParallaxBackground[] foundBackgrounds =
+        Object.FindObjectsByType<ParallaxBackground>(
+            FindObjectsInactive.Include,
+            FindObjectsSortMode.None
+        );
         for (int i = 0; i < foundBackgrounds.Length; i++)
         {
             ParallaxBackground background = foundBackgrounds[i];
