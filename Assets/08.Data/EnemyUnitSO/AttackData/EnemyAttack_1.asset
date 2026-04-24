@@ -29,7 +29,7 @@ MonoBehaviour:
   Attack:
     Damage: 7
     Speed: 1
-    Distance: 20
+    Distance: 30
     AttackCost: 0
     Trajectory: 1
     Targeting: 0

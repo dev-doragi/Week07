@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 550f97df3c4ad9d44a36190b24e47c3b, type: 3}
   m_Name: SupportData_1
   m_EditorClassIdentifier: Assembly-CSharp::UnitDataSO
-  Key: 0
+  Key: 51
   UnitName: "\uCC44\uCB9D"
   Team: 1
   Category: 5

@@ -845,9 +845,9 @@ GameObject:
   - component: {fileID: 1830252571387301637}
   - component: {fileID: 2660267445907794368}
   - component: {fileID: 1403801070890437103}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: EnemyRoots
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -906,7 +906,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyGridAuthoring
   Grid: {fileID: 2660267445907794368}
-  SelectedUnit: {fileID: 11400000, guid: fae3433d89cd678429181260f91b9573, type: 2}
+  SelectedUnit: {fileID: 11400000, guid: 7c591e93e54523f48ace150e9876c854, type: 2}
   UnitRoot: {fileID: 2085482546459659923}
 --- !u!1 &2516532881364105541
 GameObject:
@@ -958,7 +958,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74e9101c6ff40ee41b97bd4cb9889ab9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Unit
-  _data: {fileID: 11400000, guid: 3aedc62710a6de446aba14d5cacf213f, type: 2}
+  _data: {fileID: 11400000, guid: fae3433d89cd678429181260f91b9573, type: 2}
   _baseRenderer: {fileID: 7990621207474711699}
   _damageOverlays: []
 --- !u!114 &7625204726878803885

@@ -171,7 +171,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74e9101c6ff40ee41b97bd4cb9889ab9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Unit
-  _data: {fileID: 11400000, guid: 3aedc62710a6de446aba14d5cacf213f, type: 2}
+  _data: {fileID: 11400000, guid: fae3433d89cd678429181260f91b9573, type: 2}
   _baseRenderer: {fileID: 8707529686961373768}
   _damageOverlays: []
 --- !u!114 &5847496527665062495

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 550f97df3c4ad9d44a36190b24e47c3b, type: 3}
   m_Name: ArcAttackerData_2
   m_EditorClassIdentifier: Assembly-CSharp::UnitDataSO
-  Key: 0
+  Key: 13
   UnitName: "\uD3ED\uD0C4\uBCD1"
   Team: 1
   Category: 3
@@ -21,15 +21,15 @@ MonoBehaviour:
   Size: {x: 1, y: 1}
   PlacementRule: 1
   ActsAsFoundation: 0
-  MaxHp: 30
+  MaxHp: 110
   BaseDefenseRate: 0
   Cost: 15
   DeathSpawnKey: 
   BaseDeathSpawnCount: 0
   Attack:
     Damage: 15
-    Speed: 0.2
-    Distance: 10
+    Speed: 3
+    Distance: 30
     AttackCost: 1
     Trajectory: 2
     Targeting: 0
