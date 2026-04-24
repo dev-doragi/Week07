@@ -37,6 +37,7 @@ public class Unit : MonoBehaviour, IDamageable
     private TeamType _team;
     private bool _isInitialized = false;
     private UnitState _currentState = UnitState.Idle; // 현재 상태
+    private bool _isOnGrid = false;
 
     public UnitDataSO Data => _data;
     public TeamType Team => _team;
@@ -45,6 +46,7 @@ public class Unit : MonoBehaviour, IDamageable
     public bool IsDead => _currentState == UnitState.Dead;
     public UnitState CurrentState => _currentState;
     public EntityStatReceiver StatReceiver => _statReceiver;
+    public void SetOnGrid(bool value) => _isOnGrid = value;
 
     public event Action<float, float> OnHpChanged;
     public event Action<Unit> OnDead;
@@ -191,6 +193,7 @@ public class Unit : MonoBehaviour, IDamageable
         }
 
         OnDead?.Invoke(this);
+        if(_isOnGrid) return;
 
         // 그리드에서 분리 (FallingUnit이 Destroy까지 책임)
         transform.SetParent(null, true);
