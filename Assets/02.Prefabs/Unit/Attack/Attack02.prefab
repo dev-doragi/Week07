@@ -14,9 +14,9 @@ GameObject:
   - component: {fileID: 1110127966968061037}
   - component: {fileID: 3984364251638876074}
   - component: {fileID: 2470074498217126439}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Attack2
-  m_TagString: Untagged
+  m_TagString: Ally
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -193,7 +193,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5348656777014114059}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Muzzle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -224,9 +224,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9150495014539727649}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Attack02
-  m_TagString: Untagged
+  m_TagString: Ally
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

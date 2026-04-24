@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9092327908350379584}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Support02
-  m_TagString: Untagged
+  m_TagString: Ally
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -45,9 +45,9 @@ GameObject:
   - component: {fileID: 701577650349793372}
   - component: {fileID: 255102740750468026}
   - component: {fileID: 6678560772947934819}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Support_2
-  m_TagString: Untagged
+  m_TagString: Ally
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

@@ -96,7 +96,22 @@ public class StageLayout : MonoBehaviour
             transform
         );
 
-        Debug.Log($"[StageLayout] 적 스폰 완료: {waveData.EnemySiegePrefab.name} at {_enemySiegePoint.position}");
+        // 요새 구조: 루트 포함 하위의 모든 Unit 초기화
+        Unit[] units = _currentEnemySiege.GetComponentsInChildren<Unit>(includeInactive: true);
+        if (units.Length > 0)
+        {
+            foreach (Unit unit in units)
+            {
+                unit.InitializeRuntime();
+                Debug.Log($"[StageLayout] Unit 초기화 완료: {unit.name} / Team: {unit.Team} / Category: {unit.Category}");
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"[StageLayout] 스폰된 오브젝트에 Unit 컴포넌트가 없습니다: {_currentEnemySiege.name}");
+        }
+
+        Debug.Log($"[StageLayout] 적 스폰 완료: {waveData.EnemySiegePrefab.name} at {_enemySiegePoint.position} / 총 {units.Length}개 Unit 초기화");
     }
 
     /// <summary>
