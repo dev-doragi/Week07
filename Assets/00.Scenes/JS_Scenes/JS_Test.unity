@@ -290,7 +290,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1864333800}
-  - {fileID: 311541913}
   - {fileID: 460492692}
   m_Father: {fileID: 677586047}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -452,18 +451,18 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 311541912}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 698019411}
-  m_Father: {fileID: 294253097}
+  m_Father: {fileID: 677586047}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: 12}
-  m_SizeDelta: {x: -46, y: 44}
+  m_AnchoredPosition: {x: 750, y: 354}
+  m_SizeDelta: {x: -1636, y: 44}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &311541914
 MonoBehaviour:
@@ -645,8 +644,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -12, y: 28}
-  m_SizeDelta: {x: 14, y: -68}
+  m_AnchoredPosition: {x: -12, y: 3}
+  m_SizeDelta: {x: 14, y: -18}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &460492693
 MonoBehaviour:
@@ -1094,6 +1093,7 @@ RectTransform:
   - {fileID: 916135941}
   - {fileID: 2035479868}
   - {fileID: 1717211148}
+  - {fileID: 311541913}
   - {fileID: 294253097}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1716,12 +1716,14 @@ MonoBehaviour:
   _overridePanelTransforms: 0
   _gridPanelPosition: {x: 0, y: 0}
   _defaultGridPanelSize: {x: 240, y: 240}
-  _matchInventorySizeToGrid: 1
+  _matchInventorySizeToGrid: 0
   _inventoryPanelSize: {x: 560, y: 240}
   _inventoryGapFromGrid: 40
   _inventoryVerticalOffset: 0
   _inventoryPadding: {x: 12, y: 12}
   _inventoryButtonHeight: 44
+  _acquireRandomBlockButton: {fileID: 311541914}
+  _createInternalAcquireButtonWhenMissing: 1
   _panelBackgroundColor: {r: 0, g: 0, b: 0, a: 0.2}
   _panelBorderColor: {r: 0.9, g: 0.9, b: 0.9, a: 0.8}
   _viewportBackgroundColor: {r: 0, g: 0, b: 0, a: 0.18}
@@ -2797,8 +2799,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -11, y: 28}
-  m_SizeDelta: {x: -46, y: -80}
+  m_AnchoredPosition: {x: -11, y: 0}
+  m_SizeDelta: {x: -46, y: -24}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1864333801
 MonoBehaviour:
