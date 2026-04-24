@@ -1,0 +1,343 @@
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
+[Serializable]
+public class IncomeBlockPrefabEntry
+{
+    public IncomeBlockType Type;
+    public IncomeBlockPiece Prefab;
+}
+
+public class IncomeInventory : MonoBehaviour
+{
+    private const string DefaultGeneratorSpritePath = "Assets/04.Art/Generator/Generator_1.png";
+    private const string DefaultBlockPrefabFolder = "Assets/02.Prefabs/Income/Blocks";
+
+    private static readonly IncomeBlockType[] AllBlockTypes =
+    {
+        IncomeBlockType.I,
+        IncomeBlockType.J,
+        IncomeBlockType.L,
+        IncomeBlockType.O,
+        IncomeBlockType.S,
+        IncomeBlockType.T,
+        IncomeBlockType.Z
+    };
+
+    [Header("References")]
+    [SerializeField] private IncomeGridBoard _gridBoard;
+    [SerializeField] private RectTransform _inventoryRoot;
+    [SerializeField] private RectTransform _layoutWidthReference;
+    [SerializeField] private RectTransform _dragRoot;
+
+    [Header("Start Reward")]
+    [SerializeField] private bool _spawnInitialOnStart = true;
+    [SerializeField] private IncomeBlockType _initialBlockType = IncomeBlockType.T;
+
+    [Header("Layout")]
+    [SerializeField] private Vector2 _startPosition = new Vector2(20f, 20f);
+    [SerializeField] private float _spacing = 20f;
+
+    [Header("Prefabs")]
+    [SerializeField] private IncomeBlockPiece _fallbackBlockPrefab;
+    [SerializeField] private List<IncomeBlockPrefabEntry> _blockPrefabs = new();
+
+    [Header("Cell Sprite")]
+    [SerializeField] private Sprite _generatorCellSprite;
+
+    [Header("Tetromino Colors")]
+    [SerializeField] private Color _iColor = new Color(0.35f, 0.95f, 0.95f, 0.95f);
+    [SerializeField] private Color _jColor = new Color(0.35f, 0.55f, 0.95f, 0.95f);
+    [SerializeField] private Color _lColor = new Color(0.95f, 0.65f, 0.30f, 0.95f);
+    [SerializeField] private Color _oColor = new Color(0.95f, 0.90f, 0.35f, 0.95f);
+    [SerializeField] private Color _sColor = new Color(0.45f, 0.90f, 0.45f, 0.95f);
+    [SerializeField] private Color _tColor = new Color(0.80f, 0.45f, 0.90f, 0.95f);
+    [SerializeField] private Color _zColor = new Color(0.95f, 0.40f, 0.40f, 0.95f);
+
+    private readonly List<IncomeBlockPiece> _spawnedPieces = new();
+    private bool _layoutInitialized;
+    private Vector2 _nextCursor;
+    private float _currentRowMaxHeight;
+
+    private void Awake()
+    {
+        if (_inventoryRoot == null)
+            _inventoryRoot = transform as RectTransform;
+
+        if (_layoutWidthReference == null)
+            _layoutWidthReference = _inventoryRoot;
+
+        if (_dragRoot == null && _inventoryRoot != null)
+            _dragRoot = _inventoryRoot.root as RectTransform;
+    }
+
+    private void Start()
+    {
+        if (_spawnInitialOnStart)
+            SpawnInitialBlock();
+    }
+
+    [ContextMenu("Spawn Initial Block")]
+    public void SpawnInitialBlock()
+    {
+        if (_spawnedPieces.Count > 0)
+            return;
+
+        AddBlock(_initialBlockType);
+    }
+
+    [ContextMenu("Acquire Random Block")]
+    public void AcquireRandomBlockFromButton()
+    {
+        AcquireRandomBlock();
+    }
+
+    public IncomeBlockPiece AcquireRandomBlock()
+    {
+        int randomIndex = UnityEngine.Random.Range(0, AllBlockTypes.Length);
+        var type = AllBlockTypes[randomIndex];
+        return AddBlock(type);
+    }
+
+    public IncomeBlockPiece AddBlock(IncomeBlockType type)
+    {
+        if (_inventoryRoot == null)
+        {
+            Debug.LogWarning("[IncomeInventory] InventoryRoot is not assigned.");
+            return null;
+        }
+
+        EnsureLayoutInitialized();
+
+        float cellSize = _gridBoard != null ? _gridBoard.CellSize : 72f;
+        Vector2 pieceSize = CalculatePieceSize(type, cellSize);
+        Vector2 spawnPosition = GetNextSpawnPosition(pieceSize);
+
+        var piece = CreateBlock(type, spawnPosition, GetColor(type));
+        if (piece == null)
+            return null;
+
+        AdvanceLayout(pieceSize);
+        EnsureContentHeight();
+
+        return piece;
+    }
+
+    // Backward compatibility entry point.
+    public void SpawnStarterBlocks()
+    {
+        SpawnInitialBlock();
+    }
+
+    public void SetGridBoard(IncomeGridBoard gridBoard)
+    {
+        _gridBoard = gridBoard;
+    }
+
+    public void SetDragRoot(RectTransform dragRoot)
+    {
+        _dragRoot = dragRoot;
+    }
+
+    public void SetInventoryRoot(RectTransform inventoryRoot)
+    {
+        _inventoryRoot = inventoryRoot;
+        if (_layoutWidthReference == null)
+            _layoutWidthReference = _inventoryRoot;
+
+        ResetLayoutCursor();
+    }
+
+    public void SetLayoutWidthReference(RectTransform layoutWidthReference)
+    {
+        _layoutWidthReference = layoutWidthReference;
+        ResetLayoutCursor();
+    }
+
+    private IncomeBlockPiece CreateBlock(IncomeBlockType type, Vector2 homePosition, Color color)
+    {
+        IncomeBlockPiece piece = null;
+
+        var prefab = ResolvePrefab(type);
+        if (prefab != null)
+        {
+            piece = Instantiate(prefab, _inventoryRoot, false);
+        }
+        else if (_fallbackBlockPrefab != null)
+        {
+            piece = Instantiate(_fallbackBlockPrefab, _inventoryRoot, false);
+        }
+        else
+        {
+            var pieceGo = new GameObject($"Income_{type}",
+                typeof(RectTransform),
+                typeof(CanvasGroup),
+                typeof(IncomeBlockPiece));
+            var rect = pieceGo.GetComponent<RectTransform>();
+            rect.SetParent(_inventoryRoot, false);
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.zero;
+            rect.pivot = Vector2.zero;
+            piece = pieceGo.GetComponent<IncomeBlockPiece>();
+        }
+
+        if (piece == null)
+            return null;
+
+        piece.name = $"Income_{type}";
+        piece.Initialize(type, _gridBoard, _dragRoot, _inventoryRoot, homePosition, color, _generatorCellSprite);
+
+        _spawnedPieces.Add(piece);
+        return piece;
+    }
+
+    private IncomeBlockPiece ResolvePrefab(IncomeBlockType type)
+    {
+        if (_blockPrefabs == null)
+            return null;
+
+        for (int i = 0; i < _blockPrefabs.Count; i++)
+        {
+            var entry = _blockPrefabs[i];
+            if (entry != null && entry.Type == type && entry.Prefab != null)
+                return entry.Prefab;
+        }
+
+        return null;
+    }
+
+    private void EnsureLayoutInitialized()
+    {
+        if (_layoutInitialized)
+            return;
+
+        _nextCursor = _startPosition;
+        _currentRowMaxHeight = 0f;
+        _layoutInitialized = true;
+    }
+
+    private void ResetLayoutCursor()
+    {
+        _layoutInitialized = false;
+        _nextCursor = _startPosition;
+        _currentRowMaxHeight = 0f;
+    }
+
+    private Vector2 GetNextSpawnPosition(Vector2 pieceSize)
+    {
+        float maxWidth = GetLayoutWidth();
+        float maxX = Mathf.Max(_startPosition.x + pieceSize.x, maxWidth - _startPosition.x);
+
+        if (_nextCursor.x > _startPosition.x && _nextCursor.x + pieceSize.x > maxX)
+        {
+            _nextCursor.x = _startPosition.x;
+            _nextCursor.y += _currentRowMaxHeight + _spacing;
+            _currentRowMaxHeight = 0f;
+        }
+
+        return _nextCursor;
+    }
+
+    private void AdvanceLayout(Vector2 pieceSize)
+    {
+        _nextCursor.x += pieceSize.x + _spacing;
+        if (pieceSize.y > _currentRowMaxHeight)
+            _currentRowMaxHeight = pieceSize.y;
+    }
+
+    private void EnsureContentHeight()
+    {
+        if (_inventoryRoot == null)
+            return;
+
+        var size = _inventoryRoot.sizeDelta;
+
+        float minWidth = GetLayoutWidth();
+        float requiredHeight = _nextCursor.y + _currentRowMaxHeight + _spacing;
+        float currentHeight = _inventoryRoot.rect.height > 1f ? _inventoryRoot.rect.height : size.y;
+
+        size.x = Mathf.Max(size.x, minWidth);
+        size.y = Mathf.Max(currentHeight, requiredHeight);
+
+        _inventoryRoot.sizeDelta = size;
+    }
+
+    private float GetLayoutWidth()
+    {
+        if (_layoutWidthReference != null && _layoutWidthReference.rect.width > 1f)
+            return _layoutWidthReference.rect.width;
+
+        if (_inventoryRoot != null && _inventoryRoot.rect.width > 1f)
+            return _inventoryRoot.rect.width;
+
+        return 640f;
+    }
+
+    private Vector2 CalculatePieceSize(IncomeBlockType type, float cellSize)
+    {
+        var cells = IncomeShapeLibrary.GetBaseCells(type);
+
+        int maxX = 0;
+        int maxY = 0;
+        for (int i = 0; i < cells.Count; i++)
+        {
+            var cell = cells[i];
+            if (cell.x > maxX) maxX = cell.x;
+            if (cell.y > maxY) maxY = cell.y;
+        }
+
+        return new Vector2((maxX + 1) * cellSize, (maxY + 1) * cellSize);
+    }
+
+    private Color GetColor(IncomeBlockType type)
+    {
+        return type switch
+        {
+            IncomeBlockType.I => _iColor,
+            IncomeBlockType.J => _jColor,
+            IncomeBlockType.L => _lColor,
+            IncomeBlockType.O => _oColor,
+            IncomeBlockType.S => _sColor,
+            IncomeBlockType.T => _tColor,
+            IncomeBlockType.Z => _zColor,
+            _ => Color.white
+        };
+    }
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        if (_generatorCellSprite == null)
+        {
+            var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(DefaultGeneratorSpritePath);
+            if (sprite != null)
+                _generatorCellSprite = sprite;
+        }
+
+        if ((_blockPrefabs == null || _blockPrefabs.Count == 0) && AssetDatabase.IsValidFolder(DefaultBlockPrefabFolder))
+        {
+            _blockPrefabs = new List<IncomeBlockPrefabEntry>();
+
+            for (int i = 0; i < AllBlockTypes.Length; i++)
+            {
+                var type = AllBlockTypes[i];
+                string path = $"{DefaultBlockPrefabFolder}/Income_{type}.prefab";
+                var prefab = AssetDatabase.LoadAssetAtPath<IncomeBlockPiece>(path);
+                if (prefab == null)
+                    continue;
+
+                _blockPrefabs.Add(new IncomeBlockPrefabEntry
+                {
+                    Type = type,
+                    Prefab = prefab
+                });
+            }
+        }
+    }
+#endif
+}
