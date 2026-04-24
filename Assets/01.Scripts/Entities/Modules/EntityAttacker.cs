@@ -11,6 +11,7 @@ public class EntityAttacker : MonoBehaviour
     private AttackModule _data;
     private Unit _currentTarget;
     private float _lastAttackTime;
+    private float _attackCooldown = 0f;
 
     public void Setup(Unit owner, AttackModule data)
     {
@@ -53,6 +54,8 @@ public class EntityAttacker : MonoBehaviour
     private void Update()
     {
         if (_owner == null || _owner.IsDead || _owner.CurrentState != UnitState.Attack) return;
+        
+        _attackCooldown -= Time.deltaTime;
         ProcessAttackCycle();
     }
 
@@ -64,8 +67,7 @@ public class EntityAttacker : MonoBehaviour
             return;
         }
 
-        float interval = 1f / Mathf.Max(0.01f, _owner.StatReceiver.GetModifiedValue(SupportStatType.AttackSpeed, _data.Speed));
-        if (Time.time >= _lastAttackTime + interval)
+        if (_attackCooldown <= 0f)
         {
             ExecuteAttack();
         }
@@ -75,15 +77,37 @@ public class EntityAttacker : MonoBehaviour
     {
         if (_owner.Team == TeamType.Player && ResourceManager.Instance != null)
         {
-            if (ResourceManager.Instance.CurrentMouse < _data.AttackCost) return;
+            if (ResourceManager.Instance.CurrentMouse < _data.AttackCost)
+            {
+                Debug.Log($"[EntityAttacker] {_owner.name} 공격 비용 부족 | 필요: {_data.AttackCost}");
+                return;
+            }
             ResourceManager.Instance.SubtractMouseCount(_data.AttackCost);
         }
 
         IAttacker performer = (_data.Trajectory == AttackTrajectoryType.Arc) ? _arcPerformer : _directPerformer;
-        if (performer != null && performer.TryPerformAttack(_owner, _currentTarget, _data))
+        if (performer != null)
         {
-            _lastAttackTime = Time.time;
-            _owner.ChangeState(UnitState.Idle);
+            if (performer.TryPerformAttack(_owner, _currentTarget, _data))
+            {
+                        // 공격 속도 적용 (초 단위)
+                        // AttackSpeed가 1.0이면 1초마다, 2.0이면 0.5초마다 공격
+                float modifiedSpeed = _owner.StatReceiver.GetModifiedValue(SupportStatType.AttackSpeed, _data.Speed);
+                float attackInterval = 1f / Mathf.Max(0.1f, modifiedSpeed);
+                
+                _attackCooldown = attackInterval;
+                _owner.ChangeState(UnitState.Idle);
+                
+                Debug.Log($"[EntityAttacker] {_owner.name} 공격 실행 | 다음 공격까지: {attackInterval:F2}초");
+            }
+            else
+            {
+                Debug.LogWarning($"[EntityAttacker] {_owner.name} 공격 실패 | Target: {_currentTarget.name}");
+            }
+        }
+        else
+        {
+            Debug.LogError($"[EntityAttacker] Performer가 설정되지 않음 | Trajectory: {_data.Trajectory}");
         }
     }
 

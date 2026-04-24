@@ -136,7 +136,7 @@ public class ResourceManager : Singleton<ResourceManager>
         int before = _currentMouseCount;
         _currentMouseCount -= amount;
         _isDirty = true; // 변경됨을 알림
-        Debug.Log($"[Resource] -{amount} | {before} → {_currentMouseCount} / {_maxMouseCount}");
+        //Debug.Log($"[Resource] -{amount} | {before} → {_currentMouseCount} / {_maxMouseCount}");
         return true;
     }
 

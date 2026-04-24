@@ -56,6 +56,7 @@ public class Bootstrapper : MonoBehaviour
 
         // [순서 3] 전투 흐름 및 로직
         if (GameFlowManager.Instance != null) GameFlowManager.Instance.BootstrapIfNeeded();
+        if (GridManager.Instance != null) GridManager.Instance.BootstrapIfNeeded();
         if (PauseManager.Instance != null) PauseManager.Instance.BootstrapIfNeeded();
 
         // [순서 4] 뷰 및 풀링 (가장 마지막에 현재 상태 동기화)

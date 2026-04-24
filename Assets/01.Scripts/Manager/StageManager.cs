@@ -8,9 +8,11 @@ using UnityEngine;
 /// [주요 역할]
 /// - ScriptableObject(StageDataSO) 기반 스테이지 환경 및 유닛 프리팹 배치
 /// - 현재 웨이브(Wave)의 시작과 끝을 통제하는 중앙 권한자
+/// - WaveStartedEvent 수신 후 StageLayout에 적 스폰 위임
 ///
 /// [이벤트 흐름]
 /// - Publish: StageLoadedEvent, StageGenerateCompleteEvent, WaveStartedEvent, WaveEndedEvent
+/// - Subscribe: WaveStartedEvent
 /// </remarks>
 public class StageManager : Singleton<StageManager>
 {
@@ -19,6 +21,7 @@ public class StageManager : Singleton<StageManager>
     [SerializeField] private Transform _stageContainer;
 
     private StageLayout _currentLayout;
+    private bool _isWaveEnding;
 
     public int CurrentStageIndex { get; private set; } = 0;
     public int CurrentWaveIndex { get; private set; } = 0;
@@ -34,12 +37,69 @@ public class StageManager : Singleton<StageManager>
             _stageContainer = parentObj.transform;
         }
 
-        // 씬 전환 시 전달된 스테이지 인덱스에 따라 스테이지 로드
         if (StageLoadContext.HasValue && !StageLoadContext.IsTutorial)
         {
             int stageIndex = StageLoadContext.GetStageIndex();
             LoadStage(stageIndex);
         }
+    }
+
+    private void OnEnable()
+    {
+        if (EventBus.Instance != null)
+        {
+            EventBus.Instance.Subscribe<WaveStartedEvent>(OnWaveStarted);
+            EventBus.Instance.Subscribe<CoreDestroyedEvent>(OnCoreDestroyed);
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (EventBus.Instance != null)
+        {
+            EventBus.Instance.Unsubscribe<WaveStartedEvent>(OnWaveStarted);
+            EventBus.Instance.Unsubscribe<CoreDestroyedEvent>(OnCoreDestroyed);
+        }
+    }
+
+    private void OnCoreDestroyed(CoreDestroyedEvent evt)
+    {
+        if (GameFlowManager.Instance != null && GameFlowManager.Instance.CurrentInGameState != InGameState.WavePlaying)
+        {
+            return;
+        }
+
+        EndWave(!evt.IsPlayerBase);
+    }
+
+    /// <summary>
+    /// [EventBus] 웨이브 시작 시 StageLayout에 적 스폰을 위임합니다.
+    /// </summary>
+    private void OnWaveStarted(WaveStartedEvent evt)
+    {
+        Debug.Log($"[StageManager] Wave {evt.WaveIndex} 시작 - 적 스폰 위임 중...");
+
+        if (_currentLayout == null)
+        {
+            Debug.LogError("[StageManager] 현재 레이아웃이 없습니다!");
+            return;
+        }
+
+        if (CurrentStageData == null)
+        {
+            Debug.LogError("[StageManager] CurrentStageData가 없습니다.");
+            return;
+        }
+
+        int waveIndex = CurrentWaveIndex;
+        if (waveIndex < 0 || waveIndex >= CurrentStageData.Waves.Count)
+        {
+            Debug.LogError($"[StageManager] 잘못된 웨이브 인덱스: {waveIndex}");
+            return;
+        }
+
+        WaveData currentWave = CurrentStageData.Waves[waveIndex];
+        _currentLayout.SpawnEnemy(currentWave);
     }
 
     public void LoadStage(int stageIndex)
@@ -61,8 +121,6 @@ public class StageManager : Singleton<StageManager>
         }
 
         EventBus.Instance.Publish(new StageLoadedEvent { StageIndex = CurrentStageIndex });
-
-        // 배치가 완전히 끝났음을 알림 (GameFlowManager가 Prepare 상태로 진입)
         EventBus.Instance.Publish(new StageGenerateCompleteEvent());
 
         Debug.Log($"[StageManager] Stage {stageIndex} 로드 및 그리드 배치 완료.");
@@ -86,7 +144,6 @@ public class StageManager : Singleton<StageManager>
             _currentLayout = null;
         }
 
-        // 스테이지가 정리되었음을 알림
         EventBus.Instance.Publish(new StageCleanedUpEvent { StageIndex = CurrentStageIndex });
 
         CurrentState = InGameState.None;
@@ -108,6 +165,8 @@ public class StageManager : Singleton<StageManager>
         }
 
         CurrentWaveIndex = waveIndex;
+        CurrentState = InGameState.WavePlaying;
+        _isWaveEnding = false;
         Debug.Log($"[StageManager] Starting Wave {waveIndex}");
         EventBus.Instance?.Publish(new WaveStartedEvent { WaveIndex = waveIndex });
     }
@@ -119,6 +178,10 @@ public class StageManager : Singleton<StageManager>
 
     public void EndWave(bool isWin)
     {
+        if (_isWaveEnding) return;
+
+        _isWaveEnding = true;
+        CurrentState = InGameState.WaveEnded;
         Debug.Log($"[StageManager] Wave {CurrentWaveIndex} 종료 - isWin: {isWin}");
         EventBus.Instance?.Publish(new WaveEndedEvent { IsWin = isWin });
     }

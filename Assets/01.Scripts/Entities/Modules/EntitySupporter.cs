@@ -1,29 +1,25 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 /// <summary>
 /// 유닛 주변 아군에게 버프 및 지원 효과를 부여하는 모듈입니다.
 /// </summary>
-/// <remarks>
-/// [주요 역할]
-/// - SupportModule의 Radius 내 아군 유닛 감지
-/// - 제단(Altar) 유닛인 경우 활성화 여부 체크
-/// - 대상의 역할군(공격/방어/전체)에 따른 버프 필터링 및 전달
-/// </remarks>
 public class EntitySupporter : MonoBehaviour
 {
     private Unit _owner;
     private SupportModule _data;
-    private AltarConnector _altar; // 제단 연동용 참조
-    private float _scanInterval = 0.5f; // 0.5초마다 아군 탐색
+    private AltarConnector _altar;
+    private float _scanInterval = 0.5f;
+
+    // 이전 틱에 버프를 적용했던 대상 추적
+    private HashSet<Unit> _previouslyBuffedUnits = new HashSet<Unit>();
 
     public void Setup(Unit owner, SupportModule data)
     {
         _owner = owner;
         _data = data;
-
         _altar = GetComponent<AltarConnector>();
-
         StartCoroutine(SupportRoutine());
     }
 
@@ -34,18 +30,38 @@ public class EntitySupporter : MonoBehaviour
             ScanAndApplyBuffs();
             yield return new WaitForSecondsRealtime(_scanInterval);
         }
+
+        // 지원 유닛 사망 시 기존 버프 해제
+        foreach (var unit in _previouslyBuffedUnits)
+        {
+            if (unit != null && !unit.IsDead)
+                unit.StatReceiver.RemoveModifier(this);
+        }
+        _previouslyBuffedUnits.Clear();
     }
 
     private void ScanAndApplyBuffs()
     {
         if (_owner == null || _data == null) return;
+        if (_altar != null && !_altar.IsAltarActive)
+        {
+            // 제단 비활성화 시 기존 버프 해제
+            foreach (var unit in _previouslyBuffedUnits)
+            {
+                if (unit != null && !unit.IsDead)
+                    unit.StatReceiver.RemoveModifier(this);
+            }
+            _previouslyBuffedUnits.Clear();
+            return;
+        }
 
-        if (_altar != null && !_altar.IsAltarActive) return;
+        int allyLayer = (_owner.Team == TeamType.Player)
+            ? LayerMask.GetMask("Ally")
+            : LayerMask.GetMask("Enemy");
 
-        int allyLayer = (_owner.Team == TeamType.Player) ? LayerMask.GetMask("Ally") : LayerMask.GetMask("Enemy");
-
-        // 반경 내 아군 콜라이더 탐색
         Collider2D[] allies = Physics2D.OverlapCircleAll(transform.position, _data.Radius, allyLayer);
+
+        HashSet<Unit> currentUnits = new HashSet<Unit>();
 
         foreach (var col in allies)
         {
@@ -55,29 +71,40 @@ public class EntitySupporter : MonoBehaviour
                 {
                     if (IsTargetRoleMatch(ally, effect.TargetRoleType))
                     {
-                        // 최종 스탯 리시버에 버프 데이터 전달
-                        ally.StatReceiver.ApplyModifier(effect);
+                        currentUnits.Add(ally);
                     }
                 }
             }
         }
+
+        // 범위에서 벗어난 유닛의 버프 제거
+        foreach (var unit in _previouslyBuffedUnits)
+        {
+            if (!currentUnits.Contains(unit) && unit != null && !unit.IsDead)
+                unit.StatReceiver.RemoveModifier(this);
+        }
+
+        // 현재 범위 유닛에 버프 재적용 (덮어쓰기)
+        foreach (var ally in currentUnits)
+        {
+            foreach (var effect in _data.Effects)
+            {
+                if (IsTargetRoleMatch(ally, effect.TargetRoleType))
+                    ally.StatReceiver.SetModifier(this, effect);
+            }
+        }
+
+        _previouslyBuffedUnits = currentUnits;
     }
 
-    /// <summary>
-    /// 대상 유닛의 역할군이 버프 적용 대상인지 판별합니다.
-    /// </summary>
     private bool IsTargetRoleMatch(Unit ally, SupportTargetRoleType targetCategory)
     {
         switch (targetCategory)
         {
-            case SupportTargetRoleType.All:
-                return true;
-            case SupportTargetRoleType.Attack:
-                return ally.Data.CanAttack;
-            case SupportTargetRoleType.Defense:
-                return ally.Data.CanCollide;
-            default:
-                return false;
+            case SupportTargetRoleType.All: return true;
+            case SupportTargetRoleType.Attack: return ally.Data.CanAttack;
+            case SupportTargetRoleType.Defense: return ally.Data.CanCollide;
+            default: return false;
         }
     }
 }

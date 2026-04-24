@@ -49,6 +49,12 @@ public class GameFlowManager : Singleton<GameFlowManager>
     private void OnStageGenerateComplete(StageGenerateCompleteEvent evt)
     {
         ChangeFlowState(InGameState.Prepare);
+
+        if (StageManager.Instance == null)
+        {
+            Debug.LogError("[GameFlowManager] StageManager가 없어 첫 웨이브를 시작할 수 없습니다.");
+            return;
+        }
     }
 
     private void OnWaveStarted(WaveStartedEvent evt)
@@ -62,6 +68,12 @@ public class GameFlowManager : Singleton<GameFlowManager>
 
         ChangeFlowState(InGameState.WaveEnded);
         StartCoroutine(SlowMotionTransitionRoutine(evt.IsWin));
+    }
+
+    private bool IsLastWave()
+    {
+        if (StageManager.Instance == null || StageManager.Instance.CurrentStageData == null) return true;
+        return StageManager.Instance.CurrentWaveIndex >= StageManager.Instance.CurrentStageData.Waves.Count - 1;
     }
 
     private void ChangeFlowState(InGameState newState)
@@ -85,6 +97,15 @@ public class GameFlowManager : Singleton<GameFlowManager>
 
         if (isWin)
         {
+            // 마지막 웨이브가 아니면 다음 웨이브로 진행
+            if (!IsLastWave())
+            {
+                ChangeFlowState(InGameState.Prepare);
+                StageManager.Instance.StartNextWave();
+                yield break;
+            }
+
+            // 마지막 웨이브 클리어 → 스테이지 클리어
             ChangeFlowState(InGameState.StageCleared);
 
             if (StageManager.Instance == null)

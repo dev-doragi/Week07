@@ -22,6 +22,11 @@ public class DirectProjectile : ProjectileBase
         _isInitialized = true;
 
         transform.position = _startPos;
+
+        // 목표 방향에 맞게 초기 회전 설정
+        Vector3 direction = (_targetPos - _startPos).normalized;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + 180f;
+        transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
     }
 
     private void Update()
@@ -31,6 +36,11 @@ public class DirectProjectile : ProjectileBase
         _elapsedTime += Time.deltaTime;
         float t = Mathf.Clamp01(_elapsedTime / _duration);
         transform.position = Vector3.Lerp(_startPos, _targetPos, t);
+
+        // 이동 방향에 맞게 지속적으로 회전 업데이트
+        Vector3 direction = (_targetPos - _startPos).normalized;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + 180f;
+        transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
 
         if (t >= 1f) Despawn();
     }
