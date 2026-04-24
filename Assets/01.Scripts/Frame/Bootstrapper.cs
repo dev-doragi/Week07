@@ -9,31 +9,30 @@ public class Bootstrapper : MonoBehaviour
     [Header("Global Managers (DDOL)")]
     [SerializeField] private GameLogger _gameLoggerPrefab;
     [SerializeField] private ProgressManager _progressManagerPrefab;
-    [SerializeField] private SceneLoader _sceneLoaderPrefab;
     [SerializeField] private GameManager _gameManagerPrefab;
-    [SerializeField] private StageManager _stageManagerPrefab;
     [SerializeField] private GameFlowManager _gameFlowManagerPrefab;
     [SerializeField] private PauseManager _pauseManagerPrefab;
     [SerializeField] private SoundManager _soundManagerPrefab;
 
     [Header("Scene Specific Managers (Non-DDOL)")]
+    [SerializeField] private StageManager _stageManagerPrefab;
+    [SerializeField] private SceneLoader _sceneLoaderPrefab;
     [SerializeField] private UIManager _uiManagerPrefab;
     [SerializeField] private PoolManager _poolManagerPrefab;
 
     private void Awake()
     {
-        // 1. 매니저 인스턴스 존재 확인 및 생성 (물리적 배치)
-        // Singleton.cs의 Awake가 실행되면서 Instance가 등록됨
+        // 1. 글로벌 매니저 인스턴스 보장
         EnsureInstance(_gameLoggerPrefab);
         EnsureInstance(_progressManagerPrefab);
-        EnsureInstance(_sceneLoaderPrefab);
         EnsureInstance(_gameManagerPrefab);
-        EnsureInstance(_stageManagerPrefab);
         EnsureInstance(_gameFlowManagerPrefab);
         EnsureInstance(_pauseManagerPrefab);
         EnsureInstance(_soundManagerPrefab);
 
-        // 씬 종속 매니저 (인게임 씬에서만 할당되어 있다면 여기서 생성됨)
+        // 2. 씬 종속 매니저 (인게임 씬 부트스트래퍼에서 할당되어 있다면 여기서 생성됨)
+        EnsureInstance(_stageManagerPrefab);
+        EnsureInstance(_sceneLoaderPrefab);
         EnsureInstance(_uiManagerPrefab);
         EnsureInstance(_poolManagerPrefab);
     }
@@ -41,7 +40,6 @@ public class Bootstrapper : MonoBehaviour
     private void Start()
     {
         // 2. 확정적 순서에 따른 논리적 초기화 (OnBootstrap 호출)
-        // 모든 매니저의 Awake가 끝난 시점이므로 Null 참조 위험 없음
         InitializeLogic();
     }
 

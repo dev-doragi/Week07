@@ -21,10 +21,7 @@ public class GameManager : Singleton<GameManager>
     protected override void OnBootstrap()
     {
         Application.targetFrameRate = 60;
-    }
 
-    private void OnEnable()
-    {
         if (EventBus.Instance != null)
         {
             EventBus.Instance.Subscribe<StageLoadedEvent>(OnStageLoaded);
