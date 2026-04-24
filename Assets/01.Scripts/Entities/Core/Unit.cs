@@ -92,6 +92,13 @@ public class Unit : MonoBehaviour, IDamageable
         }
     }
 
+    public void ForceKill()
+    {
+        if (IsDead) return;
+        _currentHp = 0f;
+        ChangeState(UnitState.Dead);
+    }
+
     private void Update()
     {
         if (!_isInitialized || IsDead || _currentState == UnitState.Stun) return;

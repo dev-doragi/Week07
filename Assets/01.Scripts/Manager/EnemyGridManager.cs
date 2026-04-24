@@ -50,7 +50,7 @@ public class EnemyGridManager : MonoBehaviour
         {
             if(unit.Team == TeamType.Enemy && !unit.IsDead)
             {
-                unit.TakeDamage(new DamageData {Damage = 99999f });
+                unit.ForceKill();
             }
         }
     }
