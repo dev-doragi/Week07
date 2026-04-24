@@ -50,6 +50,29 @@ public class GridManager : MonoBehaviour
         _rb = GetComponent<Rigidbody2D>();
     }
 
+    private void OnEnable()
+    {
+        EventBus.Instance.Subscribe<CoreDestroyedEvent>(OnCoreDestroyed);
+    }
+
+    private void OnDisable()
+    {
+        EventBus.Instance.Unsubscribe<CoreDestroyedEvent>(OnCoreDestroyed);
+    }
+
+    private void OnCoreDestroyed(CoreDestroyedEvent e)  // 코어 파괴 시 해당 팀의 모든 그리드 유닛 제거
+    {   //플레이어 코어가 파괴됐을 때만 플레이어 그리드 유닛 전체 제거
+        if(!e.IsPlayerBase) return;
+        
+        Debug.Log("[GridManager] 플레이어 코어 파괴 -> 전체 유닛 제거");
+
+        var allUnits = CollectAllPlaced();
+        foreach (var unit in allUnits)
+        {
+            StartCollapse(unit);
+        }
+    }
+
     // ==========================================
     // 좌표 변환 (마우스/카메라 ↔ 그리드)
     // ==========================================

@@ -32,11 +32,12 @@ public class Unit : MonoBehaviour, IDamageable
     private Coroutine _hitEffectCo;
     private EntityStatReceiver _statReceiver;
     private EntityAttacker _attacker; // 공격 로직 참조
-
+    private UnitAnimator _animator;     // 애니메이션
     private float _currentHp;
     private TeamType _team;
     private bool _isInitialized = false;
     private UnitState _currentState = UnitState.Idle; // 현재 상태
+    private bool _isOnGrid = false;
 
     public UnitDataSO Data => _data;
     public TeamType Team => _team;
@@ -45,6 +46,7 @@ public class Unit : MonoBehaviour, IDamageable
     public bool IsDead => _currentState == UnitState.Dead;
     public UnitState CurrentState => _currentState;
     public EntityStatReceiver StatReceiver => _statReceiver;
+    public void SetOnGrid(bool value) => _isOnGrid = value;
 
     public event Action<float, float> OnHpChanged;
     public event Action<Unit> OnDead;
@@ -57,6 +59,7 @@ public class Unit : MonoBehaviour, IDamageable
             return;
         }
 
+        _animator = GetComponent<UnitAnimator>();
         _statReceiver = GetComponent<EntityStatReceiver>();
         _team = _data.Team;
         _currentHp = _data.MaxHp;
@@ -90,6 +93,13 @@ public class Unit : MonoBehaviour, IDamageable
         }
     }
 
+    public void ForceKill()
+    {
+        if (IsDead) return;
+        _currentHp = 0f;
+        ChangeState(UnitState.Dead);
+    }
+
     private void Update()
     {
         if (!_isInitialized || IsDead || _currentState == UnitState.Stun) return;
@@ -115,8 +125,10 @@ public class Unit : MonoBehaviour, IDamageable
         switch (_currentState)
         {
             case UnitState.Idle:
+                _animator?.PlayIdle();
                 break;
             case UnitState.Attack:
+                _animator?.PlayAttack();
                 // 공격 상태 진입 시의 로직은 EntityAttacker의 루프에서 처리됨
                 break;
             case UnitState.Stun:
@@ -191,6 +203,7 @@ public class Unit : MonoBehaviour, IDamageable
         }
 
         OnDead?.Invoke(this);
+        if(_isOnGrid) return;
 
         // 그리드에서 분리 (FallingUnit이 Destroy까지 책임)
         transform.SetParent(null, true);

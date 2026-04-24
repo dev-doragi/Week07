@@ -666,9 +666,9 @@ GameObject:
   - component: {fileID: 710361370793521763}
   - component: {fileID: 5885992773680039268}
   - component: {fileID: 6708108589511184723}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: EnemyWheel(Clone)
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -773,9 +773,9 @@ GameObject:
   - component: {fileID: 6245172793514678242}
   - component: {fileID: 2059037059302842722}
   - component: {fileID: 6865574180027693082}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: EnemyCastle1
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1008,7 +1008,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6189011168401721539}
   - component: {fileID: 5279222323168585135}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Wheel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1389,7 +1389,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7187876749229778928}
   - component: {fileID: 4554625921288134778}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Wheel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1698,9 +1698,9 @@ GameObject:
   - component: {fileID: 2306122555509542879}
   - component: {fileID: 7631285409207493985}
   - component: {fileID: 2033882367022820883}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: EnemyWheel(Clone)
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1915,9 +1915,9 @@ GameObject:
   - component: {fileID: 3167991240907414707}
   - component: {fileID: 9191118471709038106}
   - component: {fileID: 3921724317930860871}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: EnemyCore(Clone)
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2620,9 +2620,9 @@ GameObject:
   - component: {fileID: 3414711421622021817}
   - component: {fileID: 91622159860577840}
   - component: {fileID: 4626139846362410295}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: EnemyWheel(Clone)
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2998,7 +2998,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3654355288507988641}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: EnemyUnits
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3138,7 +3138,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7406822133886851136}
   - component: {fileID: 6373283408442322334}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Wheel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
