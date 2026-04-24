@@ -16,6 +16,12 @@ public abstract class ProjectileBase : MonoBehaviour
     {
         EventBus.Instance.Subscribe<StageCleanedUpEvent>(HandleStageCleanedUp);
         _lifeTimeCoroutine = StartCoroutine(LifeTimeRoutine());
+
+        var rb = GetComponent<Rigidbody2D>();
+        var col = GetComponent<Collider2D>();
+        Debug.Log($"[ProjectileBase.OnEnable] Rigidbody2D: {(rb != null ? $"✓ {rb.bodyType}" : "✗ NULL")}, " +
+                  $"Collider2D: {(col != null ? $"✓ IsTrigger={col.isTrigger}" : "✗ NULL")}, " +
+                  $"GameObject: {gameObject.name}", gameObject);
     }
 
     protected virtual void OnDisable()
@@ -34,7 +40,10 @@ public abstract class ProjectileBase : MonoBehaviour
 
     protected virtual void ProcessHit(IDamageable target, Vector2 hitPoint)
     {
-        if (target.Team == _attackerTeam || target.IsDead) return;
+        // 방어: target이 null일 수 있으므로 먼저 검사
+        if (target == null || target.Team == _attackerTeam || target.IsDead) return;
+
+        Debug.Log($"[ProcessHit] Damage: {_currentDamage}, Target Team: {target.Team}, Attacker Team: {_attackerTeam}", gameObject);
 
         DamageData data = new DamageData
         {
@@ -64,12 +73,15 @@ public abstract class ProjectileBase : MonoBehaviour
         }
     }
 
-    private void Explode(Vector2 center)
+    // 자식 클래스가 필요에 따라 직접 폭발 처리를 할 수 있도록 protected로 변경
+    protected void Explode(Vector2 center)
     {
         Collider2D[] targets = Physics2D.OverlapCircleAll(center, _attackData.RangeRadius);
         foreach (var col in targets)
         {
-            if (col.TryGetComponent(out IDamageable target) && target.Team != _attackerTeam)
+            if (col.TryGetComponent(out IDamageable target)
+                && target.Team != _attackerTeam
+                && !target.IsDead)
             {
                 target.TakeDamage(new DamageData { Damage = _currentDamage, HitPoint = center });
             }

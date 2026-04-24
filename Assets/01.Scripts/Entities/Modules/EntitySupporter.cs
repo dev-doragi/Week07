@@ -32,7 +32,7 @@ public class EntitySupporter : MonoBehaviour
         while (!_owner.IsDead)
         {
             ScanAndApplyBuffs();
-            yield return new WaitForSeconds(_scanInterval);
+            yield return new WaitForSecondsRealtime(_scanInterval);
         }
     }
 

@@ -39,9 +39,16 @@ public class DirectProjectile : ProjectileBase
     {
         if (!_isInitialized) return;
 
-        if (other.TryGetComponent(out IDamageable target))
+        IDamageable target = other.GetComponentInParent<IDamageable>();
+        if (target != null)
         {
             ProcessHit(target, transform.position);
         }
+    }
+
+    protected override void Despawn()
+    {
+        _isInitialized = false;
+        base.Despawn();
     }
 }

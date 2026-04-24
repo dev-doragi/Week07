@@ -65,7 +65,6 @@ public class Unit : MonoBehaviour, IDamageable
         OnHpChanged?.Invoke(_currentHp, _data.MaxHp);
         AssembleModules();
 
-        // 초기 상태 설정
         ChangeState(UnitState.Idle);
         UpdateVisualFeedback();
     }
@@ -109,14 +108,13 @@ public class Unit : MonoBehaviour, IDamageable
     /// </summary>
     public void ChangeState(UnitState newState)
     {
-        if (_currentState == UnitState.Dead) return; // 이미 사망했다면 상태 변경 불가
+        if (_currentState == UnitState.Dead) return;
 
         _currentState = newState;
 
         switch (_currentState)
         {
             case UnitState.Idle:
-                // 대기 시 특별한 초기화가 필요하다면 여기서 수행
                 break;
             case UnitState.Attack:
                 // 공격 상태 진입 시의 로직은 EntityAttacker의 루프에서 처리됨
@@ -134,20 +132,19 @@ public class Unit : MonoBehaviour, IDamageable
     {
         if (!_isInitialized || IsDead) return;
 
+        if (_data.Category == UnitCategory.Wheel) return;
+
         float baseDefense = _data.BaseDefenseRate;
         float finalDefense = _statReceiver.GetModifiedValue(SupportStatType.DefenseRate, baseDefense);
-
         float finalDamage = hitData.Damage * (1f - Mathf.Clamp01(finalDefense));
+
         _currentHp -= Mathf.Max(0f, finalDamage);
 
         UpdateVisualFeedback();
         OnHpChanged?.Invoke(_currentHp, _data.MaxHp);
 
-        // [기획 반영] 체력이 0 이하면 DEAD 상태로 전환
         if (_currentHp <= 0f)
-        {
             ChangeState(UnitState.Dead);
-        }
     }
 
     private void UpdateVisualFeedback()
@@ -156,12 +153,10 @@ public class Unit : MonoBehaviour, IDamageable
 
         float ratio = _currentHp / _data.MaxHp;
 
-        // [기획 반영] 3단계 피칠갑 오버레이 누적 활성화
         if (ratio <= 0.7f && _damageOverlays.Length > 0) _damageOverlays[0].gameObject.SetActive(true);
         if (ratio <= 0.4f && _damageOverlays.Length > 1) _damageOverlays[1].gameObject.SetActive(true);
         if (ratio <= 0.1f && _damageOverlays.Length > 2) _damageOverlays[2].gameObject.SetActive(true);
 
-        // 피격 시 깜빡임 효과
         float colorVal = 0.5f + (ratio / 2f);
         if (_hitEffectCo != null) StopCoroutine(_hitEffectCo);
         _hitEffectCo = StartCoroutine(HitFlashRoutine(new Color(1f, colorVal, colorVal, 1f)));
@@ -169,21 +164,25 @@ public class Unit : MonoBehaviour, IDamageable
 
     private IEnumerator HitFlashRoutine(Color targetColor)
     {
+        if (_baseRenderer == null) yield break;
+
         for (int i = 0; i < 2; i++)
         {
+            if (_baseRenderer == null) yield break;
             _baseRenderer.color = new Color(1f, 1f, 1f, 0.75f);
-            yield return new WaitForSeconds(0.05f);
+            yield return new WaitForSecondsRealtime(0.05f);
+            if (_baseRenderer == null) yield break;
             _baseRenderer.color = targetColor;
-            yield return new WaitForSeconds(0.05f);
+            yield return new WaitForSecondsRealtime(0.05f);
         }
+        _hitEffectCo = null;
     }
 
     private void HandleDeath()
     {
-        // [기획 반영] 코어 파괴 시 팀별 이벤트 발행
+        // 코어 파괴 이벤트 발행
         if (_data.Category == UnitCategory.Core && _team == TeamType.Enemy)
         {
-            SpawnEnemyDeathRats();
             EventBus.Instance?.Publish(new CoreDestroyedEvent { IsPlayerBase = false });
         }
         else if (_data.Category == UnitCategory.Core && _team == TeamType.Player)
@@ -193,22 +192,35 @@ public class Unit : MonoBehaviour, IDamageable
 
         OnDead?.Invoke(this);
 
-        if (PoolManager.Instance != null)
-            PoolManager.Instance.Despawn(gameObject);
-        else
-            Destroy(gameObject);
+        // 그리드에서 분리 (FallingUnit이 Destroy까지 책임)
+        transform.SetParent(null, true);
+        var col = GetComponent<Collider2D>();
+        if (col != null) col.enabled = false;
+
+        // 연출 시작과 동시에 스폰
+        SpawnDeathEffect(_data.DeathSpawnKey, _data.BaseDeathSpawnCount);
+        var falling = gameObject.AddComponent<FallingUnit>();
+        falling.Begin();
     }
 
-    private void SpawnEnemyDeathRats()
+    private void SpawnDeathEffect(string key, int count)
     {
-        if (StageManager.Instance == null || PoolManager.Instance == null) return;
+        if (string.IsNullOrEmpty(key) || count <= 0) return;
+        if (PoolManager.Instance == null) return;
 
-        int additionalRats = (StageManager.Instance.CurrentWaveIndex * 15) + (StageManager.Instance.CurrentStageIndex * 20);
-        int totalSpawnCount = _data.BaseDeathSpawnCount + additionalRats;
-
-        for (int i = 0; i < totalSpawnCount; i++)
+        if (_data.Category == UnitCategory.Core && StageManager.Instance != null)
         {
-            PoolManager.Instance.Spawn("DropRat", transform.position, Quaternion.identity);
+            count += (StageManager.Instance.CurrentWaveIndex * 15)
+                   + (StageManager.Instance.CurrentStageIndex * 20);
         }
+
+        for (int i = 0; i < count; i++)
+            PoolManager.Instance.Spawn(key, transform.position, Quaternion.identity);
+    }
+
+    private void OnDestroy()
+    {
+        if (_hitEffectCo != null) StopCoroutine(_hitEffectCo);
+        _hitEffectCo = null;
     }
 }

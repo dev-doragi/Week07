@@ -205,24 +205,82 @@ public class GridManager : MonoBehaviour
         if (unit == null) return false;
         if (unit.Data.PlacementRule == PlacementRule.InitialOnly) return false;
 
+        //사전 검증 : 이 유닛을 빼면 붕괴가 발생하는지 판단
+        if(WouldCauseCollapse(unit))
+        {
+            Debug.Log($"[GridManager] {unit.Data.UnitName} 제거 거부 | 연쇄 붕괴 발생 위험");
+            return false;
+        }
+
+        // 환불
+        if(unit.Data.Cost > 0 && ResourceManager.Instance != null)
+        {
+            int refund = Mathf.CeilToInt(unit.Data.Cost * 0.5f);
+            ResourceManager.Instance.AddMouseCount(refund);
+            Debug.Log($"[GridManager] {unit.Data.UnitName} 제거 | 환불: {refund} (원가: {unit.Data.Cost})");
+        }
+
         StartCollapse(unit);
         ScheduleCollapseCheck();
 
         return true;
     }
 
+    // 안전 제거 판단
+    private bool WouldCauseCollapse(PlacedUnit unitToRemove)
+    {   
+        //임시로 그리드에서 제거 해보기
+        for(int x = 0; x < unitToRemove.Data.Size.x; x++)
+        {
+            for(int y = 0; y < unitToRemove.Data.Size.y; y++)
+            {
+                _cells[unitToRemove.OriginCell.x + x, unitToRemove.OriginCell.y + y] = null;
+            }
+        }
+        
+        //이 상태에서 붕괴 대상이 있는지 체크
+        var unsupported = FindUnsupportedUnits();
+
+        for(int x = 0; x < unitToRemove.Data.Size.x; x++)
+        {
+            for(int y = 0; y < unitToRemove.Data.Size.y; y++)
+            {
+                _cells[unitToRemove.OriginCell.x + x, unitToRemove.OriginCell.y + y] = unitToRemove;
+            }
+        }
+        return unsupported.Count > 0;
+    }
+
+    // footprint 전체의 월드 중심 좌표 반환
+    private Vector3 FootprintCenter(UnitDataSO data, Vector2Int origin)
+    {
+        return _origin + new Vector3(
+            (origin.x + data.Size.x * 0.5f) * _cellSize,
+            (origin.y + data.Size.y * 0.5f) * _cellSize,
+            0f);
+    }
+
     // 실제 프리팹 생성 + 그리드 배열에 등록 (TryPlace/PlaceInitial 공용)
     private void CreateAndRegister(UnitDataSO data, Vector2Int origin)
     {
-        var instance = Instantiate(data.Prefab, CellToWorld(origin), Quaternion.identity, transform);
-        
-        //프리팹 크기를 그리드 셀 크기에 맞춤
-        // footprint 크기 x cellSize로 스케일링 
-        
-        instance.transform.localScale = new Vector3(
-            data.Size.x * _cellSize,
-            data.Size.y * _cellSize, 1f
-        );
+        var instance = Instantiate(data.Prefab, FootprintCenter(data, origin), Quaternion.identity, transform);
+
+        float targetW = data.Size.x * _cellSize;
+        float targetH = data.Size.y * _cellSize;
+
+        var sr = instance.GetComponent<SpriteRenderer>();
+        if (sr != null && sr.sprite != null)
+        {
+            // 스프라이트 고유 월드 크기(scale=1일 때)로 나눠서 정규화
+            var natural = sr.sprite.bounds.size;
+            instance.transform.localScale = new Vector3(
+                targetW / natural.x,
+                targetH / natural.y, 1f);
+        }
+        else
+        {
+            instance.transform.localScale = new Vector3(targetW, targetH, 1f);
+        }
 
         var placed = new PlacedUnit(data, origin, instance);
         for (int x = 0; x < data.Size.x; x++)
@@ -232,6 +290,31 @@ public class GridManager : MonoBehaviour
                 _cells[origin.x + x, origin.y + y] = placed;
             }
         }
+
+        // Uit의 사망 이벤트 구독 -> 전투 파괴 시 연쇄 붕괴 발동
+        var unit = instance.GetComponentInChildren<Unit>();
+        if(unit != null)
+        {
+            unit.InitializeRuntime();
+            unit.OnDead += (deadUnit) => OnUnitDied(placed);
+        }
+    }
+
+    private void OnUnitDied(PlacedUnit placed)
+    {
+        if(GetUnitAt(placed.OriginCell) != placed) return;
+        
+        ForceRemove(placed);
+    }
+
+    public void ForceRemove(PlacedUnit unit)
+    {
+        if (unit == null) return;
+
+        Debug.Log($"[Gridmanager] {unit.Data.UnitName} 전투 파괴 | 연쇄 붕괴 체크 시작");
+        
+        StartCollapse(unit);
+        ScheduleCollapseCheck();
     }
     /// <summary>
     /// 돌진 데미지 계산 (가장 오른쪽 열의 공격력 합)
