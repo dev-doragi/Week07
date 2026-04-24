@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4340935886268698186}
   - component: {fileID: 9019930440329990238}
   - component: {fileID: -8992915273179841229}
+  - component: {fileID: 8646237645568497134}
   m_Layer: 0
   m_Name: Core
   m_TagString: Untagged
@@ -28,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 3197281350173304387}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.16, y: 0.26, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -106,6 +107,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Unit
   _data: {fileID: 11400000, guid: a20b726f5ee6fae40861df8b4ad0d6d3, type: 2}
+  _baseRenderer: {fileID: 0}
+  _damageOverlays: []
 --- !u!61 &-8992915273179841229
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -152,3 +155,15 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 2.1333334, y: 1.0666667}
   m_EdgeRadius: 0
+--- !u!114 &8646237645568497134
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3197281350173304387}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18ace60422855744e86a29ead21bf44f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EntityStatReceiver

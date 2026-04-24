@@ -2444,7 +2444,7 @@ MonoBehaviour:
   - {x: 2, y: 4}
   - {x: 3, y: 4}
   - {x: 4, y: 4}
-  _coreCell: {x: 3, y: 5}
+  _coreCell: {x: 2, y: 5}
   _ghostCellPrefab: {fileID: 2592798566633237559, guid: 7db8010cc69d69f4891d2f51170cd300, type: 3}
   _validColor: {r: 0, g: 0, b: 0, a: 0.39607844}
   _invalidColor: {r: 1, g: 0.2, b: 0.2, a: 0.5}

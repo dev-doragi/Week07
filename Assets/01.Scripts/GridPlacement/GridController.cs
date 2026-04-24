@@ -201,13 +201,22 @@ public class GridController : MonoBehaviour
         }
         for (; i < _ghostCells.Count; i++)
             _ghostCells[i].gameObject.SetActive(false);
-        
+
         // -- 유닛 스프라이트 프리뷰 --
         _spritePreview.sprite = unitSprite;
-        // footprint 전체 크기에 맞춤
-        _spritePreview.transform.localScale = new Vector3(size.x * cellSize, size.y * cellSize, 1f);
+        float previewW = size.x * cellSize;
+        float previewH = size.y * cellSize;
+        if (unitSprite != null)
+        {
+            var natural = unitSprite.bounds.size;
+            _spritePreview.transform.localScale = new Vector3(previewW / natural.x, previewH / natural.y, 1f);
+        }
+        else
+        {
+            _spritePreview.transform.localScale = new Vector3(previewW, previewH, 1f);
+        }
         // footprint 중앙에 배치
-        _spritePreview.transform.localPosition = new Vector3(size.x * cellSize * 0.5f, size.y * cellSize * 0.5f, 0f);
+        _spritePreview.transform.localPosition = new Vector3(previewW * 0.5f, previewH * 0.5f, 0f);
 
         _ghostRoot.gameObject.SetActive(true);
     }

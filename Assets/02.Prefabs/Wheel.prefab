@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4027417507003853704}
   - component: {fileID: 2359909542968179436}
   - component: {fileID: 2500876650774566691}
+  - component: {fileID: 3343431056928405757}
   m_Layer: 0
   m_Name: Wheel
   m_TagString: Untagged
@@ -167,6 +168,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18ace60422855744e86a29ead21bf44f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EntityStatReceiver
+--- !u!114 &3343431056928405757
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5195015259534892740}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66fb84c84f667e64db386d8d3da3db94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitAnimator
+  _idleFrames:
+  - {fileID: -4422140865799512813, guid: 8e696400559cad541864e54b5206fdaa, type: 3}
+  - {fileID: 577773453, guid: 8e696400559cad541864e54b5206fdaa, type: 3}
+  - {fileID: 657148931, guid: 8e696400559cad541864e54b5206fdaa, type: 3}
+  - {fileID: 283714011, guid: 8e696400559cad541864e54b5206fdaa, type: 3}
+  _idleFrameRate: 12
+  _attackFrames: []
+  _attackFrameRate: 12
 --- !u!1 &8185261341758472092
 GameObject:
   m_ObjectHideFlags: 0
