@@ -119,20 +119,24 @@ public class ResourceManager : Singleton<ResourceManager>
 
     public void AddMouseCount(int amount)
     {
+        int before = _currentMouseCount;
         _currentMouseCount = Mathf.Min(_currentMouseCount + amount, _maxMouseCount);
         _isDirty = true; // 변경됨을 알림
+        Debug.Log($"[Resource] + {amount} | {before} -> {_currentMouseCount} / {_maxMouseCount}");
     }
 
     public bool SubtractMouseCount(int amount)
     {
         if (_currentMouseCount < amount)
         {
-            Debug.Log("[ResourceManager] 자원이 부족합니다.");
+            Debug.Log($"[Resource] 자원 부족 | 보유: {_currentMouseCount} / 필요: {amount}");
             return false;
         }
 
+        int before = _currentMouseCount;
         _currentMouseCount -= amount;
         _isDirty = true; // 변경됨을 알림
+        Debug.Log($"[Resource] -{amount} | {before} → {_currentMouseCount} / {_maxMouseCount}");
         return true;
     }
 
@@ -148,6 +152,6 @@ public class ResourceManager : Singleton<ResourceManager>
     private void UpdateUI()
     {
         if (_countDisplayText != null)
-            _countDisplayText.text = $"{_currentMouseCount} / {_maxMouseCount}";
+            _countDisplayText.text = $"남은쥐 : {_currentMouseCount} / {_maxMouseCount}";
     }
 }
