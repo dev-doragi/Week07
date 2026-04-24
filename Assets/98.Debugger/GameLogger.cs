@@ -31,6 +31,7 @@ public class GameLogger : Singleton<GameLogger>
     private Thread _writeThread;
     private bool _isRunning = false;
 
+
     protected override void OnBootstrap()
     {
         try
@@ -48,6 +49,17 @@ public class GameLogger : Singleton<GameLogger>
             _writeThread.Start();
 
             Application.logMessageReceived += HandleUnityLog;
+            SceneManager.sceneLoaded += OnSceneLoaded;
+
+            // DDOL 싱글톤은 OnBootstrap에서 한 번만 구독 (OnEnable/OnDisable에서 해제/재구독하지 않음)
+            EventBus.Instance.Subscribe<StageLoadedEvent>(OnStageLoaded);
+            EventBus.Instance.Subscribe<StageGenerateCompleteEvent>(OnStageGenerated);
+            EventBus.Instance.Subscribe<WaveStartedEvent>(OnWaveStarted);
+            EventBus.Instance.Subscribe<WaveEndedEvent>(OnWaveEnded);
+            EventBus.Instance.Subscribe<StageClearedEvent>(OnStageCleared);
+            EventBus.Instance.Subscribe<StageFailedEvent>(OnStageFailed);
+            EventBus.Instance.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
+            EventBus.Instance.Subscribe<InGameStateChangedEvent>(OnInGameStateChanged);
 
             EnqueueLog("=== Game Session Started ===");
             EnqueueLog($"Platform: {Application.platform}, PersistentDataPath: {Application.persistentDataPath}");
@@ -58,43 +70,24 @@ public class GameLogger : Singleton<GameLogger>
         }
     }
 
-    private void OnEnable()
-    {
-        if (EventBus.Instance == null) return;
+    // OnEnable/OnDisable 제거 (씬 전환 시 구독이 끊기는 문제 방지)
 
-        EventBus.Instance.Subscribe<StageLoadedEvent>(OnStageLoaded);
-        EventBus.Instance.Subscribe<StageGenerateCompleteEvent>(OnStageGenerated);
-        EventBus.Instance.Subscribe<WaveStartedEvent>(OnWaveStarted);
-        EventBus.Instance.Subscribe<WaveEndedEvent>(OnWaveEnded);
-        EventBus.Instance.Subscribe<StageClearedEvent>(OnStageCleared);
-        EventBus.Instance.Subscribe<StageFailedEvent>(OnStageFailed);
-        EventBus.Instance.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
-        EventBus.Instance.Subscribe<InGameStateChangedEvent>(OnInGameStateChanged);
-
-        SceneManager.sceneLoaded += OnSceneLoaded;
-    }
-
-    private void OnDisable()
-    {
-        if (EventBus.Instance != null)
-        {
-            EventBus.Instance.Unsubscribe<StageLoadedEvent>(OnStageLoaded);
-            EventBus.Instance.Unsubscribe<StageGenerateCompleteEvent>(OnStageGenerated);
-            EventBus.Instance.Unsubscribe<WaveStartedEvent>(OnWaveStarted);
-            EventBus.Instance.Unsubscribe<WaveEndedEvent>(OnWaveEnded);
-            EventBus.Instance.Unsubscribe<StageClearedEvent>(OnStageCleared);
-            EventBus.Instance.Unsubscribe<StageFailedEvent>(OnStageFailed);
-            EventBus.Instance.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
-            EventBus.Instance.Unsubscribe<InGameStateChangedEvent>(OnInGameStateChanged);
-        }
-
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
 
     protected override void OnDestroy()
     {
         base.OnDestroy();
         Application.logMessageReceived -= HandleUnityLog;
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+
+        // DDOL 싱글톤은 OnDestroy에서만 구독 해제
+        EventBus.Instance.Unsubscribe<StageLoadedEvent>(OnStageLoaded);
+        EventBus.Instance.Unsubscribe<StageGenerateCompleteEvent>(OnStageGenerated);
+        EventBus.Instance.Unsubscribe<WaveStartedEvent>(OnWaveStarted);
+        EventBus.Instance.Unsubscribe<WaveEndedEvent>(OnWaveEnded);
+        EventBus.Instance.Unsubscribe<StageClearedEvent>(OnStageCleared);
+        EventBus.Instance.Unsubscribe<StageFailedEvent>(OnStageFailed);
+        EventBus.Instance.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
+        EventBus.Instance.Unsubscribe<InGameStateChangedEvent>(OnInGameStateChanged);
 
         // 스레드 종료 및 파일 스트림 닫기
         _isRunning = false;

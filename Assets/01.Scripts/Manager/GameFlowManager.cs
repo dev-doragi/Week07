@@ -17,10 +17,7 @@ public class GameFlowManager : Singleton<GameFlowManager>
                 ChangeFlowState(InGameState.None);
             }
         }
-    }
 
-    private void OnEnable()
-    {
         if (EventBus.Instance != null)
         {
             EventBus.Instance.Subscribe<GameStateChangedEvent>(OnGlobalStateChanged);
