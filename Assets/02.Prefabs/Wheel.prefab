@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4027417507003853704}
   - component: {fileID: 2500876650774566691}
   - component: {fileID: 5277728024459135944}
+  - component: {fileID: 6418454903563819956}
   m_Layer: 6
   m_Name: Wheel
   m_TagString: Ally
@@ -167,6 +168,26 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1.0666667, y: 1.0666667}
   m_EdgeRadius: 0
+--- !u!114 &6418454903563819956
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5195015259534892740}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66fb84c84f667e64db386d8d3da3db94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitAnimator
+  _idleFrames:
+  - {fileID: -4422140865799512813, guid: 8e696400559cad541864e54b5206fdaa, type: 3}
+  - {fileID: 577773453, guid: 8e696400559cad541864e54b5206fdaa, type: 3}
+  - {fileID: 657148931, guid: 8e696400559cad541864e54b5206fdaa, type: 3}
+  - {fileID: 283714011, guid: 8e696400559cad541864e54b5206fdaa, type: 3}
+  _idleFrameRate: 12
+  _attackFrames: []
+  _attackFrameRate: 12
 --- !u!1 &8185261341758472092
 GameObject:
   m_ObjectHideFlags: 0

@@ -45,6 +45,7 @@ GameObject:
   - component: {fileID: 965658897136000551}
   - component: {fileID: 4416887922094963051}
   - component: {fileID: 6734407346776990105}
+  - component: {fileID: 3425372950222938682}
   m_Layer: 6
   m_Name: Support_1
   m_TagString: Ally
@@ -61,7 +62,7 @@ Transform:
   m_GameObject: {fileID: 7285319905050699864}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.5, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -175,7 +176,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 1
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.2718259, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -185,7 +186,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 2.1333334, y: 1.0666667}
+  m_Size: {x: 1.5896816, y: 1.0666667}
   m_EdgeRadius: 0
 --- !u!114 &6734407346776990105
 MonoBehaviour:
@@ -199,3 +200,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18ace60422855744e86a29ead21bf44f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EntityStatReceiver
+--- !u!114 &3425372950222938682
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7285319905050699864}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66fb84c84f667e64db386d8d3da3db94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitAnimator
+  _idleFrames:
+  - {fileID: -2132995636211010893, guid: e8d5b49934a0c5e488b624dec09914f4, type: 3}
+  - {fileID: -8440165483005212548, guid: e8d5b49934a0c5e488b624dec09914f4, type: 3}
+  - {fileID: 1696394255486085444, guid: e8d5b49934a0c5e488b624dec09914f4, type: 3}
+  _idleFrameRate: 12
+  _attackFrames: []
+  _attackFrameRate: 12

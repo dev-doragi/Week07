@@ -45,6 +45,7 @@ GameObject:
   - component: {fileID: 701577650349793372}
   - component: {fileID: 255102740750468026}
   - component: {fileID: 6678560772947934819}
+  - component: {fileID: 8157942727554342836}
   m_Layer: 6
   m_Name: Support_2
   m_TagString: Ally
@@ -175,7 +176,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 1
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.031871885, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -185,7 +186,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 2.1333334, y: 1.0666667}
+  m_Size: {x: 0.9930281, y: 1.0666667}
   m_EdgeRadius: 0
 --- !u!114 &6678560772947934819
 MonoBehaviour:
@@ -199,3 +200,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18ace60422855744e86a29ead21bf44f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EntityStatReceiver
+--- !u!114 &8157942727554342836
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5144084208058120485}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66fb84c84f667e64db386d8d3da3db94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitAnimator
+  _idleFrames:
+  - {fileID: -2417847074671435042, guid: 739b85737b59dfc4eb8a9335d18aba72, type: 3}
+  - {fileID: 2271363463249633613, guid: 739b85737b59dfc4eb8a9335d18aba72, type: 3}
+  - {fileID: 7180056873152389656, guid: 739b85737b59dfc4eb8a9335d18aba72, type: 3}
+  - {fileID: 8974744836144455243, guid: 739b85737b59dfc4eb8a9335d18aba72, type: 3}
+  - {fileID: 2388881503075478227, guid: 739b85737b59dfc4eb8a9335d18aba72, type: 3}
+  _idleFrameRate: 12
+  _attackFrames: []
+  _attackFrameRate: 12
