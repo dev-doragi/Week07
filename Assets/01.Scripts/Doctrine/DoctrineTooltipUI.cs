@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
+using TMPro;
 
 public class DoctrineTooltipUI : MonoBehaviour
 {
@@ -8,11 +8,11 @@ public class DoctrineTooltipUI : MonoBehaviour
     [SerializeField] private CanvasGroup canvasGroup;
 
     [Header("Texts")]
-    [SerializeField] private Text nodeNameText;
-    [SerializeField] private Text doctrineTypeText;
-    [SerializeField] private Text descriptionText;
-    [SerializeField] private Text effectSummaryText;
-    [SerializeField] private Text stateHintText;
+    [SerializeField] private TextMeshProUGUI nodeNameText;
+    [SerializeField] private TextMeshProUGUI doctrineTypeText;
+    [SerializeField] private TextMeshProUGUI descriptionText;
+    [SerializeField] private TextMeshProUGUI effectSummaryText;
+    [SerializeField] private TextMeshProUGUI stateHintText;
 
     [Header("Position")]
     [SerializeField] private bool followMouse = true;
@@ -126,3 +126,4 @@ public class DoctrineTooltipUI : MonoBehaviour
         }
     }
 }
+
