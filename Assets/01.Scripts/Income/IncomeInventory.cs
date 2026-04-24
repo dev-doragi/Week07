@@ -13,6 +13,9 @@ public class IncomeBlockPrefabEntry
     public IncomeBlockPiece Prefab;
 }
 
+/// <summary>
+/// 인벤토리 내 블록 생성/배치(줄바꿈 포함)와 랜덤 획득 흐름을 담당한다.
+/// </summary>
 public class IncomeInventory : MonoBehaviour
 {
     private const string DefaultGeneratorSpritePath = "Assets/04.Art/Generator/Generator_1.png";
@@ -50,7 +53,7 @@ public class IncomeInventory : MonoBehaviour
     [Header("Cell Sprite")]
     [SerializeField] private Sprite _generatorCellSprite;
 
-    [Header("Tetromino Colors")]
+    [Header("Tetromino Outline Colors")]
     [SerializeField] private Color _iColor = new Color(0.35f, 0.95f, 0.95f, 0.95f);
     [SerializeField] private Color _jColor = new Color(0.35f, 0.55f, 0.95f, 0.95f);
     [SerializeField] private Color _lColor = new Color(0.95f, 0.65f, 0.30f, 0.95f);
@@ -94,6 +97,7 @@ public class IncomeInventory : MonoBehaviour
     [ContextMenu("Acquire Random Block")]
     public void AcquireRandomBlockFromButton()
     {
+        // UI Button OnClick에서 바로 연결하는 진입점.
         AcquireRandomBlock();
     }
 
@@ -128,7 +132,7 @@ public class IncomeInventory : MonoBehaviour
         return piece;
     }
 
-    // Backward compatibility entry point.
+    // 이전 버전과의 호환을 위한 진입점.
     public void SpawnStarterBlocks()
     {
         SpawnInitialBlock();
@@ -190,6 +194,7 @@ public class IncomeInventory : MonoBehaviour
             return null;
 
         piece.name = $"Income_{type}";
+        // color는 내부 칸이 아닌 블록 외곽선 색상으로 사용된다.
         piece.Initialize(type, _gridBoard, _dragRoot, _inventoryRoot, homePosition, color, _generatorCellSprite);
 
         _spawnedPieces.Add(piece);
