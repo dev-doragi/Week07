@@ -18,10 +18,10 @@ MonoBehaviour:
   Category: 2
   Prefab: {fileID: 3197281350173304387, guid: 4907d5b45352e534783e3a533561faa7, type: 3}
   Icon: {fileID: 0}
-  Size: {x: 1, y: 1}
+  Size: {x: 2, y: 1}
   PlacementRule: 0
   ActsAsFoundation: 0
-  MaxHp: 0
+  MaxHp: 200
   BaseDefenseRate: 0
   Cost: 0
   DeathSpawnKey: DropRat
@@ -30,10 +30,15 @@ MonoBehaviour:
     Damage: 0
     Speed: 0
     Distance: 0
-    RangeRadius: 0
-    Trajectory: 0
-    Penetration: 0
     AttackCost: 0
+    Trajectory: 0
+    Targeting: 0
+    Area: 0
+    RangeRadius: 0
+    PiercingCount: 0
+    Penetration: 0
+    PiercingDecay: 0
+    ProjectilePrefab: {fileID: 0}
   Defense:
     CollisionPower: 0
   Support:
