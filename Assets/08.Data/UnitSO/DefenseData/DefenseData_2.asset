@@ -24,8 +24,8 @@ MonoBehaviour:
   MaxHp: 100
   BaseDefenseRate: 0
   Cost: 10
-  DeathSpawnKey: DropRat
-  BaseDeathSpawnCount: 25
+  DeathSpawnKey: 
+  BaseDeathSpawnCount: 0
   Attack:
     Damage: 0
     Speed: 0
