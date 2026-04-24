@@ -29,6 +29,32 @@ public class EnemyGridManager : MonoBehaviour
         EnsureGridStorage();
     }
 
+    //코어 파괴시 유닛 전체 제거 코드
+    private void OnEnable()
+    {
+        EventBus.Instance.Subscribe<CoreDestroyedEvent>(OnCoreDestroyed);
+    }
+
+    private void OnDisable()
+    {
+        EventBus.Instance.Unsubscribe<CoreDestroyedEvent>(OnCoreDestroyed);
+    }
+
+    private void OnCoreDestroyed(CoreDestroyedEvent e)
+    {   // 적 코어가 파괴됐을 때만 적 유닛 전체 제거
+        if (e.IsPlayerBase) return;
+
+        // 씬에 있는 모든 적 Unit 찾아서 즉사 
+        var allEnemies = FindObjectsByType<Unit>(FindObjectsSortMode.None);
+        foreach(var unit in allEnemies)
+        {
+            if(unit.Team == TeamType.Enemy && !unit.IsDead)
+            {
+                unit.TakeDamage(new DamageData {Damage = 99999f });
+            }
+        }
+    }
+
     private void EnsureGridStorage()
     {
         if (_cells == null || _cells.GetLength(0) != _width || _cells.GetLength(1) != _height)
