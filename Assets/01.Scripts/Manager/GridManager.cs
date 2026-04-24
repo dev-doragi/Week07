@@ -242,6 +242,16 @@ public class GridManager : MonoBehaviour
             instance.transform.localScale = new Vector3(targetW, targetH, 1f);
         }
 
+        var unit = instance.GetComponentInChildren<Unit>();
+        if (unit != null)
+        {
+            unit.InitializeRuntime();
+        }
+        else
+        {
+            Debug.LogError($"[GridManager] 배치된 프리팹에 Unit 컴포넌트가 없습니다: {data.UnitName}");
+        }
+
         var placed = new PlacedUnit(data, origin, instance);
         for (int x = 0; x < data.Size.x; x++)
         {
