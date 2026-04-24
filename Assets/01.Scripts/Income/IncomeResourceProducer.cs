@@ -1,6 +1,9 @@
 ﻿using System.Collections;
 using UnityEngine;
 
+/// <summary>
+/// 일정 주기로 Income 그리드를 스캔해 점유 칸 수 기반 자원을 생산하고 ResourceManager에 반영한다.
+/// </summary>
 public class IncomeResourceProducer : MonoBehaviour
 {
     [Header("References")]
@@ -51,6 +54,9 @@ public class IncomeResourceProducer : MonoBehaviour
         var manager = ResolveResourceManager();
         if (manager != null)
         {
+            // 한번이라도 연결되면 누락 경고 상태는 해제한다.
+            _warnedMissingResourceManager = false;
+
             int before = manager.CurrentMouse;
             manager.AddMouseCount(amount);
             if (_logProduction)
@@ -115,10 +121,12 @@ public class IncomeResourceProducer : MonoBehaviour
         if (_resourceManager != null)
             return _resourceManager;
 
-#pragma warning disable CS0618
-        _resourceManager = FindObjectOfType<ResourceManager>();
-#pragma warning restore CS0618
-
+        _resourceManager = FindSceneObject<ResourceManager>();
         return _resourceManager;
+    }
+
+    private static T FindSceneObject<T>() where T : Object
+    {
+        return Object.FindFirstObjectByType<T>();
     }
 }

@@ -30,6 +30,10 @@ public class IncomeSystemAutoSetup : MonoBehaviour
     [SerializeField] private Vector2 _inventoryPadding = new Vector2(12f, 12f);
     [SerializeField] private float _inventoryButtonHeight = 44f;
 
+    [Header("Acquire Button")]
+    [SerializeField] private Button _acquireRandomBlockButton;
+    [SerializeField] private bool _createInternalAcquireButtonWhenMissing = true;
+
     [Header("Style")]
     [SerializeField] private Color _panelBackgroundColor = new Color(0f, 0f, 0f, 0.28f);
     [SerializeField] private Color _panelBorderColor = new Color(0.9f, 0.9f, 0.9f, 0.8f);
@@ -56,9 +60,7 @@ public class IncomeSystemAutoSetup : MonoBehaviour
     {
         if (_targetCanvas == null)
         {
-#pragma warning disable CS0618
-            _targetCanvas = FindObjectOfType<Canvas>();
-#pragma warning restore CS0618
+            _targetCanvas = FindSceneObject<Canvas>();
         }
 
         if (_targetCanvas == null)
@@ -104,22 +106,25 @@ public class IncomeSystemAutoSetup : MonoBehaviour
         if (inventoryPanelCreated || _overridePanelTransforms)
             ConfigurePanel(inventoryPanel, inventoryPanelPosition, resolvedInventorySize, _panelBackgroundColor, _panelBorderColor);
 
+        var button = ResolveAcquireButton(inventoryPanel, canvasRect);
+        bool buttonInsideInventoryPanel = IsButtonInsidePanel(button, inventoryPanel);
+
         var viewport = GetOrCreateRectTransform(inventoryPanel, "InventoryViewport");
-        ConfigureViewportRect(viewport);
+        ConfigureViewportRect(viewport, buttonInsideInventoryPanel);
         ConfigureViewportVisual(viewport);
 
         var content = GetOrCreateRectTransform(viewport, "InventoryContent");
         ConfigureContentRect(content, viewport);
 
-        var button = GetOrCreateButton(inventoryPanel, "AcquireRandomBlockButton");
-        ConfigureAcquireButton(button);
+        if (buttonInsideInventoryPanel && button != null)
+            ConfigureAcquireButton(button);
 
         var scrollRect = inventoryPanel.GetComponent<ScrollRect>();
         if (scrollRect == null)
             scrollRect = inventoryPanel.gameObject.AddComponent<ScrollRect>();
 
         var verticalScrollbar = GetOrCreateVerticalScrollbar(inventoryPanel, "InventoryVerticalScrollbar");
-        ConfigureVerticalScrollbar(verticalScrollbar);
+        ConfigureVerticalScrollbar(verticalScrollbar, buttonInsideInventoryPanel);
 
         scrollRect.viewport = viewport;
         scrollRect.content = content;
@@ -142,8 +147,12 @@ public class IncomeSystemAutoSetup : MonoBehaviour
         _inventory.SetInventoryRoot(content);
         _inventory.SetLayoutWidthReference(viewport);
 
-        button.onClick.RemoveAllListeners();
-        button.onClick.AddListener(_inventory.AcquireRandomBlockFromButton);
+        if (button != null)
+        {
+            // 외부 버튼에 이미 걸려 있는 다른 이벤트는 보존하고, Income 획득 핸들러만 중복 없이 갱신한다.
+            button.onClick.RemoveListener(_inventory.AcquireRandomBlockFromButton);
+            button.onClick.AddListener(_inventory.AcquireRandomBlockFromButton);
+        }
 
         if (_resourceProducer == null)
         {
@@ -154,9 +163,7 @@ public class IncomeSystemAutoSetup : MonoBehaviour
 
         _resourceProducer.SetGridBoard(_gridBoard);
 
-#pragma warning disable CS0618
-        var resourceManager = FindObjectOfType<ResourceManager>();
-#pragma warning restore CS0618
+        var resourceManager = FindSceneObject<ResourceManager>();
         _resourceProducer.SetResourceManager(resourceManager);
     }
 
@@ -168,9 +175,7 @@ public class IncomeSystemAutoSetup : MonoBehaviour
             return _gridBoard.transform as RectTransform;
         }
 
-#pragma warning disable CS0618
-        _gridBoard = FindObjectOfType<IncomeGridBoard>();
-#pragma warning restore CS0618
+        _gridBoard = FindSceneObject<IncomeGridBoard>();
         if (_gridBoard != null)
         {
             created = false;
@@ -188,9 +193,7 @@ public class IncomeSystemAutoSetup : MonoBehaviour
             return _inventory.transform as RectTransform;
         }
 
-#pragma warning disable CS0618
-        _inventory = FindObjectOfType<IncomeInventory>();
-#pragma warning restore CS0618
+        _inventory = FindSceneObject<IncomeInventory>();
         if (_inventory != null)
         {
             created = false;
@@ -254,12 +257,13 @@ public class IncomeSystemAutoSetup : MonoBehaviour
         return childRect;
     }
 
-    private void ConfigureViewportRect(RectTransform viewport)
+    private void ConfigureViewportRect(RectTransform viewport, bool reserveBottomForInternalButton)
     {
         viewport.anchorMin = new Vector2(0f, 0f);
         viewport.anchorMax = new Vector2(1f, 1f);
         viewport.pivot = new Vector2(0.5f, 0.5f);
-        viewport.offsetMin = new Vector2(_inventoryPadding.x, _inventoryPadding.y * 2f + _inventoryButtonHeight);
+        float bottomReserve = reserveBottomForInternalButton ? (_inventoryPadding.y * 2f + _inventoryButtonHeight) : _inventoryPadding.y;
+        viewport.offsetMin = new Vector2(_inventoryPadding.x, bottomReserve);
         viewport.offsetMax = new Vector2(-(_inventoryPadding.x + _scrollbarWidth + _scrollbarGap), -_inventoryPadding.y);
     }
 
@@ -363,17 +367,18 @@ public class IncomeSystemAutoSetup : MonoBehaviour
         return scrollbar;
     }
 
-    private void ConfigureVerticalScrollbar(Scrollbar scrollbar)
+    private void ConfigureVerticalScrollbar(Scrollbar scrollbar, bool reserveBottomForInternalButton)
     {
         if (scrollbar == null)
             return;
 
+        float buttonReserve = reserveBottomForInternalButton ? (_inventoryButtonHeight + _inventoryPadding.y) : 0f;
         var rect = scrollbar.GetComponent<RectTransform>();
         rect.anchorMin = new Vector2(1f, 0f);
         rect.anchorMax = new Vector2(1f, 1f);
         rect.pivot = new Vector2(1f, 0.5f);
-        rect.sizeDelta = new Vector2(_scrollbarWidth, -(_inventoryPadding.y * 2f + _inventoryButtonHeight));
-        rect.anchoredPosition = new Vector2(-_inventoryPadding.x, (_inventoryButtonHeight + _inventoryPadding.y) * 0.5f);
+        rect.sizeDelta = new Vector2(_scrollbarWidth, -(_inventoryPadding.y * 2f + buttonReserve));
+        rect.anchoredPosition = new Vector2(-_inventoryPadding.x, buttonReserve * 0.5f);
 
         var background = scrollbar.GetComponent<Image>();
         if (background != null)
@@ -405,6 +410,59 @@ public class IncomeSystemAutoSetup : MonoBehaviour
                 handleImage.raycastTarget = true;
             }
         }
+    }
+
+    private static T FindSceneObject<T>() where T : Object
+    {
+        return Object.FindFirstObjectByType<T>();
+    }
+
+    private Button ResolveAcquireButton(RectTransform inventoryPanel, RectTransform canvasRect)
+    {
+        if (_acquireRandomBlockButton != null)
+            return _acquireRandomBlockButton;
+
+        // 이미 씬에 버튼이 존재하면(패널 외부 포함) 그 버튼을 우선 재사용한다.
+        var existing = FindNamedButton(canvasRect, "AcquireRandomBlockButton");
+        if (existing != null)
+        {
+            _acquireRandomBlockButton = existing;
+            return _acquireRandomBlockButton;
+        }
+
+        if (!_createInternalAcquireButtonWhenMissing)
+            return null;
+
+        _acquireRandomBlockButton = GetOrCreateButton(inventoryPanel, "AcquireRandomBlockButton");
+        return _acquireRandomBlockButton;
+    }
+
+    private static bool IsButtonInsidePanel(Button button, RectTransform panel)
+    {
+        if (button == null || panel == null)
+            return false;
+
+        var buttonRect = button.transform as RectTransform;
+        if (buttonRect == null)
+            return false;
+
+        return buttonRect.IsChildOf(panel);
+    }
+
+    private static Button FindNamedButton(RectTransform root, string buttonName)
+    {
+        if (root == null)
+            return null;
+
+        var buttons = root.GetComponentsInChildren<Button>(true);
+        for (int i = 0; i < buttons.Length; i++)
+        {
+            var button = buttons[i];
+            if (button != null && button.name == buttonName)
+                return button;
+        }
+
+        return null;
     }
 
 #if UNITY_EDITOR
