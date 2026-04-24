@@ -2,9 +2,6 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-/// <summary>
-/// 유닛 주변 아군에게 버프 및 지원 효과를 부여하는 모듈입니다.
-/// </summary>
 public class EntitySupporter : MonoBehaviour
 {
     private Unit _owner;
@@ -12,7 +9,7 @@ public class EntitySupporter : MonoBehaviour
     private AltarConnector _altar;
     private float _scanInterval = 0.5f;
 
-    // 이전 틱에 버프를 적용했던 대상 추적
+    // Tracks units that were buffed by this supporter in the previous scan.
     private HashSet<Unit> _previouslyBuffedUnits = new HashSet<Unit>();
 
     public void Setup(Unit owner, SupportModule data)
@@ -31,13 +28,7 @@ public class EntitySupporter : MonoBehaviour
             yield return new WaitForSecondsRealtime(_scanInterval);
         }
 
-        // 지원 유닛 사망 시 기존 버프 해제
-        foreach (var unit in _previouslyBuffedUnits)
-        {
-            if (unit != null && !unit.IsDead)
-                unit.StatReceiver.RemoveModifier(this);
-        }
-        _previouslyBuffedUnits.Clear();
+        ClearAllAppliedBuffs();
     }
 
     private void ScanAndApplyBuffs()
@@ -45,13 +36,7 @@ public class EntitySupporter : MonoBehaviour
         if (_owner == null || _data == null) return;
         if (_altar != null && !_altar.IsAltarActive)
         {
-            // 제단 비활성화 시 기존 버프 해제
-            foreach (var unit in _previouslyBuffedUnits)
-            {
-                if (unit != null && !unit.IsDead)
-                    unit.StatReceiver.RemoveModifier(this);
-            }
-            _previouslyBuffedUnits.Clear();
+            ClearAllAppliedBuffs();
             return;
         }
 
@@ -77,14 +62,14 @@ public class EntitySupporter : MonoBehaviour
             }
         }
 
-        // 범위에서 벗어난 유닛의 버프 제거
+        // Remove buffs from units that are no longer in support range.
         foreach (var unit in _previouslyBuffedUnits)
         {
             if (!currentUnits.Contains(unit) && unit != null && !unit.IsDead)
                 unit.StatReceiver.RemoveModifier(this);
         }
 
-        // 현재 범위 유닛에 버프 재적용 (덮어쓰기)
+        // Apply or refresh buffs for current units in range.
         foreach (var ally in currentUnits)
         {
             foreach (var effect in _data.Effects)
@@ -106,5 +91,25 @@ public class EntitySupporter : MonoBehaviour
             case SupportTargetRoleType.Defense: return ally.Data.CanCollide;
             default: return false;
         }
+    }
+
+    private void OnDisable()
+    {
+        ClearAllAppliedBuffs();
+    }
+
+    private void OnDestroy()
+    {
+        ClearAllAppliedBuffs();
+    }
+
+    private void ClearAllAppliedBuffs()
+    {
+        foreach (var unit in _previouslyBuffedUnits)
+        {
+            if (unit != null && !unit.IsDead)
+                unit.StatReceiver.RemoveModifier(this);
+        }
+        _previouslyBuffedUnits.Clear();
     }
 }
