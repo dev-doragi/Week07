@@ -4669,7 +4669,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 17.8427, y: -77.20654}
+  m_AnchoredPosition: {x: 0, y: -77.20654}
   m_SizeDelta: {x: 501.5658, y: 91.5869}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &6540484401067049548
@@ -4766,7 +4766,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: -13.725159, y: 0, z: -27.450317, w: 0}
+  m_margin: {x: -0.5529175, y: 0, z: -1.1057129, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -5379,7 +5379,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000119297234}
+  m_AnchoredPosition: {x: 0, y: 0.0000250398}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &6894136695459651140
@@ -6603,25 +6603,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GuageController
   _maxGauge: 100
-  _chargeGaugePower: 25
+  _gaugePerHit: 10
   _button: {fileID: 802277797364095298}
   _gaugeRect: {fileID: 8279775709183014868}
   _siegeHandler: {fileID: 0}
-  OnActivated:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: SiegeChargeHandler, Assembly-CSharp
-        m_MethodName: ExecuteCrash
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!1 &6529329561586649342
 GameObject:
   m_ObjectHideFlags: 0

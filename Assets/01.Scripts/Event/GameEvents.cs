@@ -74,5 +74,11 @@ public struct SiegeCollisionResolvedEvent
     public float PlayerCP;
     public float EnemyCP;
     public float Delta;
-    public bool IsPlayerLosing; // true = 아군 쪽이 낮아서 데미지 받음
+    public bool IsPlayerLosing;
+}
+
+/// <summary>투사체 또는 공격이 적에게 명중했을 때 발행합니다.</summary>
+public struct EnemyHitEvent
+{
+    public TeamType AttackerTeam;
 }
