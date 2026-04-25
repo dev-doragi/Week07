@@ -60,7 +60,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Unit
   _data: {fileID: 11400000, guid: 7b3a236afa733db489828bde94b314be, type: 2}
-  _baseRenderer: {fileID: 0}
+  _baseRenderer: {fileID: 6266836533601119824}
   _damageOverlays: []
 --- !u!61 &3881786071951429347
 BoxCollider2D:
