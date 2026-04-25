@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 [DefaultExecutionOrder(-160)]
@@ -22,6 +23,7 @@ public class StageManager : Singleton<StageManager>
 
     private StageLayout _currentLayout;
     private bool _isWaveEnding;
+    private Coroutine _mapWaveStartCoroutine;
 
     public int CurrentStageIndex { get; private set; } = 0;
     public int CurrentWaveIndex { get; private set; } = 0;
@@ -144,6 +146,8 @@ public class StageManager : Singleton<StageManager>
 
     public void ClearCurrentStage()
     {
+        StopMapWaveStartRoutine();
+
         if (_currentLayout != null)
         {
             Destroy(_currentLayout.gameObject);
@@ -174,7 +178,21 @@ public class StageManager : Singleton<StageManager>
         CurrentState = InGameState.WavePlaying;
         _isWaveEnding = false;
         Debug.Log($"[StageManager] Starting Wave {waveIndex}");
-        EventBus.Instance?.Publish(new WaveStartedEvent { WaveIndex = waveIndex });
+        EventBus.Instance?.Publish(new WaveStartedEvent { StageIndex = CurrentStageIndex, WaveIndex = waveIndex });
+    }
+
+    public void StartStageFromMapNode(int stageIndex, int waveIndex, float delay)
+    {
+        StopMapWaveStartRoutine();
+
+        if (_stageDatas == null || stageIndex < 0 || stageIndex >= _stageDatas.Length)
+        {
+            Debug.LogError($"[StageManager] Invalid map stage index: {stageIndex}");
+            return;
+        }
+
+        LoadStage(stageIndex);
+        _mapWaveStartCoroutine = StartCoroutine(StartMapWaveAfterDelay(waveIndex, delay));
     }
 
     public void StartNextWave()
@@ -189,6 +207,24 @@ public class StageManager : Singleton<StageManager>
         _isWaveEnding = true;
         CurrentState = InGameState.WaveEnded;
         Debug.Log($"[StageManager] Wave {CurrentWaveIndex} 종료 - isWin: {isWin}");
-        EventBus.Instance?.Publish(new WaveEndedEvent { IsWin = isWin });
+        EventBus.Instance?.Publish(new WaveEndedEvent { StageIndex = CurrentStageIndex, WaveIndex = CurrentWaveIndex, IsWin = isWin });
+    }
+
+    private IEnumerator StartMapWaveAfterDelay(int waveIndex, float delay)
+    {
+        if (delay > 0f)
+            yield return new WaitForSeconds(delay);
+
+        _mapWaveStartCoroutine = null;
+        StartWave(waveIndex);
+    }
+
+    private void StopMapWaveStartRoutine()
+    {
+        if (_mapWaveStartCoroutine == null)
+            return;
+
+        StopCoroutine(_mapWaveStartCoroutine);
+        _mapWaveStartCoroutine = null;
     }
 }

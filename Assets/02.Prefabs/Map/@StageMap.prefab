@@ -1,0 +1,76 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1145415508425108954
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7589229047284350834}
+  - component: {fileID: 5701285067502101643}
+  - component: {fileID: 1172823652233578416}
+  m_Layer: 0
+  m_Name: '@StageMap'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7589229047284350834
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1145415508425108954}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5701285067502101643
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1145415508425108954}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e09d460f8543412f8770a0e1e96c8b4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StageMapController
+  _routeData: {fileID: 11400000, guid: c234165486cc435e89350d4fec4ba1a7, type: 2}
+  _rewardApplier: {fileID: 1172823652233578416}
+  _targetCanvas: {fileID: 0}
+  _mapRoot: {fileID: 0}
+  _mapSize: {x: 1280, y: 600}
+  _randomizeOnStart: 1
+  _randomYRange: {x: 0.22, y: 0.78}
+  _minConnectionsPerNode: 1
+  _maxConnectionsPerNode: 2
+  _productionRewardIcon: {fileID: 21300000, guid: 83bb5f401bf2c9345b8a03ff7880bf18, type: 3}
+  _ratTowerRewardIcon: {fileID: 21300000, guid: 9e09145af0cf4c04da2ad33486f9a382, type: 3}
+  _backgroundColor: {r: 0, g: 0, b: 0, a: 0.78}
+  _lineColor: {r: 0.63, g: 0.63, b: 0.63, a: 1}
+  _lockedNodeColor: {r: 0.34, g: 0.34, b: 0.34, a: 1}
+  _availableNodeColor: {r: 0.92, g: 0.92, b: 0.92, a: 1}
+  _selectedNodeColor: {r: 0.3, g: 0.85, b: 0.4, a: 1}
+  _finalNodeColor: {r: 1, g: 0.28, b: 0.33, a: 1}
+--- !u!114 &1172823652233578416
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1145415508425108954}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7ee9ccfc6994ef0a2b6453811c3a43d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StageMapRewardApplier

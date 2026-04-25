@@ -70,6 +70,12 @@ public class UIManager : Singleton<UIManager>
     {
         if (evt.NewState == InGameState.StageCleared)
         {
+            if (StageMapController.ShouldSuppressStageClearScreen())
+            {
+                HideAllPanels();
+                return;
+            }
+
             if (GameManager.Instance.CurrentState != GameState.GameClear)
             {
                 ShowClearPanel(isAllGameClear: false);
@@ -102,6 +108,12 @@ public class UIManager : Singleton<UIManager>
         if (_gameOverPanel != null) _gameOverPanel.SetActive(false);
         if (_gameClearPanel != null) _gameClearPanel.SetActive(false);
         if (_pausePanel != null) _pausePanel.SetActive(false);
+    }
+
+    public void ShowInGamePanel()
+    {
+        HideAllPanels();
+        if (_inGamePanel != null) _inGamePanel.SetActive(true);
     }
 
     // Button handlers (connect from Inspector)
