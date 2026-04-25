@@ -185,7 +185,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Unit
   _data: {fileID: 11400000, guid: 3167973a38943794e973b04bfd577d12, type: 2}
-  _baseRenderer: {fileID: 0}
+  _baseRenderer: {fileID: 6784783102648897948}
   _damageOverlays: []
 --- !u!114 &1749475111004355449
 MonoBehaviour:
@@ -264,9 +264,9 @@ MonoBehaviour:
   - {fileID: -7810328370443580990, guid: c43ed17b5c5992c4a89a51723c0f79e7, type: 3}
   - {fileID: -387900129951953223, guid: c43ed17b5c5992c4a89a51723c0f79e7, type: 3}
   - {fileID: -4263276482167845183, guid: c43ed17b5c5992c4a89a51723c0f79e7, type: 3}
-  _idleFrameRate: 12
+  _idleDuration: 1
   _attackFrames:
   - {fileID: -3105772406370801636, guid: c43ed17b5c5992c4a89a51723c0f79e7, type: 3}
   - {fileID: 8895752234778932488, guid: c43ed17b5c5992c4a89a51723c0f79e7, type: 3}
   - {fileID: 2661873973860166606, guid: c43ed17b5c5992c4a89a51723c0f79e7, type: 3}
-  _attackFrameRate: 12
+  _attackDuration: 0

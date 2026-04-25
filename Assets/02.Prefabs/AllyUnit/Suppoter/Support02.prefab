@@ -61,7 +61,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Unit
   _data: {fileID: 11400000, guid: eeec5f3ed9635f447a80e53a2782b5c3, type: 2}
-  _baseRenderer: {fileID: 0}
+  _baseRenderer: {fileID: 1549753882106464708}
   _damageOverlays: []
 --- !u!61 &378669888295955703
 BoxCollider2D:
@@ -127,9 +127,9 @@ MonoBehaviour:
   - {fileID: 7180056873152389656, guid: 739b85737b59dfc4eb8a9335d18aba72, type: 3}
   - {fileID: 8974744836144455243, guid: 739b85737b59dfc4eb8a9335d18aba72, type: 3}
   - {fileID: 2388881503075478227, guid: 739b85737b59dfc4eb8a9335d18aba72, type: 3}
-  _idleFrameRate: 8
+  _idleDuration: 1
   _attackFrames: []
-  _attackFrameRate: 12
+  _attackDuration: 0
 --- !u!1 &5144084208058120485
 GameObject:
   m_ObjectHideFlags: 0
