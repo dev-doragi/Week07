@@ -131,8 +131,7 @@ public class AntiStallSystem : MonoBehaviour
             Destroy(go);
             return null;
         }
-
-        Debug.Log("60초 지남 스톨링 하지마셈 ㅇㅅㅇ");
+        Debug.Log("60초 지남으로 적 생성");
         unit.InitializeRuntime();
         return unit;
     }
