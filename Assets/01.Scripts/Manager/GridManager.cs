@@ -120,6 +120,11 @@ public class GridManager : Singleton<GridManager>
         if (data == null) return false;
         if (data.PlacementRule == PlacementRule.InitialOnly) return false;
 
+        if(origin.y == 0 && data.Category != UnitCategory.Wheel)
+        {
+            return false;
+        }
+
         if(data.Category == UnitCategory.Wheel && data.PlacementRule != PlacementRule.InitialOnly)
         {
             if(origin.y != 0)
