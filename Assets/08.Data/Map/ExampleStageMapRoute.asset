@@ -174,5 +174,5 @@ MonoBehaviour:
       _amount: 0
       _icon: {fileID: 0}
     _nextNodeIds: []
-  _waveStartDelay: 2
+  _waveStartDelay: 15
   _ritualPointsPerClear: 1

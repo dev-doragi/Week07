@@ -135,7 +135,7 @@ public class GameFlowManager : Singleton<GameFlowManager>
             return 1f;
 
         // 최소 1초 보장
-        return Mathf.Max(1f, waves[currentWaveIndex].NextWaveInterval);
+        return StageManager.Instance.WaveStartDelay;
     }
 
     public void RequestImmediateNextWaveStart()
