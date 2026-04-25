@@ -32,6 +32,7 @@ public class ResourceManager : Singleton<ResourceManager>
 
     [Header("UI References")]
     [SerializeField] private TextMeshProUGUI _countDisplayText;
+    [SerializeField] private TextMeshProUGUI _waveWaitDisplayText;
     [SerializeField] private Slider _genGaugeSlider;
     [SerializeField] private Slider _subGaugeSlider;
 
@@ -41,7 +42,26 @@ public class ResourceManager : Singleton<ResourceManager>
     protected override void Awake()
     {
         base.Awake();
+        EnsureWaveWaitDisplay();
         _isDirty = true; // 시작 시 UI 초기 갱신 예약
+    }
+
+    private void OnEnable()
+    {
+        if (EventBus.Instance != null)
+        {
+            EventBus.Instance.Subscribe<WaveWaitTimerTickEvent>(OnWaveWaitTimerTick);
+            EventBus.Instance.Subscribe<WaveStartedEvent>(OnWaveStarted);
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (EventBus.Instance != null)
+        {
+            EventBus.Instance.Unsubscribe<WaveWaitTimerTickEvent>(OnWaveWaitTimerTick);
+            EventBus.Instance.Unsubscribe<WaveStartedEvent>(OnWaveStarted);
+        }
     }
 
     private void Update()
@@ -153,5 +173,68 @@ public class ResourceManager : Singleton<ResourceManager>
     {
         if (_countDisplayText != null)
             _countDisplayText.text = $"남은쥐 : {_currentMouseCount} / {_maxMouseCount}";
+    }
+
+    private void OnWaveWaitTimerTick(WaveWaitTimerTickEvent evt)
+    {
+        EnsureWaveWaitDisplay();
+
+        if (_waveWaitDisplayText == null)
+            return;
+
+        float remainingTime = Mathf.Max(0f, evt.RemainingTime);
+        _waveWaitDisplayText.gameObject.SetActive(remainingTime > 0f);
+        _waveWaitDisplayText.text = $"Wave Start : {Mathf.CeilToInt(remainingTime)}";
+    }
+
+    private void OnWaveStarted(WaveStartedEvent evt)
+    {
+        if (_waveWaitDisplayText != null)
+            _waveWaitDisplayText.gameObject.SetActive(false);
+    }
+
+    [ContextMenu("Build Wave Wait UI")]
+    public void BuildWaveWaitUI()
+    {
+        EnsureWaveWaitDisplay();
+
+        if (_waveWaitDisplayText != null && !Application.isPlaying)
+            _waveWaitDisplayText.gameObject.SetActive(true);
+    }
+
+    private void EnsureWaveWaitDisplay()
+    {
+        if (_waveWaitDisplayText != null || _countDisplayText == null)
+            return;
+
+        RectTransform countRect = _countDisplayText.transform as RectTransform;
+        if (countRect == null)
+            return;
+
+        Transform existing = countRect.parent != null ? countRect.parent.Find("WaveWaitText") : null;
+        if (existing != null && existing.TryGetComponent(out TextMeshProUGUI existingText))
+        {
+            _waveWaitDisplayText = existingText;
+            _waveWaitDisplayText.gameObject.SetActive(false);
+            return;
+        }
+
+        GameObject displayObj = new GameObject("WaveWaitText", typeof(RectTransform), typeof(TextMeshProUGUI));
+        RectTransform displayRect = displayObj.GetComponent<RectTransform>();
+        displayRect.SetParent(countRect.parent, false);
+        displayRect.anchorMin = countRect.anchorMin;
+        displayRect.anchorMax = countRect.anchorMax;
+        displayRect.pivot = countRect.pivot;
+        displayRect.sizeDelta = countRect.sizeDelta;
+        displayRect.anchoredPosition = countRect.anchoredPosition + new Vector2(0f, -32f);
+
+        _waveWaitDisplayText = displayObj.GetComponent<TextMeshProUGUI>();
+        _waveWaitDisplayText.font = _countDisplayText.font;
+        _waveWaitDisplayText.fontSize = Mathf.Max(18f, _countDisplayText.fontSize * 0.8f);
+        _waveWaitDisplayText.alignment = _countDisplayText.alignment;
+        _waveWaitDisplayText.color = _countDisplayText.color;
+        _waveWaitDisplayText.raycastTarget = false;
+        _waveWaitDisplayText.text = string.Empty;
+        _waveWaitDisplayText.gameObject.SetActive(false);
     }
 }

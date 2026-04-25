@@ -11,7 +11,7 @@ public class StageMapRouteData : ScriptableObject
 
     [Header("Stage Flow")]
     [Min(0f)]
-    [SerializeField] private float _waveStartDelay = 2f;
+    [SerializeField] private float _waveStartDelay = 15f;
     [Min(0)]
     [SerializeField] private int _ritualPointsPerClear = 1;
 
