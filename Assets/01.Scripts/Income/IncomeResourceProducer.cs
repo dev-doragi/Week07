@@ -118,6 +118,33 @@ public class IncomeResourceProducer : MonoBehaviour
         }
     }
 
+    public int GrantProductionForDuration(float duration)
+    {
+        if (_gridBoard == null)
+            return 0;
+
+        int occupied = _gridBoard.GetOccupiedCellCount();
+        if (occupied <= 0)
+            return 0;
+
+        float interval = Mathf.Max(0.1f, _scanInterval);
+        int amount = Mathf.FloorToInt(occupied * Mathf.Max(1, _resourcePerCell) * Mathf.Max(0f, duration) / interval);
+        if (amount <= 0)
+            return 0;
+
+        LastProduced = amount;
+        TotalProduced += amount;
+
+        ResourceManager manager = ResolveResourceManager();
+        if (manager != null)
+            manager.AddMouseCount(amount);
+
+        if (_logProduction)
+            Debug.Log($"[IncomeResourceProducer] Granted {amount} resources for skipped wait ({duration:F1}s, occupied: {occupied}).");
+
+        return amount;
+    }
+
     public void SetGridBoard(IncomeGridBoard gridBoard)
     {
         _gridBoard = gridBoard;

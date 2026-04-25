@@ -29,6 +29,8 @@ public class StageManager : Singleton<StageManager>
     private StageLayout _currentLayout;
     private bool _isWaveEnding;
     private Coroutine _mapWaveStartCoroutine;
+    private int _pendingWaveStartIndex = -1;
+    private float _waveStartRemainingTime;
 
     public int CurrentStageIndex { get; private set; } = 0;
     public int CurrentWaveIndex { get; private set; } = 0;
@@ -37,6 +39,9 @@ public class StageManager : Singleton<StageManager>
     public StageDataSO CurrentStageData => _stageDatas != null && CurrentStageIndex >= 0 && CurrentStageIndex < _stageDatas.Length ? _stageDatas[CurrentStageIndex] : null;
     public bool IsFinalStage => _stageDatas != null && CurrentStageIndex >= _stageDatas.Length - 1;
     public float WaveStartDelay => Mathf.Max(0f, _initialWaveStartDelay);
+    public bool IsWaitingForWaveStart => _mapWaveStartCoroutine != null;
+    public int PendingWaveStartIndex => _pendingWaveStartIndex;
+    public float WaveStartRemainingTime => Mathf.Max(0f, _waveStartRemainingTime);
 
     protected override void OnBootstrap()
     {
@@ -171,6 +176,19 @@ public class StageManager : Singleton<StageManager>
 
     public void StartWave(int waveIndex)
     {
+        if (GameFlowManager.Instance != null && GameFlowManager.Instance.IsWaitingForNextWave)
+        {
+            GrantIncomeForSkippedWait(GameFlowManager.Instance.CurrentWaveWaitRemainingTime);
+            GameFlowManager.Instance.RequestImmediateNextWaveStart();
+            return;
+        }
+
+        if (IsWaitingForWaveStart)
+        {
+            RequestImmediatePendingWaveStart();
+            return;
+        }
+
         StopMapWaveStartRoutine();
 
         if (CurrentStageData == null)
@@ -211,6 +229,24 @@ public class StageManager : Singleton<StageManager>
         StartWave(CurrentWaveIndex + 1);
     }
 
+    public void RequestImmediatePendingWaveStart()
+    {
+        if (!IsWaitingForWaveStart || _pendingWaveStartIndex < 0)
+            return;
+
+        int waveIndex = _pendingWaveStartIndex;
+        float remainingTime = WaveStartRemainingTime;
+
+        StopCoroutine(_mapWaveStartCoroutine);
+        _mapWaveStartCoroutine = null;
+        _pendingWaveStartIndex = -1;
+        _waveStartRemainingTime = 0f;
+        PublishWaveWaitTick(0f);
+
+        GrantIncomeForSkippedWait(remainingTime);
+        StartWave(waveIndex);
+    }
+
     public void EndWave(bool isWin)
     {
         if (_isWaveEnding) return;
@@ -223,10 +259,11 @@ public class StageManager : Singleton<StageManager>
 
     private IEnumerator StartMapWaveAfterDelay(int waveIndex, float delay)
     {
-        float remainingTime = Mathf.Max(0f, delay);
-        PublishWaveWaitTick(remainingTime);
+        _pendingWaveStartIndex = waveIndex;
+        _waveStartRemainingTime = Mathf.Max(0f, delay);
+        PublishWaveWaitTick(_waveStartRemainingTime);
 
-        while (remainingTime > 0f)
+        while (_waveStartRemainingTime > 0f)
         {
             if (GameManager.Instance != null && GameManager.Instance.CurrentState != GameState.Playing)
             {
@@ -234,12 +271,14 @@ public class StageManager : Singleton<StageManager>
                 continue;
             }
 
-            remainingTime -= Time.deltaTime;
-            PublishWaveWaitTick(remainingTime);
+            _waveStartRemainingTime -= Time.deltaTime;
+            PublishWaveWaitTick(_waveStartRemainingTime);
             yield return null;
         }
 
         _mapWaveStartCoroutine = null;
+        _pendingWaveStartIndex = -1;
+        _waveStartRemainingTime = 0f;
         PublishWaveWaitTick(0f);
         StartWave(waveIndex);
     }
@@ -262,6 +301,15 @@ public class StageManager : Singleton<StageManager>
 
         StopCoroutine(_mapWaveStartCoroutine);
         _mapWaveStartCoroutine = null;
+        _pendingWaveStartIndex = -1;
+        _waveStartRemainingTime = 0f;
         PublishWaveWaitTick(0f);
+    }
+
+    private void GrantIncomeForSkippedWait(float remainingTime)
+    {
+        IncomeResourceProducer producer = FindFirstObjectByType<IncomeResourceProducer>(FindObjectsInactive.Include);
+        if (producer != null)
+            producer.GrantProductionForDuration(remainingTime);
     }
 }
