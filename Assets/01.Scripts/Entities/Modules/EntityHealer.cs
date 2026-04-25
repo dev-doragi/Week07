@@ -56,10 +56,5 @@ public class EntityHealer : MonoBehaviour
                 healedLog.Append($"[{healedCount}] {unit.gameObject.name} (HP+{_healAmount})\n");
             }
         }
-
-        if (healedCount > 0)
-        {
-            Debug.Log($"[EntityHealer] 힐 적용 대상 {healedCount}명\n" + healedLog.ToString());
-        }
     }
 }

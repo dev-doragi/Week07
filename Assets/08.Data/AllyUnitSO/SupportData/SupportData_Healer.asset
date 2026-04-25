@@ -47,5 +47,5 @@ MonoBehaviour:
     Effects: []
   Heal:
     HealRange: 50
-    HealAmount: 15
+    HealAmount: 50
     HealCooldown: 5
