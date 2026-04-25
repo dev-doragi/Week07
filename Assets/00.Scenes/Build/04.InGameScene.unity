@@ -2003,7 +2003,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -228}
+  m_AnchoredPosition: {x: 14, y: -165}
   m_SizeDelta: {x: 400, y: 91.5869}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &362203469
@@ -5985,6 +5985,7 @@ GameObject:
   - component: {fileID: 1059716411}
   - component: {fileID: 1059716410}
   - component: {fileID: 1059716409}
+  - component: {fileID: 1059716412}
   m_Layer: 5
   m_Name: WaveStartButton
   m_TagString: Untagged
@@ -6106,6 +6107,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1059716407}
   m_CullTransparentMesh: 1
+--- !u!114 &1059716412
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1059716407}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1faec5f2d2b04f15a6b54cd1200e83a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _button: {fileID: 1059716409}
 --- !u!1 &1065621519
 GameObject:
   m_ObjectHideFlags: 0
@@ -12065,7 +12079,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: -13.725159, y: 0, z: -27.450317, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -12095,8 +12109,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -77.20654}
-  m_SizeDelta: {x: 400, y: 91.5869}
+  m_AnchoredPosition: {x: 17.8427, y: -77.20654}
+  m_SizeDelta: {x: 501.5658, y: 91.5869}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &2122222267
 GameObject:
