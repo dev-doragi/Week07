@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8253427203628701751}
   - component: {fileID: 6784783102648897948}
-  - component: {fileID: 809065013804196580}
   m_Layer: 6
   m_Name: Attack2
   m_TagString: Ally
@@ -92,28 +91,6 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!114 &809065013804196580
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6092274590143824952}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 66fb84c84f667e64db386d8d3da3db94, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::UnitAnimator
-  _idleFrames:
-  - {fileID: -7810328370443580990, guid: c43ed17b5c5992c4a89a51723c0f79e7, type: 3}
-  - {fileID: -387900129951953223, guid: c43ed17b5c5992c4a89a51723c0f79e7, type: 3}
-  - {fileID: -4263276482167845183, guid: c43ed17b5c5992c4a89a51723c0f79e7, type: 3}
-  _idleFrameRate: 12
-  _attackFrames:
-  - {fileID: -3105772406370801636, guid: c43ed17b5c5992c4a89a51723c0f79e7, type: 3}
-  - {fileID: 8895752234778932488, guid: c43ed17b5c5992c4a89a51723c0f79e7, type: 3}
-  - {fileID: 2661873973860166606, guid: c43ed17b5c5992c4a89a51723c0f79e7, type: 3}
-  _attackFrameRate: 12
 --- !u!1 &7837646868008097621
 GameObject:
   m_ObjectHideFlags: 0
@@ -158,6 +135,7 @@ GameObject:
   - component: {fileID: 3467063552811291797}
   - component: {fileID: 1749475111004355449}
   - component: {fileID: 5055423527155961720}
+  - component: {fileID: 2202164294151621676}
   m_Layer: 6
   m_Name: ArcAttacker01
   m_TagString: Ally
@@ -270,3 +248,25 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &2202164294151621676
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8494154496769389322}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66fb84c84f667e64db386d8d3da3db94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitAnimator
+  _idleFrames:
+  - {fileID: -7810328370443580990, guid: c43ed17b5c5992c4a89a51723c0f79e7, type: 3}
+  - {fileID: -387900129951953223, guid: c43ed17b5c5992c4a89a51723c0f79e7, type: 3}
+  - {fileID: -4263276482167845183, guid: c43ed17b5c5992c4a89a51723c0f79e7, type: 3}
+  _idleFrameRate: 12
+  _attackFrames:
+  - {fileID: -3105772406370801636, guid: c43ed17b5c5992c4a89a51723c0f79e7, type: 3}
+  - {fileID: 8895752234778932488, guid: c43ed17b5c5992c4a89a51723c0f79e7, type: 3}
+  - {fileID: 2661873973860166606, guid: c43ed17b5c5992c4a89a51723c0f79e7, type: 3}
+  _attackFrameRate: 12

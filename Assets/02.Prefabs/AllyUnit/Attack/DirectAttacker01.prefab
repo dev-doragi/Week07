@@ -41,7 +41,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4015329220916688866}
   - component: {fileID: 5907671321792023873}
-  - component: {fileID: 8120571400686091014}
   m_Layer: 6
   m_Name: Attack1
   m_TagString: Ally
@@ -123,32 +122,6 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!114 &8120571400686091014
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6972376769711379440}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 66fb84c84f667e64db386d8d3da3db94, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::UnitAnimator
-  _idleFrames:
-  - {fileID: 2559823041087691283, guid: 13b7e4b947e00f447b299fafe1069214, type: 3}
-  - {fileID: 9025168656825881069, guid: 13b7e4b947e00f447b299fafe1069214, type: 3}
-  - {fileID: 6243999680266724381, guid: 13b7e4b947e00f447b299fafe1069214, type: 3}
-  - {fileID: -3959012985690031052, guid: 13b7e4b947e00f447b299fafe1069214, type: 3}
-  _idleFrameRate: 12
-  _attackFrames:
-  - {fileID: 3924230511630168413, guid: 13b7e4b947e00f447b299fafe1069214, type: 3}
-  - {fileID: 6019928784311573117, guid: 13b7e4b947e00f447b299fafe1069214, type: 3}
-  - {fileID: -8708784218064672467, guid: 13b7e4b947e00f447b299fafe1069214, type: 3}
-  - {fileID: -2209446963912461935, guid: 13b7e4b947e00f447b299fafe1069214, type: 3}
-  - {fileID: -6440990356280995724, guid: 13b7e4b947e00f447b299fafe1069214, type: 3}
-  - {fileID: -6672272948183174452, guid: 13b7e4b947e00f447b299fafe1069214, type: 3}
-  _attackFrameRate: 12
 --- !u!1 &7695974667498831695
 GameObject:
   m_ObjectHideFlags: 0
@@ -162,6 +135,7 @@ GameObject:
   - component: {fileID: 4157620117288917908}
   - component: {fileID: 5193325366856743645}
   - component: {fileID: 4473418106632027411}
+  - component: {fileID: 1289700328320681788}
   m_Layer: 6
   m_Name: DirectAttacker01
   m_TagString: Ally
@@ -273,3 +247,29 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &1289700328320681788
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7695974667498831695}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66fb84c84f667e64db386d8d3da3db94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitAnimator
+  _idleFrames:
+  - {fileID: 2559823041087691283, guid: 13b7e4b947e00f447b299fafe1069214, type: 3}
+  - {fileID: 9025168656825881069, guid: 13b7e4b947e00f447b299fafe1069214, type: 3}
+  - {fileID: 6243999680266724381, guid: 13b7e4b947e00f447b299fafe1069214, type: 3}
+  - {fileID: -3959012985690031052, guid: 13b7e4b947e00f447b299fafe1069214, type: 3}
+  _idleFrameRate: 12
+  _attackFrames:
+  - {fileID: 3924230511630168413, guid: 13b7e4b947e00f447b299fafe1069214, type: 3}
+  - {fileID: 6019928784311573117, guid: 13b7e4b947e00f447b299fafe1069214, type: 3}
+  - {fileID: -8708784218064672467, guid: 13b7e4b947e00f447b299fafe1069214, type: 3}
+  - {fileID: -2209446963912461935, guid: 13b7e4b947e00f447b299fafe1069214, type: 3}
+  - {fileID: -6440990356280995724, guid: 13b7e4b947e00f447b299fafe1069214, type: 3}
+  - {fileID: -6672272948183174452, guid: 13b7e4b947e00f447b299fafe1069214, type: 3}
+  _attackFrameRate: 12

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 868054360222926543}
   - component: {fileID: 2435920912739229301}
   - component: {fileID: 8417998693798523098}
+  - component: {fileID: 9074515109932797892}
   m_Layer: 6
   m_Name: Support01
   m_TagString: Ally
@@ -108,6 +109,25 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1.5896816, y: 1.0666667}
   m_EdgeRadius: 0
+--- !u!114 &9074515109932797892
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2279276099341820887}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66fb84c84f667e64db386d8d3da3db94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitAnimator
+  _idleFrames:
+  - {fileID: -2132995636211010893, guid: e8d5b49934a0c5e488b624dec09914f4, type: 3}
+  - {fileID: -8440165483005212548, guid: e8d5b49934a0c5e488b624dec09914f4, type: 3}
+  - {fileID: 1696394255486085444, guid: e8d5b49934a0c5e488b624dec09914f4, type: 3}
+  _idleFrameRate: 8
+  _attackFrames: []
+  _attackFrameRate: 12
 --- !u!1 &7285319905050699864
 GameObject:
   m_ObjectHideFlags: 0
@@ -118,7 +138,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2855320216154880950}
   - component: {fileID: 8819439468573589140}
-  - component: {fileID: 3425372950222938682}
   m_Layer: 6
   m_Name: Support_1
   m_TagString: Ally
@@ -200,22 +219,3 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!114 &3425372950222938682
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7285319905050699864}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 66fb84c84f667e64db386d8d3da3db94, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::UnitAnimator
-  _idleFrames:
-  - {fileID: -2132995636211010893, guid: e8d5b49934a0c5e488b624dec09914f4, type: 3}
-  - {fileID: -8440165483005212548, guid: e8d5b49934a0c5e488b624dec09914f4, type: 3}
-  - {fileID: 1696394255486085444, guid: e8d5b49934a0c5e488b624dec09914f4, type: 3}
-  _idleFrameRate: 8
-  _attackFrames: []
-  _attackFrameRate: 12
