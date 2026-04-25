@@ -43,6 +43,10 @@ public class DoctrineManager : MonoBehaviour
         _nodesByRow.Clear();
         _maxRowIndex = -1;
         _pendingNode = null;
+        if (tooltipUI != null)
+        {
+            tooltipUI.UnpinAndHide();
+        }
 
         if (autoCollectNodesFromChildren)
         {
@@ -133,6 +137,10 @@ public class DoctrineManager : MonoBehaviour
 
         _pendingNode = node;
         _pendingNode.SetState(DoctrineNodeState.Pending);
+        if (tooltipUI != null)
+        {
+            tooltipUI.Pin(data, DoctrineNodeState.Pending);
+        }
 
         Debug.Log($"[DoctrineManager] Pending selected | Row: {data.rowIndex}, Col: {data.columnIndex}, NodeId: {data.nodeId}");
         RefreshConfirmButtonState();
@@ -189,6 +197,10 @@ public class DoctrineManager : MonoBehaviour
         Debug.Log($"[DoctrineManager] Confirmed | NodeId: {data.nodeId}, RemainingPoint: {doctrinePoint}");
 
         ApplyDoctrineEffect(data);
+        if (tooltipUI != null)
+        {
+            tooltipUI.UnpinAndHide();
+        }
 
         _pendingNode = null;
         currentRowIndex += 1;
