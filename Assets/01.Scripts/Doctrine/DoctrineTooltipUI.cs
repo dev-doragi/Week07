@@ -166,11 +166,11 @@ public class DoctrineTooltipUI : MonoBehaviour
         switch (type)
         {
             case DoctrineType.Tower:
-                return "공격 타워";
+                return "타워 계열";
             case DoctrineType.Ritual:
-                return "의식";
+                return "의식 계열";
             case DoctrineType.Ram:
-                return "충각";
+                return "충각 계열";
             default:
                 return type.ToString();
         }

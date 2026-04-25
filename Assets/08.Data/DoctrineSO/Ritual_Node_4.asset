@@ -14,9 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DoctrineNodeData
   nodeId: 10
   nodeName: 1
-  description: "\uAC1C\uCA4C\uB294 \uC758\uC2DD"
+  description: "\uC950\uC758 \uC2E0\uC774\uC2DC\uC5EC! \uAC15\uB9BC\uD558\uC2DC\uC635\uC18C\uC11C!!"
   doctrineType: 1
   rowIndex: 4
   columnIndex: 1
   effectId: aab
-  effectSummary: "\uC758\uC2DD +5"
+  effectSummary: "\uC0C8\uB85C\uC6B4 \uC758\uC2DD \uAE30\uC220 \uD574\uAE08 - \uC950\uC2E0
+    \uAC15\uB9BC"

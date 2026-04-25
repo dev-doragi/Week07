@@ -7233,7 +7233,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68e4894e45aefb04abafaef451cc9d84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DoctrineManager
-  doctrinePoint: 5
+  doctrinePoint: 3
   currentRowIndex: 0
   allNodes:
   - {fileID: 364798056}
@@ -7512,7 +7512,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 10
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -8932,8 +8932,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4294901760
+  m_fontColor: {r: 0, g: 0, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -10500,7 +10500,7 @@ MonoBehaviour:
   descriptionText: {fileID: 1631688065}
   effectSummaryText: {fileID: 2143487350}
   stateHintText: {fileID: 696955272}
-  followMouse: 1
+  followMouse: 0
   mouseOffset: {x: 20, y: -20}
 --- !u!114 &2003670519
 MonoBehaviour:
