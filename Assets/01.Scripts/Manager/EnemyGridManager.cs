@@ -254,6 +254,7 @@ public class EnemyGridManager : MonoBehaviour
             }
 
             unit.OnDead += _ => OnUnitDied(placed);
+            unit.SetOnGrid(true);
         }
 
         _runtimeUnitsRegistered = true;
@@ -281,6 +282,7 @@ public class EnemyGridManager : MonoBehaviour
         if (unit != null)
         {
             unit.InitializeRuntime();
+            //unit.SetOnGrid(true);
             unit.OnDead += _ => OnUnitDied(placed);
         }
     }

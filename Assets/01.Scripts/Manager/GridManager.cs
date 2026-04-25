@@ -277,6 +277,7 @@ public class GridManager : Singleton<GridManager>
         if (unit != null)
         {
             unit.InitializeRuntime();
+            unit.SetOnGrid(true);
             unit.OnDead += (deadUnit) => OnUnitDied(placed);
         }
     }
