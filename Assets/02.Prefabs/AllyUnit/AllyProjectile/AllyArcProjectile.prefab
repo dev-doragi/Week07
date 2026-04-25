@@ -102,6 +102,7 @@ GameObject:
   - component: {fileID: 879847094218491037}
   - component: {fileID: 6194874671322571783}
   - component: {fileID: -8937686194462765162}
+  - component: {fileID: -2937601984247793293}
   - component: {fileID: 7425670535368512564}
   m_Layer: 0
   m_Name: AllyArcProjectile
@@ -179,12 +180,27 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6579287745903239311}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7138ce17dea2aad4da456b24a973ce87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ArcProjectile
   _lifeTime: 5
+--- !u!114 &-2937601984247793293
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6579287745903239311}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87cf09c3ca41e7142892a57a8fe7ab5c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RatArcProjectile
+  _lifeTime: 5
+  _fragmentPoolKey: 
+  _fragmentCount: 3
 --- !u!50 &7425670535368512564
 Rigidbody2D:
   serializedVersion: 5

@@ -53,7 +53,8 @@ public class DropRat : MonoBehaviour
 
         if (_isCollected) return;
 
-        if (collision.gameObject.TryGetComponent(out Unit unit) && unit.Team == TeamType.Player)
+        Unit unit = collision.gameObject.GetComponentInChildren<Unit>(true);
+        if (unit != null && unit.Team == TeamType.Player)
         {
             Collect();
         }

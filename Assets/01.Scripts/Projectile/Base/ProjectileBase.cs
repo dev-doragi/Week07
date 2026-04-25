@@ -42,8 +42,10 @@ public abstract class ProjectileBase : MonoBehaviour
 
     protected virtual void ProcessHit(IDamageable target, Vector2 hitPoint)
     {
-        // 방어: target이 null일 수 있으므로 먼저 검사
         if (target == null || target.Team == _attackerTeam || target.IsDead) return;
+
+        // Wheel 카테고리는 투사체 충돌 대상에서 제외
+        if (target.Category == UnitCategory.Wheel) return;
 
         //Debug.Log($"[ProcessHit] Damage: {_currentDamage}, Target Team: {target.Team}, Attacker Team: {_attackerTeam}", gameObject);
 

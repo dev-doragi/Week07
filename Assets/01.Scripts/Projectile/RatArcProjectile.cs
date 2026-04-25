@@ -6,7 +6,7 @@ using UnityEngine;
 /// OnImpact에서 파편 생성만 담당합니다.
 /// AttackModule.Area == Splash이면 ProjectileBase.Explode가 범위 데미지를 처리합니다.
 /// </summary>
-public class RatBombProjectile : ArcProjectile
+public class RatArcProjectile : ArcProjectile
 {
     [SerializeField] private string _fragmentPoolKey;
     [SerializeField] private int _fragmentCount = 3;
