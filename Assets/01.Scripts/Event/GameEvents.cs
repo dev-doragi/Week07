@@ -51,3 +51,22 @@ public struct PartPlacedEvent { public int PartKey; public UnityEngine.Vector2In
 public struct AttackPlacementTutorialRequestedEvent { public int PartKey; }
 public struct AttackPlacementTutorialEndedEvent { }
 public struct TutorialCompletedEvent { public int RewardStageIndex; }
+
+// ============================================================================
+// [충돌 관련 이벤트]
+// ============================================================================
+/// <summary>양쪽 진영의 CollisionPower 수치가 갱신되었을 때 UI 등에 알립니다.</summary>
+public struct CollisionPowerUpdatedEvent
+{
+    public float PlayerCP;
+    public float EnemyCP;
+}
+
+/// <summary>차지(돌진) 충돌 결과 데미지가 분배되었을 때 발행합니다.</summary>
+public struct SiegeCollisionResolvedEvent
+{
+    public float PlayerCP;
+    public float EnemyCP;
+    public float Delta;
+    public bool IsPlayerLosing; // true = 아군 쪽이 낮아서 데미지 받음
+}

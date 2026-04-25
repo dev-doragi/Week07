@@ -322,6 +322,56 @@ public class EnemyGridManager : MonoBehaviour
         return totalDamage;
     }
 
+    /// <summary>
+    /// 적 그리드에 배치된 전체 유닛의 CollisionPower 합산을 반환합니다.
+    /// </summary>
+    public float CalculateTotalCollisionPower()
+    {
+        var counted = new HashSet<EnemyPlacedUnit>();
+        float total = 0f;
+
+        for (int x = 0; x < _width; x++)
+        {
+            for (int y = 0; y < _height; y++)
+            {
+                var unit = _cells[x, y];
+                if (unit == null) continue;
+                if (!counted.Add(unit)) continue;
+
+                if (unit.Data.Defense != null)
+                    total += unit.Data.Defense.CollisionPower;
+            }
+        }
+        return total;
+    }
+
+    /// <summary>
+    /// 적 그리드에 배치된 살아있는 Unit 컴포넌트 목록을 반환합니다.
+    /// </summary>
+    public List<Unit> GetAllLivingUnits()
+    {
+        var counted = new HashSet<EnemyPlacedUnit>();
+        var result  = new List<Unit>();
+
+        for (int x = 0; x < _width; x++)
+        {
+            for (int y = 0; y < _height; y++)
+            {
+                var placed = _cells[x, y];
+                if (placed == null) continue;
+                if (!counted.Add(placed)) continue;
+
+                var unit = placed.Instance != null
+                    ? placed.Instance.GetComponentInChildren<Unit>()
+                    : null;
+
+                if (unit != null && !unit.IsDead)
+                    result.Add(unit);
+            }
+        }
+        return result;
+    }
+
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.gray;
