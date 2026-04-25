@@ -277,9 +277,10 @@ public class GridManager : Singleton<GridManager>
         if (unit != null)
         {
             unit.InitializeRuntime();
-            unit.SetOnGrid(true);
             unit.OnDead += (deadUnit) => OnUnitDied(placed);
         }
+        // notify listeners that player grid changed (for CP UI refresh)
+        EventBus.Instance?.Publish(new PlayerGridChangedEvent());
     }
 
     private void OnUnitDied(PlacedUnit placed)

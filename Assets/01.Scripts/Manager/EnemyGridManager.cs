@@ -285,6 +285,8 @@ public class EnemyGridManager : MonoBehaviour
             //unit.SetOnGrid(true);
             unit.OnDead += _ => OnUnitDied(placed);
         }
+        // notify listeners that enemy grid changed (for CP UI refresh)
+        EventBus.Instance?.Publish(new EnemyGridChangedEvent());
     }
 
     private void OnUnitDied(EnemyPlacedUnit placed)

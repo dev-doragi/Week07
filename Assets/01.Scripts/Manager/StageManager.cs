@@ -27,6 +27,7 @@ public class StageManager : Singleton<StageManager>
 
     public int CurrentStageIndex { get; private set; } = 0;
     public int CurrentWaveIndex { get; private set; } = 0;
+    public StageLayout CurrentLayout { get; private set; }
     public InGameState CurrentState { get; private set; } = InGameState.None;
     public StageDataSO CurrentStageData => _stageDatas != null && CurrentStageIndex >= 0 && CurrentStageIndex < _stageDatas.Length ? _stageDatas[CurrentStageIndex] : null;
     public bool IsFinalStage => _stageDatas != null && CurrentStageIndex >= _stageDatas.Length - 1;

@@ -62,6 +62,12 @@ public struct CollisionPowerUpdatedEvent
     public float EnemyCP;
 }
 
+/// <summary>플레이어 그리드에 유닛이 추가/제거되어 CP 재계산이 필요할 때 발행합니다.</summary>
+public struct PlayerGridChangedEvent { }
+
+/// <summary>적 그리드에 유닛이 추가/제거되어 CP 재계산이 필요할 때 발행합니다.</summary>
+public struct EnemyGridChangedEvent { }
+
 /// <summary>차지(돌진) 충돌 결과 데미지가 분배되었을 때 발행합니다.</summary>
 public struct SiegeCollisionResolvedEvent
 {
