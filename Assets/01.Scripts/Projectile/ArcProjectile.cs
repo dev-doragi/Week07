@@ -48,6 +48,12 @@ public class ArcProjectile : ProjectileBase
     {
         if (!_isInitialized) return;
 
+        if(other.CompareTag("RitualWall") && _attackerTeam == TeamType.Enemy)
+        {
+            Despawn();
+            return;
+        }
+
         // 비행 중 다른 대상과 부딪히는 판정
         if (other.TryGetComponent(out IDamageable target))
         {

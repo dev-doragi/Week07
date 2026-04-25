@@ -49,6 +49,12 @@ public class DirectProjectile : ProjectileBase
     {
         if (!_isInitialized) return;
 
+        if(other.CompareTag("RitualWall") && _attackerTeam == TeamType.Enemy)
+        {
+            Despawn();
+            return;
+        }
+
         IDamageable target = other.GetComponentInParent<IDamageable>();
         if (target != null)
         {

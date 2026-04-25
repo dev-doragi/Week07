@@ -115,7 +115,7 @@ MonoBehaviour:
   - {fileID: 809304776149915049, guid: 6cdd00033613b0241aa8c501ba372446, type: 3}
   _runFrameRate: 8
   _knockBackPower: 4
-  _moveSpeed: 1
+  _moveSpeed: 3
   _groundLayerMask:
     serializedVersion: 2
     m_Bits: 256
