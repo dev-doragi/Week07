@@ -14,6 +14,7 @@ public class EnemyGridManager : MonoBehaviour
 
     private EnemyPlacedUnit[,] _cells;
     private Rigidbody2D _rb;
+    private bool _runtimeUnitsRegistered = false;
 
     private readonly Vector2Int[] _fourDirections =
     {
@@ -218,6 +219,46 @@ public class EnemyGridManager : MonoBehaviour
         return true;
     }
 
+    /// <summary>
+    /// Registers already-instantiated child Units (from authored enemy prefab)
+    /// into runtime grid cells and collapse callbacks.
+    /// Does not call Unit.InitializeRuntime().
+    /// </summary>
+    public void RegisterExistingUnitsFromChildren()
+    {
+        if (_runtimeUnitsRegistered) return;
+
+        EnsureGridStorage();
+        ClearGridCells();
+
+        Unit[] units = GetComponentsInChildren<Unit>(includeInactive: true);
+        foreach (Unit unit in units)
+        {
+            if (unit == null || unit.Data == null) continue;
+
+            UnitDataSO data = unit.Data;
+            Vector2Int origin = InferOriginFromCurrentTransform(unit.transform.position, data);
+            if (!CanRegisterAt(origin, data))
+            {
+                Debug.LogWarning($"[EnemyGridManager] register skipped: {unit.name} @ {origin}");
+                continue;
+            }
+
+            var placed = new EnemyPlacedUnit(data, origin, unit.gameObject);
+            for (int x = 0; x < data.Size.x; x++)
+            {
+                for (int y = 0; y < data.Size.y; y++)
+                {
+                    _cells[origin.x + x, origin.y + y] = placed;
+                }
+            }
+
+            unit.OnDead += _ => OnUnitDied(placed);
+        }
+
+        _runtimeUnitsRegistered = true;
+    }
+
     private void CreateAndRegister(UnitDataSO data, Vector2Int origin)
     {
         Vector3 footprintCenterOffset = new Vector3(
@@ -293,6 +334,42 @@ public class EnemyGridManager : MonoBehaviour
             Gizmos.DrawLine(
                 _origin + new Vector3(0, y * _cellSize, 0),
                 _origin + new Vector3(_width * _cellSize, y * _cellSize, 0));
+        }
+    }
+
+    private Vector2Int InferOriginFromCurrentTransform(Vector3 worldPosition, UnitDataSO data)
+    {
+        Vector3 offset = new Vector3(
+            (data.Size.x - 1) * _cellSize * 0.5f,
+            (data.Size.y - 1) * _cellSize * 0.5f,
+            0f);
+
+        return WorldToCell(worldPosition - offset);
+    }
+
+    private bool CanRegisterAt(Vector2Int origin, UnitDataSO data)
+    {
+        for (int x = 0; x < data.Size.x; x++)
+        {
+            for (int y = 0; y < data.Size.y; y++)
+            {
+                var cell = new Vector2Int(origin.x + x, origin.y + y);
+                if (!IsInBounds(cell)) return false;
+                if (_cells[cell.x, cell.y] != null) return false;
+            }
+        }
+
+        return true;
+    }
+
+    private void ClearGridCells()
+    {
+        for (int x = 0; x < _width; x++)
+        {
+            for (int y = 0; y < _height; y++)
+            {
+                _cells[x, y] = null;
+            }
         }
     }
 

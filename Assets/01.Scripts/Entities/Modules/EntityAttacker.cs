@@ -90,10 +90,11 @@ public class EntityAttacker : MonoBehaviour
         {
             if (performer.TryPerformAttack(_owner, _currentTarget, _data))
             {
-                        // 공격 속도 적용 (초 단위)
-                        // AttackSpeed가 1.0이면 1초마다, 2.0이면 0.5초마다 공격
-                float modifiedSpeed = _owner.StatReceiver.GetModifiedValue(SupportStatType.AttackSpeed, _data.Speed);
-                float attackInterval = 1f / Mathf.Max(0.1f, modifiedSpeed);
+                        
+                float baseAttackInterval = Mathf.Max(0.01f, _data.Speed);
+                float baseAttacksPerSecond = 1f / baseAttackInterval;
+                float modifiedAttacksPerSecond = _owner.StatReceiver.GetModifiedValue(SupportStatType.AttackSpeed, baseAttacksPerSecond);
+                float attackInterval = 1f / Mathf.Max(0.1f, modifiedAttacksPerSecond);
                 
                 _attackCooldown = attackInterval;
                 _owner.ChangeState(UnitState.Idle);

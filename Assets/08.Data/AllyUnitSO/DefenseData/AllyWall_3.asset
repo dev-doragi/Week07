@@ -10,22 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 550f97df3c4ad9d44a36190b24e47c3b, type: 3}
-  m_Name: EnemyCoreData
+  m_Name: AllyWall_3
   m_EditorClassIdentifier: Assembly-CSharp::UnitDataSO
-  Key: 199
-  UnitName: 
-  Team: 2
-  Category: 2
-  Prefab: {fileID: 3197281350173304387, guid: ee18ca8736c6eb044aaa7e9cd24dd9fc, type: 3}
-  Icon: {fileID: 21300000, guid: 95b9bb7cab7af7641a43e401c7996e0f, type: 3}
-  Size: {x: 2, y: 1}
-  PlacementRule: 0
-  ActsAsFoundation: 0
-  MaxHp: 200
+  Key: 3
+  UnitName: "\uBCBD\uBCBD\uBCBD\uC950"
+  Team: 1
+  Category: 4
+  Prefab: {fileID: 664433030619585036, guid: 133aae2717435414d80594abbf2250eb, type: 3}
+  Icon: {fileID: 898551970227511676, guid: 8538a3102160c0546b32f5a4d6e96026, type: 3}
+  Size: {x: 1, y: 1}
+  PlacementRule: 2
+  ActsAsFoundation: 1
+  MaxHp: 150
   BaseDefenseRate: 0
-  Cost: 0
-  DeathSpawnKey: DropRat
-  BaseDeathSpawnCount: 50
+  Cost: 15
+  DeathSpawnKey: 
+  BaseDeathSpawnCount: 0
   Attack:
     Damage: 0
     Speed: 0
@@ -40,7 +40,7 @@ MonoBehaviour:
     PiercingDecay: 0
     ProjectilePrefab: {fileID: 0}
   Defense:
-    CollisionPower: 0
+    CollisionPower: 3
   Support:
     Radius: 0
     Effects: []

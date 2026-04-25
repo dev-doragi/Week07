@@ -10,22 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 550f97df3c4ad9d44a36190b24e47c3b, type: 3}
-  m_Name: EnemyCoreData
+  m_Name: WheelData
   m_EditorClassIdentifier: Assembly-CSharp::UnitDataSO
-  Key: 199
+  Key: 98
   UnitName: 
-  Team: 2
-  Category: 2
-  Prefab: {fileID: 3197281350173304387, guid: ee18ca8736c6eb044aaa7e9cd24dd9fc, type: 3}
-  Icon: {fileID: 21300000, guid: 95b9bb7cab7af7641a43e401c7996e0f, type: 3}
-  Size: {x: 2, y: 1}
+  Team: 1
+  Category: 1
+  Prefab: {fileID: 8185261341758472092, guid: 8bcd0c3dca3ca0f4f870b6bdc8d2e45a, type: 3}
+  Icon: {fileID: -4422140865799512813, guid: 8e696400559cad541864e54b5206fdaa, type: 3}
+  Size: {x: 1, y: 1}
   PlacementRule: 0
-  ActsAsFoundation: 0
-  MaxHp: 200
+  ActsAsFoundation: 1
+  MaxHp: 999
   BaseDefenseRate: 0
   Cost: 0
-  DeathSpawnKey: DropRat
-  BaseDeathSpawnCount: 50
+  DeathSpawnKey: 
+  BaseDeathSpawnCount: 0
   Attack:
     Damage: 0
     Speed: 0

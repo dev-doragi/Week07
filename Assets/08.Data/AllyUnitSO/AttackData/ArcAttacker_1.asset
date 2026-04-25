@@ -10,35 +10,35 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 550f97df3c4ad9d44a36190b24e47c3b, type: 3}
-  m_Name: EnemyCoreData
+  m_Name: ArcAttacker_1
   m_EditorClassIdentifier: Assembly-CSharp::UnitDataSO
-  Key: 199
-  UnitName: 
-  Team: 2
-  Category: 2
-  Prefab: {fileID: 3197281350173304387, guid: ee18ca8736c6eb044aaa7e9cd24dd9fc, type: 3}
-  Icon: {fileID: 21300000, guid: 95b9bb7cab7af7641a43e401c7996e0f, type: 3}
-  Size: {x: 2, y: 1}
-  PlacementRule: 0
+  Key: 12
+  UnitName: "\uD3ED\uD0C4\uBCD1"
+  Team: 1
+  Category: 3
+  Prefab: {fileID: 8494154496769389322, guid: 843c2ccd18c217b4aad2ceb964eb011f, type: 3}
+  Icon: {fileID: -7810328370443580990, guid: c43ed17b5c5992c4a89a51723c0f79e7, type: 3}
+  Size: {x: 1, y: 1}
+  PlacementRule: 1
   ActsAsFoundation: 0
-  MaxHp: 200
+  MaxHp: 100
   BaseDefenseRate: 0
-  Cost: 0
-  DeathSpawnKey: DropRat
-  BaseDeathSpawnCount: 50
+  Cost: 10
+  DeathSpawnKey: 
+  BaseDeathSpawnCount: 0
   Attack:
-    Damage: 0
-    Speed: 0
-    Distance: 0
-    AttackCost: 0
-    Trajectory: 0
+    Damage: 8
+    Speed: 2
+    Distance: 30
+    AttackCost: 5
+    Trajectory: 2
     Targeting: 0
-    Area: 0
-    RangeRadius: 0
+    Area: 1
+    RangeRadius: 2
     PiercingCount: 0
     Penetration: 0
     PiercingDecay: 0
-    ProjectilePrefab: {fileID: 0}
+    ProjectilePrefab: {fileID: 6579287745903239311, guid: cd8931b0d41a86f4ebcc986ffd7c04e5, type: 3}
   Defense:
     CollisionPower: 0
   Support:
