@@ -25,7 +25,7 @@ MonoBehaviour:
   BaseDefenseRate: 0
   Cost: 0
   DeathSpawnKey: DropRat
-  BaseDeathSpawnCount: 50
+  BaseDeathSpawnCount: 20
   Attack:
     Damage: 0
     Speed: 0
