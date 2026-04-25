@@ -44,11 +44,6 @@ public class UnitDataSO : ScriptableObject
     public string DeathSpawnKey = "DropRat";
     public int BaseDeathSpawnCount = 25;
 
-    // =======================================================================
-    // 전투 및 행동 모듈 (Modules)
-    // 인스펙터에서 필요한 기능에만 데이터를 할당하면, 유닛의 역할이 자동으로 결정됩니다.
-    // =======================================================================
-
     [Header("Combat & Behavior Modules")]
     [Tooltip("공격 능력이 없다면 비워두세요(Null).")]
     public AttackModule Attack;
@@ -56,15 +51,16 @@ public class UnitDataSO : ScriptableObject
     [Tooltip("적에게 부딪혔을 때 충돌 피해를 주지 않는다면 비워두세요(Null).")]
     public DefenseModule Defense;
 
-    [Tooltip("주변 아군에게 버프/힐을 주지 않는다면 비워두세요(Null).")]
+    [Tooltip("주변 아군에게 버프를 주지 않는다면 비워두세요(Null).")]
     public SupportModule Support;
 
-    // -----------------------------------------------------------------------
-    // 편의성 프로퍼티 (외부 매니저나 핸들러가 호출할 때 사용)
-    // -----------------------------------------------------------------------
-    public bool CanAttack => Attack != null && Attack.Damage > 0;
+    [Tooltip("주변 아군을 주기적으로 힐하지 않는다면 비워두세요(Null).")]
+    public HealModule Heal;
+
+    public bool CanAttack  => Attack  != null && Attack.Damage > 0;
     public bool CanCollide => Defense != null && Defense.CollisionPower > 0;
     public bool CanSupport => Support != null && Support.Radius > 0;
+    public bool CanHeal    => Heal    != null && Heal.HealAmount > 0;
 }
 
 // ================================================================
@@ -129,4 +125,17 @@ public class SupportModule
 
     [Tooltip("적용될 버프 효과들의 목록")]
     public List<PartSupportEffectData> Effects = new List<PartSupportEffectData>();
+}
+
+[System.Serializable]
+public class HealModule
+{
+    [Tooltip("힐이 적용되는 반경 (월드 단위)")]
+    public float HealRange = 10f;
+
+    [Tooltip("1회 힐량")]
+    public float HealAmount;
+
+    [Tooltip("힐 쿨다운 (초)")]
+    [Min(0.1f)] public float HealCooldown = 2f;
 }

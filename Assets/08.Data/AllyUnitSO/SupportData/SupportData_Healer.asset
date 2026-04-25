@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 550f97df3c4ad9d44a36190b24e47c3b, type: 3}
-  m_Name: SupportData_2
+  m_Name: SupportData_Healer
   m_EditorClassIdentifier: Assembly-CSharp::UnitDataSO
-  Key: 52
-  UnitName: "\uC131\uC951\uC790"
+  Key: 53
+  UnitName: "\uD14C\uC2A4\uD2B8 \uD790\uB7EC"
   Team: 1
   Category: 5
-  Prefab: {fileID: 464603893784749280, guid: 8b8b2ceaaf2c40748ad1df6f6304fbdf, type: 3}
+  Prefab: {fileID: 464603893784749280, guid: 738c781a80125e24881f791ee6035a33, type: 3}
   Icon: {fileID: -2417847074671435042, guid: 739b85737b59dfc4eb8a9335d18aba72, type: 3}
   Size: {x: 1, y: 1}
   PlacementRule: 1
@@ -43,12 +43,9 @@ MonoBehaviour:
   Defense:
     CollisionPower: 0
   Support:
-    Radius: 20
-    Effects:
-    - _targetRoleType: 3
-      _targetStatType: 4
-      _modifierType: 2
-      _value: 0.25
-      _description: "\uBC29\uC5B4\uB825 25% \uC99D\uAC00"
-    HealAmount: 0
-    HealCooldown: 0
+    Radius: 0
+    Effects: []
+  Heal:
+    HealRange: 50
+    HealAmount: 50
+    HealCooldown: 5
