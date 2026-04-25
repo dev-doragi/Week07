@@ -47,6 +47,9 @@ public class GameManager : Singleton<GameManager>
 
     private void OnStageCleared(StageClearedEvent evt)
     {
+        if (StageMapController.ShouldSuppressStageClearScreen())
+            return;
+
         if (evt.IsFinalStage)
         {
             ChangeState(GameState.GameClear);

@@ -7,12 +7,14 @@ public class UnitAnimator : MonoBehaviour
     [Header("Idle")]
     [Tooltip("Idle 스프라이트 프레임 (1장이면 정지 이미지)")]
     [SerializeField] private Sprite[] _idleFrames;
-    [SerializeField] private float _idleFrameRate = 6f;
+    [SerializeField] private float _idleDuration = 1f;
 
     [Header("Attack")]
     [Tooltip("Attack 스프라이트 프레임 (비워두면 공격 애니 없음)")]
     [SerializeField] private Sprite[] _attackFrames;
-    [SerializeField] private float _attackFrameRate = 12f;
+    
+    [Tooltip("Attack 애니메이션 총 재생 시간 (초). 0이면 SO 공격 속도에 맞춤")]
+    [SerializeField] private float _attackDuration = 0f;
 
     private SpriteRenderer _sr;
     private Coroutine _currentAnim;
@@ -28,11 +30,15 @@ public class UnitAnimator : MonoBehaviour
     }
 
     //외부 API
-    public void PlayAttack()
+    public void PlayAttack(float duration = 0f)
     {
         if(_attackFrames == null || _attackFrames.Length == 0) return;
         StopCurrent();
-        _currentAnim = StartCoroutine(PlayOnce(_attackFrames, _attackFrameRate, PlayIdle));
+
+        float d = duration > 0f ? duration : _attackDuration;
+        if(d <= 0f) d = 0.5f;   // 안전 기본값
+
+        _currentAnim = StartCoroutine(PlayOnce(_attackFrames, d, PlayIdle));
     }
 
     public void PlayIdle()
@@ -45,13 +51,13 @@ public class UnitAnimator : MonoBehaviour
             _sr.sprite = _idleFrames[0];
             return;
         }
-        _currentAnim = StartCoroutine(PlayLoop(_idleFrames, _idleFrameRate));
+        _currentAnim = StartCoroutine(PlayLoop(_idleFrames, _idleDuration));
     }
 
     // 내부 코루틴
-    private IEnumerator PlayLoop(Sprite[] frames, float fps)
+    private IEnumerator PlayLoop(Sprite[] frames, float totalDuration)
     {
-        float interval = 1f / fps;
+        float interval = totalDuration / frames.Length;
         int index = 0;
         while(true)
         {
@@ -61,9 +67,9 @@ public class UnitAnimator : MonoBehaviour
         }
     }
 
-    private IEnumerator PlayOnce(Sprite[] frames, float fps, System.Action onComplete)
+    private IEnumerator PlayOnce(Sprite[] frames, float totalDuration, System.Action onComplete)
     {
-        float interval = 1f / fps;
+        float interval = totalDuration / frames.Length;
         for(int i = 0; i < frames.Length; i++)
         {
             _sr.sprite = frames[i];

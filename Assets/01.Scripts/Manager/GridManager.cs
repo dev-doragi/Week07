@@ -35,6 +35,9 @@ public class GridManager : Singleton<GridManager>
     };
 
     public int Width => _width;
+    public event System.Action OnCapacityChanged;
+    public int MaxCapacity => SumWheelCapacities();
+    public int CurrentUnitCount => CountPlacedUnits();
     public int Height => _height;
     public float CellSize => _cellSize;
 
@@ -117,6 +120,20 @@ public class GridManager : Singleton<GridManager>
         if (data == null) return false;
         if (data.PlacementRule == PlacementRule.InitialOnly) return false;
 
+        if(origin.y == 0 && data.Category != UnitCategory.Wheel)
+        {
+            return false;
+        }
+
+        if(data.Category == UnitCategory.Wheel && data.PlacementRule != PlacementRule.InitialOnly)
+        {
+            if(origin.y != 0)
+            {
+                Debug.Log("[GridManager] 바퀴는 최하단 행에만 설치 가능함!!");
+                return false;
+            }
+        }
+
         for (int x = 0; x < data.Size.x; x++)
         {
             for (int y = 0; y < data.Size.y; y++)
@@ -170,6 +187,16 @@ public class GridManager : Singleton<GridManager>
     public bool TryPlace(UnitDataSO data, Vector2Int origin)
     {
         if (!CanPlace(data, origin)) return false;
+
+        if(data.Category != UnitCategory.Wheel && data.Category != UnitCategory.Core)
+        {
+            if(CurrentUnitCount >= MaxCapacity)
+            {
+                Debug.Log($"[GridManager] 수용량 초과 | {CurrentUnitCount}/{MaxCapacity}");
+                return false;
+            }
+        }
+
         if (data.Cost > 0 && ResourceManager.Instance != null)
         {
             int before = ResourceManager.Instance.CurrentMouse;
@@ -248,6 +275,43 @@ public class GridManager : Singleton<GridManager>
             0f);
     }
 
+    //수용량 헬퍼 메서드
+    private int SumWheelCapacities()
+    {
+        var counted = new HashSet<PlacedUnit>();
+        int total = 0;
+        for (int x = 0; x < _width; x++)
+        {
+            for(int y = 0; y < _height; y++)
+            {
+                var unit = _cells[x, y];
+                if(unit != null && unit.Data.Category == UnitCategory.Wheel && counted.Add(unit))
+                    total += unit.Data.WheelCapacity;
+            }    
+        }
+            
+        return total;
+    }
+
+    private int CountPlacedUnits()
+    {
+        var counted = new HashSet<PlacedUnit>();
+        for(int x = 0; x < _width; x++)
+        {
+            for(int y = 0; y < _height; y++)
+            {
+                var unit = _cells[x, y];
+                if(unit != null 
+                && unit.Data.Category != UnitCategory.Wheel 
+                && unit.Data.Category != UnitCategory.Core)
+                {
+                    counted.Add(unit);
+                }
+            }
+        }
+        return counted.Count;
+    }
+
     private void CreateAndRegister(UnitDataSO data, Vector2Int origin)
     {
         var instance = Instantiate(data.Prefab, FootprintCenter(data, origin), Quaternion.identity, transform);
@@ -277,8 +341,10 @@ public class GridManager : Singleton<GridManager>
         if (unit != null)
         {
             unit.InitializeRuntime();
+            unit.SetOnGrid(true);
             unit.OnDead += (deadUnit) => OnUnitDied(placed);
         }
+        OnCapacityChanged?.Invoke();
     }
 
     private void OnUnitDied(PlacedUnit placed)
@@ -360,6 +426,8 @@ public class GridManager : Singleton<GridManager>
 
         var falling = go.AddComponent<FallingUnit>();
         falling.Begin();
+
+        OnCapacityChanged?.Invoke();
     }
 
     private void ScheduleCollapseCheck()

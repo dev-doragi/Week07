@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: EnemySupport_1
   m_EditorClassIdentifier: Assembly-CSharp::UnitDataSO
   Key: 151
-  UnitName: "\uCC44\uCB9D"
+  UnitName: "\uAE30\uC220\uC790"
   Team: 2
   Category: 5
   Prefab: {fileID: 994972766376619284, guid: b8ea08534d4c1004d8bfe3d228f3d211, type: 3}
-  Icon: {fileID: 21300000, guid: 32c1a65dbfeefd24b9ba5ea13b0135b1, type: 3}
+  Icon: {fileID: 21300000, guid: be6effd12f98811449f0247fe8195121, type: 3}
   Size: {x: 1, y: 1}
   PlacementRule: 1
   ActsAsFoundation: 0

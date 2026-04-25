@@ -50,6 +50,9 @@ public class GridController : MonoBehaviour
     [SerializeField] private SpriteRenderer _ghostCellPrefab;
     [SerializeField] private Color _validColor = new(0.2f, 0.5f, 1f, 0.5f);   // 설치 가능
     [SerializeField] private Color _invalidColor = new(1f, 0.2f, 0.2f, 0.5f); // 설치 불가
+    [SerializeField] private Color _hintColor = new(0.2f, 1f, 0.2f, 0.3f);   //설치 가능 영역 녹색
+    private readonly List<SpriteRenderer> _hintCells = new();
+    private Transform _hintRoot;
 
     [Tooltip("설치 가능 시 표시되는 유닛 스프라이트 프리뷰의 알파값 (0~1)")]
     [SerializeField, Range(0f, 1f)] private float _spritePreviewAlpha = 0.7f;
@@ -97,8 +100,54 @@ public class GridController : MonoBehaviour
         var previewGo = new GameObject("SpritePreview");
         previewGo.transform.SetParent(_ghostRoot, false);
         _spritePreview = previewGo.AddComponent<SpriteRenderer>();
-        _spritePreview.sortingOrder = 11;   //배경 셀보다 위        
+        _spritePreview.sortingOrder = 11;   //배경 셀보다 위      
+
+        _hintRoot = new GameObject("HintRoot").transform;
+        _hintRoot.SetParent(transform);
+        _hintRoot.gameObject.SetActive(false);  
     }
+
+    //힌트 표시/숨김 메서드
+    private void ShowValidCells(UnitDataSO data)
+    {
+        HideValidCells();
+        _hintRoot.gameObject.SetActive(true);
+
+        for(int x = 0; x < _grid.Width; x++)
+        {
+            for(int y = 0; y < _grid.Height; y++)
+            {
+                var cell = new Vector2Int(x, y);
+                if(!_grid.CanPlace(data, cell)) continue;
+
+                // 힌트 셀 재활용 또는 생성
+                SpriteRenderer sr;
+                if(_hintCells.Count <= _hintCells.FindAll(h => h.gameObject.activeSelf).Count)
+                {
+                    sr = Instantiate(_ghostCellPrefab, _hintRoot);
+                    _hintCells.Add(sr);
+                }
+                else
+                {
+                    sr = _hintCells.Find(h => !h.gameObject.activeSelf);
+                }
+
+                sr.transform.position = _grid.CellToWorld(cell);
+                sr.transform.localScale = Vector3.one * _grid.CellSize;
+                sr.color = _hintColor;
+                sr.sortingOrder = 9;
+                sr.gameObject.SetActive(true);
+            }
+        }
+    }
+
+    private void HideValidCells()
+    {
+        foreach(var h in _hintCells) h.gameObject.SetActive(false);
+        _hintRoot.gameObject.SetActive(false);
+    }
+
+    
 
     // ==========================================
     // 입력 처리
@@ -170,12 +219,14 @@ public class GridController : MonoBehaviour
         if (data.Prefab != null && data.Prefab.TryGetComponent(out SpriteRenderer sr))
             sprite = sr.sprite;
         ShowGhost(data.Size, sprite);
+        ShowValidCells(data);
     }
 
     private void Deselect()
     {
         _selected = null;
         _ghostRoot.gameObject.SetActive(false);
+        HideValidCells();
     }
 
     // ==========================================

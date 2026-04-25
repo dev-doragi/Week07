@@ -12,6 +12,12 @@ public class DirectAttacker : MonoBehaviour, IAttacker
         Vector3 startPos = _spawnPoint != null ? _spawnPoint.position : transform.position;
         GameObject obj = PoolManager.Instance.Spawn(attackData.ProjectilePrefab.name, startPos, Quaternion.identity);
 
+        if (obj.TryGetComponent(out RatProjectile ratProjectile))
+        {
+            ratProjectile.Initialize(attacker, startPos, target.transform.position, Vector3.Distance(startPos, target.transform.position) / Mathf.Max(0.01f, _projectileSpeed));
+            return true;
+        }
+
         if (obj.TryGetComponent(out DirectProjectile projectile))
         {
             projectile.Initialize(attackData, attacker.Team, startPos, target.transform.position, _projectileSpeed);

@@ -201,7 +201,8 @@ public class Unit : MonoBehaviour, IDamageable
         {
             EventBus.Instance?.Publish(new CoreDestroyedEvent { IsPlayerBase = true });
         }
-
+        SpawnDeathEffect(_data.DeathSpawnKey, _data.BaseDeathSpawnCount);
+        
         OnDead?.Invoke(this);
         if(_isOnGrid) return;
 
@@ -211,7 +212,6 @@ public class Unit : MonoBehaviour, IDamageable
         if (col != null) col.enabled = false;
 
         // 연출 시작과 동시에 스폰
-        SpawnDeathEffect(_data.DeathSpawnKey, _data.BaseDeathSpawnCount);
         var falling = gameObject.AddComponent<FallingUnit>();
         falling.Begin();
     }

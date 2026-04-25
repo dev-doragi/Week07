@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEditor.EditorTools;
 using UnityEngine;
 
 // ================================================================
@@ -24,6 +25,10 @@ public class UnitDataSO : ScriptableObject
 
     [Tooltip("이 유닛 위에 다른 유닛(NeedsFoundationBelow)을 올릴 수 있는지 여부")]
     public bool ActsAsFoundation;
+
+    [Header("Wheel Settings")]
+    [Tooltip("Category가 Wheel일 때만 사용. 이 바퀴 1개가 제공하는 유닛 수용량.")]
+    public int WheelCapacity = 5;
 
     [Header("Core Stats (공통 스탯)")]
     public float MaxHp;

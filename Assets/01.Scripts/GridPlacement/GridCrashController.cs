@@ -98,7 +98,7 @@ public class GridCrashController : MonoBehaviour
 
         if(hitCount > 0) OnEnemyHit();
 
-        // _overlapBuffer.Clear();
+        // _overlapBuffer.TutorialClear();
 
         // if (Physics2D.OverlapCollider(_crashCollider, filter, _overlapBuffer) > 0)
         // {

@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 550f97df3c4ad9d44a36190b24e47c3b, type: 3}
+  m_Name: SupportData_2
+  m_EditorClassIdentifier: Assembly-CSharp::UnitDataSO
+  Key: 52
+  UnitName: "\uC131\uC951\uC790"
+  Team: 1
+  Category: 5
+  Prefab: {fileID: 464603893784749280, guid: 8b8b2ceaaf2c40748ad1df6f6304fbdf, type: 3}
+  Icon: {fileID: -2417847074671435042, guid: 739b85737b59dfc4eb8a9335d18aba72, type: 3}
+  Size: {x: 1, y: 1}
+  PlacementRule: 1
+  ActsAsFoundation: 0
+  MaxHp: 25
+  BaseDefenseRate: 0
+  Cost: 20
+  DeathSpawnKey: 
+  BaseDeathSpawnCount: 0
+  Attack:
+    Damage: 0
+    Speed: 0
+    Distance: 0
+    AttackCost: 0
+    Trajectory: 0
+    Targeting: 0
+    Area: 0
+    RangeRadius: 0
+    PiercingCount: 0
+    Penetration: 0
+    PiercingDecay: 0
+    ProjectilePrefab: {fileID: 0}
+  Defense:
+    CollisionPower: 0
+  Support:
+    Radius: 20
+    Effects: []

@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Ally
   - Enemy
+  - DropRat
+  - RitualWall
   layers:
   - Default
   - TransparentFX
@@ -15,10 +17,10 @@ TagManager:
   - UI
   - Ally
   - Enemy
+  - Ground
   - 
-  - 
-  - 
-  - 
+  - DropRat
+  - Fragment
   - 
   - 
   - 
