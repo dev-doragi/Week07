@@ -63,6 +63,12 @@ public class UnitDataSO : ScriptableObject
     // 편의성 프로퍼티 (외부 매니저나 핸들러가 호출할 때 사용)
     // -----------------------------------------------------------------------
     public bool CanAttack => Attack != null && Attack.Damage > 0;
+    public bool CanHeal =>
+        Category == UnitCategory.Support
+        && Attack != null
+        && Attack.Damage < 0
+        && !Mathf.Approximately(Attack.Speed, 0f)
+        && Attack.Distance > 0f;
     public bool CanCollide => Defense != null && Defense.CollisionPower > 0;
     public bool CanSupport => Support != null && Support.Radius > 0;
 }
