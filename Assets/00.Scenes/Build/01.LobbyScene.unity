@@ -828,6 +828,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 8761254742845928811, guid: b4d0ff21047420a4a91109e58c427864, type: 3}
+      propertyPath: _inputReaderPrefab
+      value: 
+      objectReference: {fileID: 3851252871139124538, guid: ee19359670951f642a85379f81b981d5, type: 3}
+    - target: {fileID: 8761254742845928811, guid: b4d0ff21047420a4a91109e58c427864, type: 3}
       propertyPath: _poolManagerPrefab
       value: 
       objectReference: {fileID: 0}

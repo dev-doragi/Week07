@@ -27,14 +27,14 @@ public static class StageLoadContext
     {
         int value = _stageIndex != -1 ? _stageIndex : 0;
         _stageIndex = -1;
-        // 튜토리얼 플래그는 명시적으로 Clear()가 호출되기 전까지 유지
+        // 튜토리얼 플래그는 명시적으로 TutorialClear()가 호출되기 전까지 유지
         return value;
     }
 
     /// <summary>
     /// 튜토리얼이 종료되면 명시적으로 호출하여 컨텍스트를 초기화합니다.
     /// </summary>
-    public static void Clear()
+    public static void TutorialClear()
     {
         _stageIndex = -1;
         _isTutorial = false;

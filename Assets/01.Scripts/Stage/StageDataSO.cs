@@ -6,10 +6,13 @@ public struct WaveData
 {
     [Tooltip("이 웨이브에 등장할 적 공성병기")]
     public GameObject EnemySiegePrefab;
-    public float WaveInterval; // 각 웨이브의 스톤 인터벌
+
+    [Tooltip("이 웨이브 클리어 후 다음 웨이브 시작까지의 대기 시간(최소 1초)")]
+    [Min(1f)]
+    public float NextWaveInterval;
 }
 
-[CreateAssetMenu(fileName = "StageData_", menuName = "08.Data/Stage/StageData")]
+[CreateAssetMenu(fileName = "StageData_", menuName = "Data/Stage/StageData")]
 public class StageDataSO : ScriptableObject
 {
     [Header("Stage Layout (위치 껍데기)")]

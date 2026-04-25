@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// 게임의 최상단 캔버스 패널(InGame, GameOver, Clear, Pause 등)의 가시성을 제어하는 매니저입니다.
+/// 게임의 최상단 캔버스 패널(InGame, GameOver, TutorialClear, Pause 등)의 가시성을 제어하는 매니저입니다.
 /// </summary>
 /// <remarks>
 /// [주요 역할]
@@ -20,7 +20,7 @@ public class UIManager : Singleton<UIManager>
     [SerializeField] private GameObject _gameClearPanel;
     [SerializeField] private GameObject _pausePanel;
 
-    [Header("Clear Panel Elements")]
+    [Header("TutorialClear Panel Elements")]
     [SerializeField] private GameObject _gameClearText;
     [SerializeField] private GameObject _stageClearText;
     [SerializeField] private GameObject _resumeButton;
