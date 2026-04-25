@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 142f1dfaaa0966d4da2de617d7170097, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SceneLoader
-  _isDontDestroyOnLoad: 0
+  _isDontDestroyOnLoad: 1
   _lobbySceneName: 01.LobbyScene
   _tutorialSceneName: 02.TutorialScene
   _stageSelectSceneName: 03.StageSelectScene

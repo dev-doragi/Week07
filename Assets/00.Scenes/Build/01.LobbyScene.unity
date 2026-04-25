@@ -202,7 +202,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1375938952}
+      - m_Target: {fileID: 941340211}
         m_TargetAssemblyTypeName: SceneLoader, Assembly-CSharp
         m_MethodName: GoToStageSelect
         m_Mode: 1
@@ -331,7 +331,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &1375938951
+--- !u!1001 &941340210
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -388,10 +388,10 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 39b77fb31af5d5b4f899e7f4d7ab89b4, type: 3}
---- !u!114 &1375938952 stripped
+--- !u!114 &941340211 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 763655693601502932, guid: 39b77fb31af5d5b4f899e7f4d7ab89b4, type: 3}
-  m_PrefabInstance: {fileID: 1375938951}
+  m_PrefabInstance: {fileID: 941340210}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
@@ -856,4 +856,4 @@ SceneRoots:
   - {fileID: 7316184123297993823}
   - {fileID: 1433856882}
   - {fileID: 596702392}
-  - {fileID: 1375938951}
+  - {fileID: 941340210}
