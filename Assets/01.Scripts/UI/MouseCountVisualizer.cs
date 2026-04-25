@@ -89,7 +89,7 @@ public class MouseCountVisualizer : MonoBehaviour
         if (_resourceManager == null || _mousePrefab == null || _spawnLocation == null)
             return;
 
-        int targetCount = Mathf.Max(0, _resourceManager.CurrentMouse);
+        int targetCount = Mathf.Max(0, _resourceManager.CurrentMouse / 10);
         if (!force && targetCount == _lastSyncedCount)
             return;
 
