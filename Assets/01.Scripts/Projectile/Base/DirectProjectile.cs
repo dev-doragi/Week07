@@ -22,10 +22,17 @@ public class DirectProjectile : ProjectileBase
         _isInitialized = true;
 
         transform.position = _startPos;
+        transform.rotation = ResolveRotation();
+    }
+
+    private Quaternion ResolveRotation()
+    {
+        if (_attackerTeam == TeamType.Player)
+            return Quaternion.identity;
 
         Vector3 direction = (_targetPos - _startPos).normalized;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + 180f;
-        transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+        return Quaternion.AngleAxis(angle, Vector3.forward);
     }
 
     protected virtual void Update()
@@ -35,10 +42,7 @@ public class DirectProjectile : ProjectileBase
         _elapsedTime += Time.deltaTime;
         float t = Mathf.Clamp01(_elapsedTime / _duration);
         transform.position = Vector3.Lerp(_startPos, _targetPos, t);
-
-        Vector3 direction = (_targetPos - _startPos).normalized;
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + 180f;
-        transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+        transform.rotation = ResolveRotation();
 
         if (t >= 1f)
         {
@@ -51,17 +55,18 @@ public class DirectProjectile : ProjectileBase
     {
         if (!_isInitialized) return;
 
-        if(other.CompareTag("RitualWall") && _attackerTeam == TeamType.Enemy)
+        if (other.CompareTag("RitualWall") && _attackerTeam == TeamType.Enemy)
         {
             Despawn();
             return;
         }
 
         IDamageable target = other.GetComponentInParent<IDamageable>();
-        if (target != null)
-        {
-            ProcessHit(target, transform.position);
-        }
+        if (target == null) return;
+
+        if (target.Category == UnitCategory.Wheel) return;
+
+        ProcessHit(target, transform.position);
     }
 
     protected override void Despawn()

@@ -8,6 +8,7 @@ using UnityEngine;
 public class RatProjectile : DirectProjectile
 {
     [SerializeField] private string _fragmentPoolKey;
+    [SerializeField] private int _fragmentCount = 3;
 
     public void Initialize(Unit attacker, Vector3 startPosition, Vector3 targetPosition, float travelTime)
     {
@@ -26,6 +27,9 @@ public class RatProjectile : DirectProjectile
     {
         if (string.IsNullOrEmpty(_fragmentPoolKey)) return;
 
-        PoolManager.Instance.Spawn(_fragmentPoolKey, transform.position, Quaternion.identity);
+        for (int i = 0; i < _fragmentCount; i++)
+        {
+            PoolManager.Instance.Spawn(_fragmentPoolKey, transform.position, Quaternion.identity);
+        }
     }
 }
