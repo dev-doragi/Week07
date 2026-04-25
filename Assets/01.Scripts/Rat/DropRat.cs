@@ -20,11 +20,11 @@ public class DropRat : MonoBehaviour
     [Header("Components")]
     [SerializeField] private Rigidbody2D _rigid;
     [SerializeField] private SpriteRenderer _sr;
-    [SerializeField] private Animator _anim;
 
     [Header("Sprites / Anim")]
     [SerializeField] private Sprite _aliveSprite;
-    [SerializeField] private Sprite _runningSprite;
+    [SerializeField] private Sprite[] _runFrames;
+    [SerializeField] private float _runFrameRate = 8f;
 
     [Header("Physics")]
     [SerializeField] private float _knockBackPower = 4f;
@@ -38,6 +38,7 @@ public class DropRat : MonoBehaviour
 
     private bool _isMoving;
     private bool _isCollected;
+    private Coroutine _animCoroutine;
 
     /// <summary>
     /// 오브젝트가 활성화될 때 초기화 및 스폰 넉백을 적용합니다.
@@ -46,6 +47,9 @@ public class DropRat : MonoBehaviour
     {
         _isMoving = false;
         _isCollected = false;
+
+        if(_animCoroutine != null) StopCoroutine(_animCoroutine);
+        _animCoroutine = null;
 
         if (_rigid == null)
         {
@@ -61,11 +65,6 @@ public class DropRat : MonoBehaviour
 
         if (_sr != null && _aliveSprite != null) _sr.sprite = _aliveSprite;
 
-        if (_anim != null)
-        {
-            _anim.ResetTrigger("Run");
-            _anim.Rebind();
-        }
     }
 
     /// <summary>
@@ -75,6 +74,8 @@ public class DropRat : MonoBehaviour
     {
         _isMoving = false;
         _isCollected = false;
+        if(_animCoroutine != null) StopCoroutine(_animCoroutine);
+        _animCoroutine = null;
     }
 
     /// <summary>
@@ -89,11 +90,12 @@ public class DropRat : MonoBehaviour
 
         if (!_isMoving && CheckLayerInMask(collision.gameObject.layer, _groundLayerMask))
         {
-            if (_anim != null) _anim.SetTrigger("Run");
             _isMoving = true;
 
-            if (_sr != null && _runningSprite != null)
-                _sr.sprite = _runningSprite;
+            if(_runFrames != null && _runFrames.Length > 0)
+            {
+                _animCoroutine = StartCoroutine(RunAnimLoop());
+            }
         }
 
         if (_isCollected) return;
@@ -118,6 +120,19 @@ public class DropRat : MonoBehaviour
             Collect();
         }
     }
+
+    private System.Collections.IEnumerator RunAnimLoop()
+    {
+        float interval = 1f / _runFrameRate;
+        int index = 0;
+        while(true)
+        {
+            _sr.sprite = _runFrames[index];
+            index = (index + 1) % _runFrames.Length;
+            yield return new WaitForSeconds(interval);
+        }
+    }
+
 
     /// <summary>
     /// 매 프레임 이동 처리 (주행 중일 때 수평 속도 적용).
