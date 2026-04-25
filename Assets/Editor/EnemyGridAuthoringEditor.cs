@@ -39,7 +39,7 @@ public class EnemyGridAuthoringEditor : Editor
 
         GUILayout.Space(8f);
 
-        if (GUILayout.Button("Clear Enemy Grid"))
+        if (GUILayout.Button("TutorialClear Enemy Grid"))
         {
             ClearEnemyGrid();
         }

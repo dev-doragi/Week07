@@ -64,7 +64,13 @@ public class StageManager : Singleton<StageManager>
 
     private void OnCoreDestroyed(CoreDestroyedEvent evt)
     {
-        if (GameFlowManager.Instance != null && GameFlowManager.Instance.CurrentInGameState != InGameState.WavePlaying)
+        // GameFlowManager가 없으면 EndWave를 호출하지 않음 (방어)
+        if (GameFlowManager.Instance == null)
+        {
+            Debug.LogWarning("[StageManager] GameFlowManager.Instance가 null이므로 EndWave를 호출하지 않습니다.");
+            return;
+        }
+        if (GameFlowManager.Instance.CurrentInGameState != InGameState.WavePlaying)
         {
             return;
         }
