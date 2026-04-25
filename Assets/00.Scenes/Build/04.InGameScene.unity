@@ -5997,6 +5997,57 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1067768473}
   m_CullTransparentMesh: 1
+--- !u!1 &1120811416
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1120811418}
+  - component: {fileID: 1120811417}
+  m_Layer: 0
+  m_Name: AntiStallSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1120811417
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1120811416}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a0a6a9852627204bbab36bc835e3039, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AntiStallSystem
+  _stallUnitData: {fileID: 11400000, guid: fae3433d89cd678429181260f91b9573, type: 2}
+  _firstSpawnDelay: 60
+  _spawnInterval: 20
+  _spawnPerCycle: 2
+  _xOffsetFirst: 3
+  _xOffsetNext: 1
+  _spawnY: 0
+--- !u!4 &1120811418
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1120811416}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1133905489
 GameObject:
   m_ObjectHideFlags: 0
@@ -7194,6 +7245,7 @@ MonoBehaviour:
   _ghostCellPrefab: {fileID: 2592798566633237559, guid: 7db8010cc69d69f4891d2f51170cd300, type: 3}
   _validColor: {r: 0, g: 0, b: 0, a: 0.39607844}
   _invalidColor: {r: 1, g: 0.2, b: 0.2, a: 0.5}
+  _hintColor: {r: 0.2, g: 1, b: 0.2, a: 0.3}
   _spritePreviewAlpha: 0.3
 --- !u!1 &1344461221
 GameObject:
@@ -11801,3 +11853,4 @@ SceneRoots:
   - {fileID: 1815692531}
   - {fileID: 1904706380}
   - {fileID: 1384917482}
+  - {fileID: 1120811418}
