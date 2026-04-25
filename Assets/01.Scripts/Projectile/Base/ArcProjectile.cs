@@ -21,7 +21,7 @@ public class ArcProjectile : ProjectileBase
         transform.position = _startPos;
     }
 
-    private void Update()
+    protected virtual void Update()
     {
         if (!_isInitialized) return;
 
@@ -38,11 +38,12 @@ public class ArcProjectile : ProjectileBase
             {
                 Explode(transform.position);
             }
+            OnImpact(transform.position);
             Despawn();
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    protected virtual void OnTriggerEnter2D(Collider2D other)
     {
         if (!_isInitialized) return;
 

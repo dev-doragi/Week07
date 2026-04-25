@@ -13,6 +13,12 @@ public class ArcAttacker : MonoBehaviour, IAttacker
         Vector3 startPos = _spawnPoint != null ? _spawnPoint.position : transform.position;
         GameObject obj = PoolManager.Instance.Spawn(attackData.ProjectilePrefab.name, startPos, Quaternion.identity);
 
+        if (obj.TryGetComponent(out RatBombProjectile ratBomb))
+        {
+            ratBomb.Initialize(attacker, startPos, target.transform.position, _travelTime, _arcHeight);
+            return true;
+        }
+
         if (obj.TryGetComponent(out ArcProjectile projectile))
         {
             projectile.Initialize(attackData, attacker.Team, startPos, target.transform.position, _travelTime, _arcHeight);

@@ -38,6 +38,8 @@ public abstract class ProjectileBase : MonoBehaviour
         _remainingPiercing = data.PiercingCount;
     }
 
+    protected virtual void OnImpact(Vector2 hitPoint) { }
+
     protected virtual void ProcessHit(IDamageable target, Vector2 hitPoint)
     {
         // 방어: target이 null일 수 있으므로 먼저 검사
@@ -56,11 +58,13 @@ public abstract class ProjectileBase : MonoBehaviour
         {
             case AreaType.Single:
                 target.TakeDamage(data);
+                OnImpact(hitPoint);
                 Despawn();
                 break;
 
             case AreaType.Splash:
                 Explode(hitPoint);
+                OnImpact(hitPoint);
                 Despawn();
                 break;
 
@@ -68,7 +72,11 @@ public abstract class ProjectileBase : MonoBehaviour
                 data.IsPiercing = true;
                 target.TakeDamage(data);
                 _currentDamage *= _attackData.PiercingDecay;
-                if (_remainingPiercing-- <= 0) Despawn();
+                if (_remainingPiercing-- <= 0)
+                {
+                    OnImpact(hitPoint);
+                    Despawn();
+                }
                 break;
         }
     }

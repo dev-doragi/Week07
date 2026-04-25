@@ -28,7 +28,7 @@ public class DirectProjectile : ProjectileBase
         transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
     }
 
-    private void Update()
+    protected virtual void Update()
     {
         if (!_isInitialized) return;
 
@@ -40,10 +40,14 @@ public class DirectProjectile : ProjectileBase
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + 180f;
         transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
 
-        if (t >= 1f) Despawn();
+        if (t >= 1f)
+        {
+            OnImpact(transform.position);
+            Despawn();
+        }
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    protected virtual void OnTriggerEnter2D(Collider2D other)
     {
         if (!_isInitialized) return;
 
