@@ -9,6 +9,7 @@ public class Bootstrapper : MonoBehaviour
     [Header("Global Managers (DDOL)")]
     [SerializeField] private GameLogger _gameLoggerPrefab;
     [SerializeField] private ProgressManager _progressManagerPrefab;
+    [SerializeField] private InputReader _inputReaderPrefab;
     [SerializeField] private GameManager _gameManagerPrefab;
     [SerializeField] private GameFlowManager _gameFlowManagerPrefab;
     [SerializeField] private PauseManager _pauseManagerPrefab;
@@ -25,6 +26,7 @@ public class Bootstrapper : MonoBehaviour
         // 1. 글로벌 매니저 인스턴스 보장
         EnsureInstance(_gameLoggerPrefab);
         EnsureInstance(_progressManagerPrefab);
+        EnsureInstance(_inputReaderPrefab);
         EnsureInstance(_gameManagerPrefab);
         EnsureInstance(_gameFlowManagerPrefab);
         EnsureInstance(_pauseManagerPrefab);
@@ -49,17 +51,18 @@ public class Bootstrapper : MonoBehaviour
         if (GameLogger.Instance != null) GameLogger.Instance.BootstrapIfNeeded();
         if (ProgressManager.Instance != null) ProgressManager.Instance.BootstrapIfNeeded();
         if (SceneLoader.Instance != null) SceneLoader.Instance.BootstrapIfNeeded();
+        if (InputReader.Instance != null) InputReader.Instance.BootstrapIfNeeded();
 
-        // [순서 2] 게임 코어 및 스테이지 상태
+        // [순서 2] 게임 코어 및 전투 흐름 상태 (수신자 먼저)
         if (GameManager.Instance != null) GameManager.Instance.BootstrapIfNeeded();
-        if (StageManager.Instance != null) StageManager.Instance.BootstrapIfNeeded();
-
-        // [순서 3] 전투 흐름 및 로직
         if (GameFlowManager.Instance != null) GameFlowManager.Instance.BootstrapIfNeeded();
+
+        // [순서 3] 스테이지 및 환경 로드 (발행자 나중에)
+        if (StageManager.Instance != null) StageManager.Instance.BootstrapIfNeeded();
         if (GridManager.Instance != null) GridManager.Instance.BootstrapIfNeeded();
         if (PauseManager.Instance != null) PauseManager.Instance.BootstrapIfNeeded();
 
-        // [순서 4] 뷰 및 풀링 (가장 마지막에 현재 상태 동기화)
+        // [순서 4] 뷰 및 풀링
         if (PoolManager.Instance != null) PoolManager.Instance.BootstrapIfNeeded();
         if (UIManager.Instance != null) UIManager.Instance.BootstrapIfNeeded();
         if (SoundManager.Instance != null) SoundManager.Instance.BootstrapIfNeeded();
