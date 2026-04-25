@@ -38,7 +38,7 @@ MonoBehaviour:
     PiercingCount: 0
     Penetration: 0
     PiercingDecay: 0
-    ProjectilePrefab: {fileID: 6579287745903239311, guid: 44e7b9d803cb906429430b1fb3eb89b4, type: 3}
+    ProjectilePrefab: {fileID: 6579287745903239311, guid: a529ebaa78b428240bfbd9a28e01fbdc, type: 3}
   Defense:
     CollisionPower: 0
   Support:

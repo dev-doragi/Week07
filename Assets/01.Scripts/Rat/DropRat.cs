@@ -14,7 +14,6 @@ public class DropRat : MonoBehaviour
     [SerializeField] private float _knockBackPower = 4f;
     [SerializeField] private float _moveSpeed = 1f;
     [SerializeField] private int _rewardAmount = 2;
-    [SerializeField] private LayerMask _groundLayerMask;
 
     private bool _isMoving;
     private bool _isCollected;
@@ -44,7 +43,7 @@ public class DropRat : MonoBehaviour
     {
         if (collision == null) return;
 
-        if (!_isMoving && CheckLayerInMask(collision.gameObject.layer, _groundLayerMask))
+        if (!_isMoving && collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
             _isMoving = true;
             if (_animator != null) _animator.SetTrigger("Run");
@@ -75,10 +74,5 @@ public class DropRat : MonoBehaviour
 
         ResourceManager.Instance?.AddMouseCount(_rewardAmount);
         PoolManager.Instance.Despawn(gameObject);
-    }
-
-    private bool CheckLayerInMask(int layer, LayerMask mask)
-    {
-        return (mask.value & (1 << layer)) != 0;
     }
 }
