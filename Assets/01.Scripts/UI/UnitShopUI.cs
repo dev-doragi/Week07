@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -21,6 +22,7 @@ public class UnitShopUI : MonoBehaviour
     [Header("Unit Data")]
     [Tooltip("비워두면 Resources/UnitSO 폴더에서 자동 로드")]
     [SerializeField] private List<UnitDataSO> _allUnits;
+    [SerializeField] private TextMeshProUGUI _capacityText;     //수용량 텍스트 UI
 
     [Header("Slide Settings")]
     [SerializeField] private float _slideDuration = 0.25f;
@@ -46,6 +48,19 @@ public class UnitShopUI : MonoBehaviour
         }
     }
 
+    private void OnEnable()
+    {
+        if(GridManager.Instance != null)
+            GridManager.Instance.OnCapacityChanged += UpdateCapacityText;
+    }
+
+    private void OnDisable()
+    {
+        if(GridManager.Instance != null)
+            GridManager.Instance.OnCapacityChanged -= UpdateCapacityText;
+    }
+
+
     private void Start()
     {
         if (_allUnits == null || _allUnits.Count == 0)
@@ -56,6 +71,12 @@ public class UnitShopUI : MonoBehaviour
         _attackBtn.onClick.AddListener(() => OnCategoryClicked(UnitCategory.Attack));
         _defenseBtn.onClick.AddListener(() => OnCategoryClicked(UnitCategory.Defense));
         _supportBtn.onClick.AddListener(() => OnCategoryClicked(UnitCategory.Support));
+    }
+
+    private void UpdateCapacityText()
+    {
+        if(_capacityText != null && GridManager.Instance != null)
+            _capacityText.text = $"{GridManager.Instance.CurrentUnitCount} / {GridManager.Instance.MaxCapacity}";
     }
 
     private void OnCategoryClicked(UnitCategory category)
@@ -77,6 +98,18 @@ public class UnitShopUI : MonoBehaviour
     {
         foreach (Transform child in _cardContainer)
             Destroy(child.gameObject);
+
+        //지원 탭일 때 설치 가능한 바퀴를 최상단에 먼저 추가
+        if(category == UnitCategory.Support)
+        {
+            foreach(var data in _allUnits)
+            {
+                if(data.Category != UnitCategory.Wheel) continue;
+                if(data.PlacementRule == PlacementRule.InitialOnly) continue;
+                var card = Instantiate(_cardPrefab, _cardContainer);
+                card.Setup(data, OnUnitSelected);
+            }
+        }
 
         foreach (var data in _allUnits)
         {

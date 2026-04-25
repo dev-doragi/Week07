@@ -5,11 +5,11 @@ using UnityEngine;
 // ================================================================
 // 그리드의 모든 것을 담당하는 싱글톤 매니저 (씬에 1개만 존재)
 // 담당:
-//   1) 그리드 데이터 저장 (어떤 셀에 뭐가 있는지)
-//   2) 좌표 변환 (월드 ↔ 셀)
-//   3) 설치 가능 여부 검증 (규칙 체크)
-//   4) 실제 설치/제거 (프리팹 Instantiate/Destroy)
-//   5) 에디터에서 그리드 라인 시각화 (Gizmo)
+//    1) 그리드 데이터 저장 (어떤 셀에 뭐가 있는지)
+//    2) 좌표 변환 (월드 ↔ 셀)
+//    3) 설치 가능 여부 검증 (규칙 체크)
+//    4) 실제 설치/제거 (프리팹 Instantiate/Destroy)
+//    5) 에디터에서 그리드 라인 시각화 (Gizmo)
 // ================================================================
 [DefaultExecutionOrder(-150)]
 public class GridManager : Singleton<GridManager>
@@ -35,6 +35,9 @@ public class GridManager : Singleton<GridManager>
     };
 
     public int Width => _width;
+    public event System.Action OnCapacityChanged;
+    public int MaxCapacity => SumWheelCapacities();
+    public int CurrentUnitCount => CountPlacedUnits();
     public int Height => _height;
     public float CellSize => _cellSize;
 
@@ -117,6 +120,20 @@ public class GridManager : Singleton<GridManager>
         if (data == null) return false;
         if (data.PlacementRule == PlacementRule.InitialOnly) return false;
 
+        if (origin.y == 0 && data.Category != UnitCategory.Wheel)
+        {
+            return false;
+        }
+
+        if (data.Category == UnitCategory.Wheel && data.PlacementRule != PlacementRule.InitialOnly)
+        {
+            if (origin.y != 0)
+            {
+                Debug.Log("[GridManager] 바퀴는 최하단 행에만 설치 가능함!!");
+                return false;
+            }
+        }
+
         for (int x = 0; x < data.Size.x; x++)
         {
             for (int y = 0; y < data.Size.y; y++)
@@ -129,7 +146,7 @@ public class GridManager : Singleton<GridManager>
         return data.PlacementRule switch
         {
             PlacementRule.NeedsFoundationBelow => HasFoundationBelow(data, origin),
-            PlacementRule.NeedsAdjacent        => HasAnyAdjacent(data, origin),
+            PlacementRule.NeedsAdjacent => HasAnyAdjacent(data, origin),
             _ => false
         };
     }
@@ -170,6 +187,16 @@ public class GridManager : Singleton<GridManager>
     public bool TryPlace(UnitDataSO data, Vector2Int origin)
     {
         if (!CanPlace(data, origin)) return false;
+
+        if (data.Category != UnitCategory.Wheel && data.Category != UnitCategory.Core)
+        {
+            if (CurrentUnitCount >= MaxCapacity)
+            {
+                Debug.Log($"[GridManager] 수용량 초과 | {CurrentUnitCount}/{MaxCapacity}");
+                return false;
+            }
+        }
+
         if (data.Cost > 0 && ResourceManager.Instance != null)
         {
             int before = ResourceManager.Instance.CurrentMouse;
@@ -248,6 +275,43 @@ public class GridManager : Singleton<GridManager>
             0f);
     }
 
+    //수용량 헬퍼 메서드
+    private int SumWheelCapacities()
+    {
+        var counted = new HashSet<PlacedUnit>();
+        int total = 0;
+        for (int x = 0; x < _width; x++)
+        {
+            for (int y = 0; y < _height; y++)
+            {
+                var unit = _cells[x, y];
+                if (unit != null && unit.Data.Category == UnitCategory.Wheel && counted.Add(unit))
+                    total += unit.Data.WheelCapacity;
+            }
+        }
+
+        return total;
+    }
+
+    private int CountPlacedUnits()
+    {
+        var counted = new HashSet<PlacedUnit>();
+        for (int x = 0; x < _width; x++)
+        {
+            for (int y = 0; y < _height; y++)
+            {
+                var unit = _cells[x, y];
+                if (unit != null
+                && unit.Data.Category != UnitCategory.Wheel
+                && unit.Data.Category != UnitCategory.Core)
+                {
+                    counted.Add(unit);
+                }
+            }
+        }
+        return counted.Count;
+    }
+
     private void CreateAndRegister(UnitDataSO data, Vector2Int origin)
     {
         var instance = Instantiate(data.Prefab, FootprintCenter(data, origin), Quaternion.identity, transform);
@@ -279,7 +343,9 @@ public class GridManager : Singleton<GridManager>
             unit.InitializeRuntime();
             unit.OnDead += (deadUnit) => OnUnitDied(placed);
         }
-        // notify listeners that player grid changed (for CP UI refresh)
+
+        // [Merge Resolved] 브랜치별 알림 로직 통합
+        OnCapacityChanged?.Invoke();
         EventBus.Instance?.Publish(new PlayerGridChangedEvent());
     }
 
@@ -351,7 +417,7 @@ public class GridManager : Singleton<GridManager>
     public List<Unit> GetAllLivingUnits()
     {
         var counted = new HashSet<PlacedUnit>();
-        var result  = new List<Unit>();
+        var result = new List<Unit>();
 
         for (int x = 0; x < _width; x++)
         {
@@ -372,7 +438,7 @@ public class GridManager : Singleton<GridManager>
         return result;
     }
 
-#region 디버그 시각화
+    #region 디버그 시각화
 
     private void OnDrawGizmos()
     {
@@ -391,9 +457,9 @@ public class GridManager : Singleton<GridManager>
         }
     }
 
-#endregion
+    #endregion
 
-#region 연쇄붕괴 시스템
+    #region 연쇄붕괴 시스템
 
     private const float COLLAPSE_DELAY = 0.15f;
     private bool _collapseScheduled = false;
@@ -412,6 +478,10 @@ public class GridManager : Singleton<GridManager>
 
         var falling = go.AddComponent<FallingUnit>();
         falling.Begin();
+
+        // [Merge Resolved] 브랜치별 알림 로직 통합
+        OnCapacityChanged?.Invoke();
+        EventBus.Instance?.Publish(new PlayerGridChangedEvent());
     }
 
     private void ScheduleCollapseCheck()
@@ -476,9 +546,9 @@ public class GridManager : Singleton<GridManager>
     {
         return unit.Data.PlacementRule switch
         {
-            PlacementRule.InitialOnly          => true,
+            PlacementRule.InitialOnly => true,
             PlacementRule.NeedsFoundationBelow => HasSupportedFoundationBelow(unit, supported),
-            PlacementRule.NeedsAdjacent        => HasSupportedAdjacent(unit, supported),
+            PlacementRule.NeedsAdjacent => HasSupportedAdjacent(unit, supported),
             _ => false
         };
     }
@@ -517,7 +587,7 @@ public class GridManager : Singleton<GridManager>
         return false;
     }
 
-#endregion
+    #endregion
 }
 
 // ================================================================

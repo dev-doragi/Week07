@@ -21,6 +21,11 @@ public class StageManager : Singleton<StageManager>
     [SerializeField] private StageDataSO[] _stageDatas;
     [SerializeField] private Transform _stageContainer;
 
+    [Header("Wave Start")]
+    [Min(0f)]
+    [Tooltip("All automatic wave waits use this value, including the first wave, map-selected waves, and next-wave waits.")]
+    [SerializeField] private float _initialWaveStartDelay = 15f;
+
     private StageLayout _currentLayout;
     private bool _isWaveEnding;
     private Coroutine _mapWaveStartCoroutine;
@@ -31,6 +36,7 @@ public class StageManager : Singleton<StageManager>
     public InGameState CurrentState { get; private set; } = InGameState.None;
     public StageDataSO CurrentStageData => _stageDatas != null && CurrentStageIndex >= 0 && CurrentStageIndex < _stageDatas.Length ? _stageDatas[CurrentStageIndex] : null;
     public bool IsFinalStage => _stageDatas != null && CurrentStageIndex >= _stageDatas.Length - 1;
+    public float WaveStartDelay => Mathf.Max(0f, _initialWaveStartDelay);
 
     protected override void OnBootstrap()
     {
@@ -44,6 +50,7 @@ public class StageManager : Singleton<StageManager>
         {
             int stageIndex = StageLoadContext.GetStageIndex();
             LoadStage(stageIndex);
+            StartWaveAfterDelay(0, WaveStartDelay);
         }
     }
 
@@ -143,6 +150,7 @@ public class StageManager : Singleton<StageManager>
             return;
         }
         LoadStage(CurrentStageIndex + 1);
+        StartWaveAfterDelay(0, WaveStartDelay);
     }
 
     public void ClearCurrentStage()
@@ -163,6 +171,8 @@ public class StageManager : Singleton<StageManager>
 
     public void StartWave(int waveIndex)
     {
+        StopMapWaveStartRoutine();
+
         if (CurrentStageData == null)
         {
             Debug.LogError("[StageManager] CurrentStageData가 없습니다.");
@@ -193,7 +203,7 @@ public class StageManager : Singleton<StageManager>
         }
 
         LoadStage(stageIndex);
-        _mapWaveStartCoroutine = StartCoroutine(StartMapWaveAfterDelay(waveIndex, delay));
+        StartWaveAfterDelay(waveIndex, WaveStartDelay);
     }
 
     public void StartNextWave()
@@ -213,11 +223,36 @@ public class StageManager : Singleton<StageManager>
 
     private IEnumerator StartMapWaveAfterDelay(int waveIndex, float delay)
     {
-        if (delay > 0f)
-            yield return new WaitForSeconds(delay);
+        float remainingTime = Mathf.Max(0f, delay);
+        PublishWaveWaitTick(remainingTime);
+
+        while (remainingTime > 0f)
+        {
+            if (GameManager.Instance != null && GameManager.Instance.CurrentState != GameState.Playing)
+            {
+                yield return null;
+                continue;
+            }
+
+            remainingTime -= Time.deltaTime;
+            PublishWaveWaitTick(remainingTime);
+            yield return null;
+        }
 
         _mapWaveStartCoroutine = null;
+        PublishWaveWaitTick(0f);
         StartWave(waveIndex);
+    }
+
+    private void StartWaveAfterDelay(int waveIndex, float delay)
+    {
+        StopMapWaveStartRoutine();
+        _mapWaveStartCoroutine = StartCoroutine(StartMapWaveAfterDelay(waveIndex, delay));
+    }
+
+    private void PublishWaveWaitTick(float remainingTime)
+    {
+        EventBus.Instance?.Publish(new WaveWaitTimerTickEvent { RemainingTime = Mathf.Max(0f, remainingTime) });
     }
 
     private void StopMapWaveStartRoutine()
@@ -227,5 +262,6 @@ public class StageManager : Singleton<StageManager>
 
         StopCoroutine(_mapWaveStartCoroutine);
         _mapWaveStartCoroutine = null;
+        PublishWaveWaitTick(0f);
     }
 }

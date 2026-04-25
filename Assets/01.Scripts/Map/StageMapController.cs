@@ -25,7 +25,7 @@ public class StageMapController : MonoBehaviour
     [Header("Visuals")]
     [SerializeField] private Sprite _productionRewardIcon;
     [SerializeField] private Sprite _ratTowerRewardIcon;
-    [SerializeField] private Color _backgroundColor = new Color(0f, 0f, 0f, 0.78f);
+    [SerializeField] private Color _backgroundColor = new Color32(0x20, 0x20, 0x20, 0xff);
     [SerializeField] private Color _lineColor = new Color(0.63f, 0.63f, 0.63f, 1f);
     [SerializeField] private Color _lockedNodeColor = new Color(0.34f, 0.34f, 0.34f, 1f);
     [SerializeField] private Color _availableNodeColor = new Color(0.92f, 0.92f, 0.92f, 1f);
@@ -38,6 +38,9 @@ public class StageMapController : MonoBehaviour
     private string _currentNodeId;
     private string _selectedNodeId;
     private bool _isInitialized;
+    private bool _isMapVisible;
+    private bool _hasPausedTimeScale;
+    private float _timeScaleBeforeMap = 1f;
 
     private class RuntimeNode
     {
@@ -65,6 +68,8 @@ public class StageMapController : MonoBehaviour
 
     private void OnDisable()
     {
+        SetMapVisible(false);
+
         if (_activeController == this)
             _activeController = null;
 
@@ -75,6 +80,11 @@ public class StageMapController : MonoBehaviour
     public static bool ShouldSuppressStageClearScreen()
     {
         return _activeController != null && _activeController.HasNextMapStepAfterCurrentClear();
+    }
+
+    public static bool IsMapVisible()
+    {
+        return _activeController != null && _activeController._isMapVisible;
     }
 
     private void Start()
@@ -375,16 +385,13 @@ public class StageMapController : MonoBehaviour
         if (_mapRoot != null)
             return;
 
-        GameObject rootObj = new GameObject("StageMapRoot", typeof(RectTransform), typeof(Image));
+        GameObject rootObj = new GameObject("StageMapRoot", typeof(RectTransform));
         _mapRoot = rootObj.GetComponent<RectTransform>();
         _mapRoot.SetParent(_targetCanvas.transform, false);
         _mapRoot.anchorMin = Vector2.zero;
         _mapRoot.anchorMax = Vector2.one;
         _mapRoot.offsetMin = Vector2.zero;
         _mapRoot.offsetMax = Vector2.zero;
-
-        Image background = rootObj.GetComponent<Image>();
-        background.color = _backgroundColor;
     }
 
     private void BuildMap()
@@ -392,10 +399,22 @@ public class StageMapController : MonoBehaviour
         ClearChildren(_mapRoot);
         _buttons.Clear();
 
+        RectTransform inputBlockerRoot = CreateChild("InputBlocker", _mapRoot).GetComponent<RectTransform>();
+        RectTransform backgroundRoot = CreateChild("Background", _mapRoot).GetComponent<RectTransform>();
         RectTransform lineRoot = CreateChild("Lines", _mapRoot).GetComponent<RectTransform>();
         RectTransform nodeRoot = CreateChild("Nodes", _mapRoot).GetComponent<RectTransform>();
+        Stretch(inputBlockerRoot);
+        StretchWithPadding(backgroundRoot, 300f);
         Stretch(lineRoot);
         Stretch(nodeRoot);
+
+        Image inputBlocker = inputBlockerRoot.gameObject.AddComponent<Image>();
+        inputBlocker.color = Color.clear;
+        inputBlocker.raycastTarget = true;
+
+        Image background = backgroundRoot.gameObject.AddComponent<Image>();
+        background.color = _backgroundColor;
+        background.raycastTarget = true;
 
         IReadOnlyList<RuntimeNode> nodes = _runtimeNodeList;
         for (int i = 0; i < nodes.Count; i++)
@@ -541,6 +560,7 @@ public class StageMapController : MonoBehaviour
     {
         if (_mapRoot == null) return;
         RefreshNodeStates();
+        SetMapVisible(true);
         _mapRoot.gameObject.SetActive(true);
     }
 
@@ -548,6 +568,41 @@ public class StageMapController : MonoBehaviour
     {
         if (_mapRoot != null)
             _mapRoot.gameObject.SetActive(false);
+
+        SetMapVisible(false);
+    }
+
+    private void SetMapVisible(bool isVisible)
+    {
+        if (_isMapVisible == isVisible)
+            return;
+
+        _isMapVisible = isVisible;
+        if (isVisible)
+            PauseGameForMap();
+        else
+            ResumeGameAfterMap();
+
+        EventBus.Instance?.Publish(new StageMapVisibilityChangedEvent { IsVisible = isVisible });
+    }
+
+    private void PauseGameForMap()
+    {
+        if (_hasPausedTimeScale)
+            return;
+
+        _timeScaleBeforeMap = Time.timeScale;
+        Time.timeScale = 0f;
+        _hasPausedTimeScale = true;
+    }
+
+    private void ResumeGameAfterMap()
+    {
+        if (!_hasPausedTimeScale)
+            return;
+
+        Time.timeScale = _timeScaleBeforeMap;
+        _hasPausedTimeScale = false;
     }
 
     private Sprite ResolveRewardIcon(StageMapReward reward)
@@ -601,6 +656,14 @@ public class StageMapController : MonoBehaviour
         rect.anchorMax = Vector2.one;
         rect.offsetMin = Vector2.zero;
         rect.offsetMax = Vector2.zero;
+    }
+
+    private static void StretchWithPadding(RectTransform rect, float padding)
+    {
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        rect.offsetMin = new Vector2(padding, padding);
+        rect.offsetMax = new Vector2(-padding, -padding);
     }
 
     private static void ClearChildren(Transform parent)
