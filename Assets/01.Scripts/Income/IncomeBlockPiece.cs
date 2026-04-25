@@ -83,6 +83,12 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         if (!_isDragging)
             return;
 
+        if (StageMapController.IsMapVisible())
+        {
+            CancelDrag();
+            return;
+        }
+
         var keyboard = Keyboard.current;
         if (keyboard != null && keyboard.rKey.wasPressedThisFrame)
         {
@@ -128,6 +134,9 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        if (StageMapController.IsMapVisible())
+            return;
+
         if (eventData.button != PointerEventData.InputButton.Left)
             return;
 
@@ -164,6 +173,9 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         if (!_isDragging)
             return;
 
+        if (StageMapController.IsMapVisible())
+            return;
+
         _dragEventCamera = eventData.pressEventCamera;
         _lastPointerScreenPosition = eventData.position;
         StickCenterToPointer(eventData.position, eventData.pressEventCamera);
@@ -175,6 +187,12 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     {
         if (!_isDragging)
             return;
+
+        if (StageMapController.IsMapVisible())
+        {
+            CancelDrag();
+            return;
+        }
 
         _isDragging = false;
         _canvasGroup.blocksRaycasts = true;
@@ -191,6 +209,9 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        if (StageMapController.IsMapVisible())
+            return;
+
         if (eventData.button != PointerEventData.InputButton.Right)
             return;
 
@@ -203,6 +224,18 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
             ResetToDefaultRotation();
             ReturnToHome();
         }
+    }
+
+    private void CancelDrag()
+    {
+        if (!_isDragging)
+            return;
+
+        _isDragging = false;
+        _canvasGroup.blocksRaycasts = true;
+        _gridBoard?.ClearPlacementPreview();
+        RestoreFromSnapshot();
+        ApplyVisualState(_blockColor);
     }
 
     private bool TryPlaceAtCurrentTransform(Camera eventCamera)

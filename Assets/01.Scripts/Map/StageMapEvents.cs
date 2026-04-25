@@ -12,3 +12,8 @@ public struct StageMapRewardAppliedEvent
     public string RewardId;
     public int Amount;
 }
+
+public struct StageMapVisibilityChangedEvent
+{
+    public bool IsVisible;
+}
