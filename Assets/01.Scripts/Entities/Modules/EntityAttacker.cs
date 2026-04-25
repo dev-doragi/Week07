@@ -63,8 +63,12 @@ public class EntityAttacker : MonoBehaviour
     {
         if (_currentTarget == null || _currentTarget.IsDead)
         {
-            _owner.ChangeState(UnitState.Idle);
-            return;
+            _currentTarget = SearchBestTarget();
+            if(_currentTarget == null)
+            {
+                _owner.ChangeState(UnitState.Idle);
+                return;    
+            }
         }
 
         if (_attackCooldown <= 0f)
@@ -97,7 +101,9 @@ public class EntityAttacker : MonoBehaviour
                 float attackInterval = 1f / Mathf.Max(0.1f, modifiedAttacksPerSecond);
                 
                 _attackCooldown = attackInterval;
-                _owner.ChangeState(UnitState.Idle);
+                var animator = _owner.GetComponent<UnitAnimator>();
+                animator?.PlayAttack(_data.Speed > 0 ? 1f / _data.Speed : 0f);
+                //_owner.ChangeState(UnitState.Idle);
                 
                 Debug.Log($"[EntityAttacker] {_owner.name} 공격 실행 | 다음 공격까지: {attackInterval:F2}초");
             }
