@@ -29,6 +29,9 @@ public class Unit : MonoBehaviour, IDamageable
     [Tooltip("순서대로 1단계(70%), 2단계(40%), 3단계(10%) 파손 스프라이트입니다.")]
     [SerializeField] private SpriteRenderer[] _damageOverlays;
 
+    [Header("Effect Prefabs")]
+    [SerializeField] private GameObject _healEffectPrefab;
+
     private Coroutine _hitEffectCo;
     private EntityStatReceiver _statReceiver;
     private EntityAttacker _attacker; // 공격 로직 참조
@@ -90,6 +93,12 @@ public class Unit : MonoBehaviour, IDamageable
         {
             var supporter = gameObject.GetOrAddComponent<EntitySupporter>();
             supporter.Setup(this, _data.Support);
+        }
+
+        if (_data.CanHeal)
+        {
+            var healer = gameObject.GetOrAddComponent<EntityHealer>();
+            healer.Setup(this, _data.Heal.HealAmount, _data.Heal.HealCooldown, _data.Heal.HealRange);
         }
     }
 
@@ -157,6 +166,30 @@ public class Unit : MonoBehaviour, IDamageable
 
         if (_currentHp <= 0f)
             ChangeState(UnitState.Dead);
+    }
+
+    public void Heal(float amount)
+    {
+        Debug.Log("Heal됨");
+        if (!_isInitialized || IsDead) return;
+        float maxHp = _data.MaxHp;
+        float prevHp = _currentHp;
+        _currentHp = Mathf.Min(_currentHp + amount, maxHp);
+        if (_currentHp != prevHp)
+        {
+            OnHpChanged?.Invoke(_currentHp, maxHp);
+            UpdateVisualFeedback();
+            if (_healEffectPrefab != null && PoolManager.Instance != null)
+            {
+                GameObject healFX = PoolManager.Instance.Spawn(_healEffectPrefab.name, transform.position, _healEffectPrefab.transform.rotation);
+                if (healFX != null)
+                {
+                    var ps = healFX.GetComponent<ParticleSystem>();
+                    if (ps != null && healFX.GetComponent<DespawnController>() == null)
+                        healFX.AddComponent<DespawnController>().Setup(ps);
+                }
+            }
+        }
     }
 
     private void UpdateVisualFeedback()

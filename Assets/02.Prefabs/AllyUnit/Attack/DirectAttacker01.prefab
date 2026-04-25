@@ -187,6 +187,7 @@ MonoBehaviour:
   _data: {fileID: 11400000, guid: 519025f91a3f45c4a96deb8a141c40d2, type: 2}
   _baseRenderer: {fileID: 5907671321792023873}
   _damageOverlays: []
+  _healEffectPrefab: {fileID: 4289407542021784391, guid: 3f97cb9369cf34e489655812e97fd93c, type: 3}
 --- !u!114 &5193325366856743645
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -63,6 +63,7 @@ MonoBehaviour:
   _data: {fileID: 11400000, guid: 4b8f6362e5023af4c83cfe26c8929c4a, type: 2}
   _baseRenderer: {fileID: 8819439468573589140}
   _damageOverlays: []
+  _healEffectPrefab: {fileID: 4289407542021784391, guid: 3f97cb9369cf34e489655812e97fd93c, type: 3}
 --- !u!61 &8417998693798523098
 BoxCollider2D:
   m_ObjectHideFlags: 0
