@@ -3916,35 +3916,15 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 802277797364095298, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 802277797364095298, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1950871296}
-    - target: {fileID: 802277797364095298, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: ExecuteCrash
-      objectReference: {fileID: 0}
-    - target: {fileID: 802277797364095298, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: SiegeChargeHandler, Assembly-CSharp
-      objectReference: {fileID: 0}
-    - target: {fileID: 802277797364095298, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
     - target: {fileID: 1171314715789322198, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1171314715789322198, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1278171207096310527, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
-      propertyPath: m_AnchoredPosition.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1816195939451451484, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
@@ -4035,14 +4015,6 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2166466540627130504, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
-      propertyPath: m_margin.x
-      value: -0.5529175
-      objectReference: {fileID: 0}
-    - target: {fileID: 2166466540627130504, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
-      propertyPath: m_margin.z
-      value: -1.1057129
-      objectReference: {fileID: 0}
     - target: {fileID: 2419784750767299302, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: m_Name
       value: InGamePanel
@@ -4068,11 +4040,11 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7216775616069275396, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
-      propertyPath: _siegeHandler
-      value: 
-      objectReference: {fileID: 1950871296}
+      propertyPath: _gaugePerHit
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 7216775616069275396, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
-      propertyPath: OnActivated.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      propertyPath: _siegeHandler
       value: 
       objectReference: {fileID: 1950871296}
     - target: {fileID: 7994137606967216088, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
