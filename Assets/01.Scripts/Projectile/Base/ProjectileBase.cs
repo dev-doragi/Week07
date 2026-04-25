@@ -44,10 +44,7 @@ public abstract class ProjectileBase : MonoBehaviour
     {
         if (target == null || target.Team == _attackerTeam || target.IsDead) return;
 
-        // Wheel 카테고리는 투사체 충돌 대상에서 제외
         if (target.Category == UnitCategory.Wheel) return;
-
-        //Debug.Log($"[ProcessHit] Damage: {_currentDamage}, Target Team: {target.Team}, Attacker Team: {_attackerTeam}", gameObject);
 
         DamageData data = new DamageData
         {
@@ -60,6 +57,8 @@ public abstract class ProjectileBase : MonoBehaviour
         {
             case AreaType.Single:
                 target.TakeDamage(data);
+                if (_attackerTeam == TeamType.Player)
+                    EventBus.Instance?.Publish(new EnemyHitEvent { AttackerTeam = _attackerTeam });
                 OnImpact(hitPoint);
                 Despawn();
                 break;
@@ -73,6 +72,8 @@ public abstract class ProjectileBase : MonoBehaviour
             case AreaType.Piercing:
                 data.IsPiercing = true;
                 target.TakeDamage(data);
+                if (_attackerTeam == TeamType.Player)
+                    EventBus.Instance?.Publish(new EnemyHitEvent { AttackerTeam = _attackerTeam });
                 _currentDamage *= _attackData.PiercingDecay;
                 if (_remainingPiercing-- <= 0)
                 {
@@ -83,10 +84,11 @@ public abstract class ProjectileBase : MonoBehaviour
         }
     }
 
-    // 자식 클래스가 필요에 따라 직접 폭발 처리를 할 수 있도록 protected로 변경
     protected void Explode(Vector2 center)
     {
         Collider2D[] targets = Physics2D.OverlapCircleAll(center, _attackData.RangeRadius);
+        int hitCount = 0;
+
         foreach (var col in targets)
         {
             if (col.TryGetComponent(out IDamageable target)
@@ -94,7 +96,14 @@ public abstract class ProjectileBase : MonoBehaviour
                 && !target.IsDead)
             {
                 target.TakeDamage(new DamageData { Damage = _currentDamage, HitPoint = center });
+                hitCount++;
             }
+        }
+
+        if (_attackerTeam == TeamType.Player && hitCount > 0)
+        {
+            for (int i = 0; i < hitCount; i++)
+                EventBus.Instance?.Publish(new EnemyHitEvent { AttackerTeam = _attackerTeam });
         }
     }
 

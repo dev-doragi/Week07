@@ -77,6 +77,7 @@ public class GridController : MonoBehaviour
         foreach (var pos in _wheelCells)
             _grid.PlaceInitial(_wheelData, pos);
         _grid.PlaceInitial(_coreData, _coreCell);
+        _grid.OnCapacityChanged += OnGridChanged;
     }
 
     // 매 프레임: 선택 → 프리뷰 → 클릭 순
@@ -90,6 +91,19 @@ public class GridController : MonoBehaviour
         HandleClicks(cell);
     }
 
+    private void OnDestroy()
+    {
+        if(_grid != null)
+            _grid.OnCapacityChanged -= OnGridChanged;
+    }
+
+    private void OnGridChanged()
+    {
+        if(_selected != null)
+            ShowValidCells(_selected);
+    }
+
+    // 유닛을 설치가능한 시각적 박스
     private void BuildGhostHierarchy()
     {
         _ghostRoot = new GameObject("GhostRoot").transform;
@@ -132,8 +146,9 @@ public class GridController : MonoBehaviour
                     sr = _hintCells.Find(h => !h.gameObject.activeSelf);
                 }
 
+                sr.transform.SetParent(_grid.transform);
                 sr.transform.position = _grid.CellToWorld(cell);
-                sr.transform.localScale = Vector3.one * _grid.CellSize;
+
                 sr.color = _hintColor;
                 sr.sortingOrder = 9;
                 sr.gameObject.SetActive(true);
@@ -173,7 +188,10 @@ public class GridController : MonoBehaviour
         if (mouse.leftButton.wasPressedThisFrame && _selected != null)
         {
             if (!EventSystem.current.IsPointerOverGameObject())
-                _grid.TryPlace(_selected, cell);
+            {
+                if(_grid.TryPlace(_selected, cell))
+                    ShowValidCells(_selected);
+            }
         }
 
         if (mouse.rightButton.wasPressedThisFrame)

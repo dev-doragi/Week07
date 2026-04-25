@@ -1,15 +1,12 @@
+using System;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
-/// <summary>
-/// 범용 차지 게이지 컨트롤러
-/// </summary>
 public class GaugeController : MonoBehaviour
 {
     [Header("Gauge Settings")]
     [SerializeField, Min(1f)] private float _maxGauge = 100f;
-    [SerializeField, Min(0f)] private float _chargeGaugePower = 1f;
+    [SerializeField, Min(1f)] private float _gaugePerHit = 10f;
 
     [Header("UI")]
     [SerializeField] private Button _button;
@@ -18,27 +15,34 @@ public class GaugeController : MonoBehaviour
     [Header("References")]
     [SerializeField] private SiegeChargeHandler _siegeHandler;
 
-    [Header("Events")]
-    public UnityEvent OnActivated;
+    public event Action OnActivated;
+    public event Action<float> OnGaugeChanged;
 
-    private float _currentGauge;
-    private bool _isGaugeFull;
-    private bool _isPaused;
-    private float _maxGaugeWidth; 
+    private float _currentGauge = 0f;
+    private bool _isGaugeFull = false;
+    private bool _isPaused = false;
+    private float _maxGaugeWidth;
 
     public float GaugeNormalized => _currentGauge / _maxGauge;
     public bool IsGaugeFull => _isGaugeFull;
+    public float CurrentGauge => _currentGauge;
 
     private void OnEnable()
     {
         if (_button != null)
-            _button.interactable = false;
+            _button.onClick.AddListener(HandleButtonClick);
+
+        UpdateGaugeUI();
+
+        EventBus.Instance?.Subscribe<EnemyHitEvent>(OnEnemyHit);
     }
 
     private void OnDisable()
     {
         if (_button != null)
             _button.onClick.RemoveListener(HandleButtonClick);
+
+        EventBus.Instance?.Unsubscribe<EnemyHitEvent>(OnEnemyHit);
     }
 
     private void Awake()
@@ -46,28 +50,56 @@ public class GaugeController : MonoBehaviour
         if (_gaugeRect != null)
             _maxGaugeWidth = _gaugeRect.sizeDelta.x;
 
+        _currentGauge = 0f;
+        _isGaugeFull = false;
+        if (_button != null)
+            _button.interactable = false;
+
+        UpdateGaugeUI();
+
         if (_siegeHandler == null)
         {
             _siegeHandler = FindAnyObjectByType<SiegeChargeHandler>();
         }
+
+        if (_siegeHandler != null)
+        {
+            _siegeHandler.OnCrashEnd += Resume;
+        }
     }
 
-    private void Update()
+    private void OnDestroy()
     {
-        TickGauge();
+        if (_siegeHandler != null)
+        {
+            _siegeHandler.OnCrashEnd -= Resume;
+        }
     }
 
-    private void TickGauge()
+    private void OnEnemyHit(EnemyHitEvent evt)
     {
-        if (_isGaugeFull || _isPaused) return;
+        if (evt.AttackerTeam != TeamType.Player) return;
 
-        _currentGauge = Mathf.Min(_currentGauge + _chargeGaugePower * Time.deltaTime, _maxGauge);
-        SetGaugeWidth(_currentGauge / _maxGauge * _maxGaugeWidth);
+        OnHit();
+    }
+
+    public void OnHit()
+    {
+        if (_isPaused || _isGaugeFull) return;
+
+        _currentGauge = Mathf.Min(_currentGauge + _gaugePerHit, _maxGauge);
+
+        UpdateGaugeUI();
 
         if (_currentGauge >= _maxGauge)
         {
             _isGaugeFull = true;
             if (_button != null) _button.interactable = true;
+            OnGaugeChanged?.Invoke(1f);
+        }
+        else
+        {
+            OnGaugeChanged?.Invoke(GaugeNormalized);
         }
     }
 
@@ -75,25 +107,25 @@ public class GaugeController : MonoBehaviour
     {
         if (!_isGaugeFull || _isPaused) return;
 
-        // 게이지 소비 + 버튼 잠금
         _currentGauge = 0f;
         _isGaugeFull = false;
         _isPaused = true;
-        SetGaugeWidth(0f);
+        UpdateGaugeUI();
 
         if (_button != null) _button.interactable = false;
 
-        // 외부 액션 호출 (SiegeChargeHandler.ExecuteCrash 등)
         OnActivated?.Invoke();
     }
 
-    /// <summary>
-    /// 외부 액션 완료 후 게이지 재충전 재개
-    /// SiegeChargeHandler.OnCrashEnd → 이 메서드에 연결
-    /// </summary>
     public void Resume()
     {
         _isPaused = false;
+    }
+
+    private void UpdateGaugeUI()
+    {
+        float normalizedGauge = GaugeNormalized;
+        SetGaugeWidth(normalizedGauge * _maxGaugeWidth);
     }
 
     private void SetGaugeWidth(float width)
