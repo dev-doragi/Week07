@@ -51,7 +51,8 @@ public class MeteorProjectile : MonoBehaviour
         var hits = Physics2D.OverlapCircleAll(explodePos, _splashRadius);
         foreach(var col in hits)
         {
-            if(!col.TryGetComponent(out IDamageable target)) continue;
+            IDamageable target = col.GetComponentInParent<IDamageable>();
+            if(target == null) continue;
             if(target.Team != TeamType.Enemy || target.IsDead) continue;
 
             target.TakeDamage(new DamageData
@@ -71,7 +72,8 @@ public class MeteorProjectile : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         if(!_launched) return;
-        if(!other.TryGetComponent(out IDamageable target)) return;
+        IDamageable target = other.GetComponentInParent<IDamageable>();
+        if(target == null) return;
         if(target.Team != TeamType.Enemy || target.IsDead) return;
 
         Explode();
