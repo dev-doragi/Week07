@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: AllyWall_4
   m_EditorClassIdentifier: Assembly-CSharp::UnitDataSO
   Key: 3
-  UnitName: "\uBCBD\uBCBD\uBCBD\uC950"
+  UnitName: "\uAE61\uBCBD\uC950"
   Team: 1
   Category: 4
   Prefab: {fileID: 664433030619585036, guid: 133aae2717435414d80594abbf2250eb, type: 3}
@@ -21,9 +21,10 @@ MonoBehaviour:
   Size: {x: 1, y: 1}
   PlacementRule: 2
   ActsAsFoundation: 1
-  MaxHp: 150
+  WheelCapacity: 5
+  MaxHp: 240
   BaseDefenseRate: 0
-  Cost: 15
+  Cost: 30
   DeathSpawnKey: 
   BaseDeathSpawnCount: 0
   Attack:
@@ -44,3 +45,7 @@ MonoBehaviour:
   Support:
     Radius: 0
     Effects: []
+  Heal:
+    HealRange: 10
+    HealAmount: 0
+    HealCooldown: 2

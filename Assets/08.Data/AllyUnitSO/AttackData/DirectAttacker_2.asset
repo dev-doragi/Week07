@@ -13,18 +13,18 @@ MonoBehaviour:
   m_Name: DirectAttacker_2
   m_EditorClassIdentifier: Assembly-CSharp::UnitDataSO
   Key: 14
-  UnitName: "\uD574\uAE081"
+  UnitName: "\uBD88\uBD99\uC774\uC950(\uC784\uC2DC\uBA85)"
   Team: 1
   Category: 3
   Prefab: {fileID: 0}
   Icon: {fileID: 0}
-  Size: {x: 1, y: 1}
-  PlacementRule: 0
+  Size: {x: 2, y: 1}
+  PlacementRule: 1
   ActsAsFoundation: 0
   WheelCapacity: 5
   MaxHp: 100
   BaseDefenseRate: 0
-  Cost: 20
+  Cost: 60
   DeathSpawnKey: 
   BaseDeathSpawnCount: 0
   Attack:

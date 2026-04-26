@@ -21,7 +21,8 @@ MonoBehaviour:
   Size: {x: 1, y: 1}
   PlacementRule: 2
   ActsAsFoundation: 1
-  MaxHp: 150
+  WheelCapacity: 5
+  MaxHp: 400
   BaseDefenseRate: 0
   Cost: 0
   DeathSpawnKey: 
@@ -44,3 +45,7 @@ MonoBehaviour:
   Support:
     Radius: 0
     Effects: []
+  Heal:
+    HealRange: 10
+    HealAmount: 0
+    HealCooldown: 2
