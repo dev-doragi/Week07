@@ -111,6 +111,9 @@ public class StageMapController : MonoBehaviour
             _currentNodeId = _routeData.StartNodeId;
         }
 
+        UnlockManager unlockManager = FindFirstObjectByType<UnlockManager>(FindObjectsInactive.Include);
+        unlockManager?.UnlockSkillsForClearedStage(evt.StageIndex);
+
         if (_currentNodeId == _routeData.FinalNodeId)
         {
             HideMap();
@@ -142,7 +145,11 @@ public class StageMapController : MonoBehaviour
         EnsureMapRoot();
         BuildRuntimeRoute();
         UnlockManager unlockManager = FindFirstObjectByType<UnlockManager>(FindObjectsInactive.Include);
-        unlockManager?.RegisterLockedUnits(_routeData.UnlockableRatUnits);
+        if (unlockManager != null)
+        {
+            unlockManager.RegisterLockedUnits(_routeData.UnlockableRatUnits);
+            unlockManager.RegisterSkillUnlocks(_routeData.SkillUnlocks);
+        }
         BuildMap();
         _currentNodeId = _routeData.StartNodeId;
         _isInitialized = true;

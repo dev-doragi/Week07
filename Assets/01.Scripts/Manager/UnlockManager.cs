@@ -9,8 +9,12 @@ public class UnlockManager : MonoBehaviour
 
     private readonly HashSet<int> _lockedUnitKeys = new HashSet<int>();
     private readonly HashSet<int> _unlockedUnitKeys = new HashSet<int>();
+    private readonly HashSet<int> _lockedSkillIndices = new HashSet<int>();
+    private readonly HashSet<int> _unlockedSkillIndices = new HashSet<int>();
+    private readonly Dictionary<int, List<int>> _skillsByClearStage = new Dictionary<int, List<int>>();
 
     public event Action<UnitDataSO> UnitUnlocked;
+    public event Action<int> SkillUnlocked;
 
     private void Awake()
     {
@@ -66,6 +70,65 @@ public class UnlockManager : MonoBehaviour
             return false;
 
         UnitUnlocked?.Invoke(unit);
+        return true;
+    }
+
+    public void RegisterSkillUnlocks(IReadOnlyList<StageSkillUnlockData> skillUnlocks)
+    {
+        _lockedSkillIndices.Clear();
+        _unlockedSkillIndices.Clear();
+        _skillsByClearStage.Clear();
+
+        if (skillUnlocks == null)
+            return;
+
+        for (int i = 0; i < skillUnlocks.Count; i++)
+        {
+            StageSkillUnlockData unlock = skillUnlocks[i];
+            if (unlock == null || unlock.SkillIndex <= 0)
+                continue;
+
+            _lockedSkillIndices.Add(unlock.SkillIndex);
+
+            if (!_skillsByClearStage.TryGetValue(unlock.ClearStageIndex, out List<int> skills))
+            {
+                skills = new List<int>();
+                _skillsByClearStage.Add(unlock.ClearStageIndex, skills);
+            }
+
+            if (!skills.Contains(unlock.SkillIndex))
+                skills.Add(unlock.SkillIndex);
+        }
+    }
+
+    public bool RequiresSkillUnlock(int skillIndex)
+    {
+        return _lockedSkillIndices.Contains(skillIndex);
+    }
+
+    public bool IsSkillUnlocked(int skillIndex)
+    {
+        return !_lockedSkillIndices.Contains(skillIndex) || _unlockedSkillIndices.Contains(skillIndex);
+    }
+
+    public void UnlockSkillsForClearedStage(int stageIndex)
+    {
+        if (!_skillsByClearStage.TryGetValue(stageIndex, out List<int> skills))
+            return;
+
+        for (int i = 0; i < skills.Count; i++)
+            UnlockSkill(skills[i]);
+    }
+
+    public bool UnlockSkill(int skillIndex)
+    {
+        if (!_lockedSkillIndices.Contains(skillIndex))
+            return false;
+
+        if (!_unlockedSkillIndices.Add(skillIndex))
+            return false;
+
+        SkillUnlocked?.Invoke(skillIndex);
         return true;
     }
 }

@@ -29,7 +29,7 @@ MonoBehaviour:
     - c1_mid
     - c1_bot
   - _nodeId: c1_top
-    _stageIndex: 0
+    _stageIndex: 1
     _normalizedPosition: {x: 0.25, y: 0.78}
     _reward:
       _type: 1
@@ -40,7 +40,7 @@ MonoBehaviour:
     _nextNodeIds:
     - c2_mid
   - _nodeId: c1_mid
-    _stageIndex: 0
+    _stageIndex: 1
     _normalizedPosition: {x: 0.25, y: 0.5}
     _reward:
       _type: 1
@@ -52,7 +52,7 @@ MonoBehaviour:
     - c2_top
     - c2_mid
   - _nodeId: c1_bot
-    _stageIndex: 0
+    _stageIndex: 1
     _normalizedPosition: {x: 0.25, y: 0.22}
     _reward:
       _type: 1
@@ -64,7 +64,7 @@ MonoBehaviour:
     - c2_mid
     - c2_bot
   - _nodeId: c2_top
-    _stageIndex: 0
+    _stageIndex: 2
     _normalizedPosition: {x: 0.42, y: 0.78}
     _reward:
       _type: 1
@@ -75,7 +75,7 @@ MonoBehaviour:
     _nextNodeIds:
     - c3_top
   - _nodeId: c2_mid
-    _stageIndex: 0
+    _stageIndex: 2
     _normalizedPosition: {x: 0.42, y: 0.5}
     _reward:
       _type: 2
@@ -86,7 +86,7 @@ MonoBehaviour:
     _nextNodeIds:
     - c3_mid
   - _nodeId: c2_bot
-    _stageIndex: 0
+    _stageIndex: 2
     _normalizedPosition: {x: 0.42, y: 0.22}
     _reward:
       _type: 1
@@ -97,7 +97,7 @@ MonoBehaviour:
     _nextNodeIds:
     - c3_bot
   - _nodeId: c3_top
-    _stageIndex: 0
+    _stageIndex: 3
     _normalizedPosition: {x: 0.58, y: 0.78}
     _reward:
       _type: 2
@@ -109,7 +109,7 @@ MonoBehaviour:
     - c4_top
     - c4_mid
   - _nodeId: c3_mid
-    _stageIndex: 0
+    _stageIndex: 3
     _normalizedPosition: {x: 0.58, y: 0.5}
     _reward:
       _type: 1
@@ -121,7 +121,7 @@ MonoBehaviour:
     - c4_mid
     - c4_bot
   - _nodeId: c3_bot
-    _stageIndex: 0
+    _stageIndex: 3
     _normalizedPosition: {x: 0.58, y: 0.22}
     _reward:
       _type: 2
@@ -132,7 +132,7 @@ MonoBehaviour:
     _nextNodeIds:
     - c4_mid
   - _nodeId: c4_top
-    _stageIndex: 0
+    _stageIndex: 4
     _normalizedPosition: {x: 0.75, y: 0.78}
     _reward:
       _type: 1
@@ -143,7 +143,7 @@ MonoBehaviour:
     _nextNodeIds:
     - final
   - _nodeId: c4_mid
-    _stageIndex: 0
+    _stageIndex: 4
     _normalizedPosition: {x: 0.75, y: 0.5}
     _reward:
       _type: 2
@@ -154,7 +154,7 @@ MonoBehaviour:
     _nextNodeIds:
     - final
   - _nodeId: c4_bot
-    _stageIndex: 0
+    _stageIndex: 4
     _normalizedPosition: {x: 0.75, y: 0.22}
     _reward:
       _type: 2
@@ -165,7 +165,7 @@ MonoBehaviour:
     _nextNodeIds:
     - final
   - _nodeId: final
-    _stageIndex: 0
+    _stageIndex: 5
     _normalizedPosition: {x: 0.92, y: 0.5}
     _reward:
       _type: 0
@@ -179,3 +179,10 @@ MonoBehaviour:
   _unlockableRatUnits:
   - {fileID: 11400000, guid: eeec5f3ed9635f447a80e53a2782b5c3, type: 2}
   - {fileID: 11400000, guid: c1c51b752c581ff48857766478134efa, type: 2}
+  _skillUnlocks:
+  - _clearStageIndex: 0
+    _skillIndex: 1
+  - _clearStageIndex: 1
+    _skillIndex: 2
+  - _clearStageIndex: 2
+    _skillIndex: 3
