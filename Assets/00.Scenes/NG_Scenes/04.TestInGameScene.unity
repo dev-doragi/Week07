@@ -1791,6 +1791,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5296992969310506774, guid: 810ff77847dc926408aa668c6034d877, type: 3}
+      propertyPath: _globalPools.Array.size
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 5296992969310506774, guid: 810ff77847dc926408aa668c6034d877, type: 3}
+      propertyPath: _globalPools.Array.data[7].Prefab
+      value: 
+      objectReference: {fileID: 6523836865489773202, guid: 172ce31f2366f8c4ca1056e1e26ed2d8, type: 3}
+    - target: {fileID: 5296992969310506774, guid: 810ff77847dc926408aa668c6034d877, type: 3}
+      propertyPath: _globalPools.Array.data[7].MaxSize
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 5296992969310506774, guid: 810ff77847dc926408aa668c6034d877, type: 3}
+      propertyPath: _globalPools.Array.data[7].InitialSize
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 8831656271116653013, guid: 810ff77847dc926408aa668c6034d877, type: 3}
       propertyPath: m_Name
       value: PoolManager
@@ -2899,6 +2915,15 @@ MonoBehaviour:
   _skill3Cooldown: 5
   _wallObject: {fileID: 1275786568}
   _skill1Duration: 5
+  _meteorPoolKey: MeteorProjectile
+  _meteorCount: 5
+  _meteorDamage: 40
+  _splashRadius: 2
+  _spawnHeight: 15
+  _targetRadius: 3
+  _minDuration: 0.8
+  _maxDuration: 1.4
+  _meteorDelay: 0.15
 --- !u!4 &1815692531
 Transform:
   m_ObjectHideFlags: 0
@@ -3911,6 +3936,14 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 2066150188}
+    - target: {fileID: 277339360353513318, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1815692530}
+    - target: {fileID: 277339360353513318, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: UseSkill2
+      objectReference: {fileID: 0}
     - target: {fileID: 575178730942400517, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -4071,14 +4104,6 @@ PrefabInstance:
       propertyPath: _siegeHandler
       value: 
       objectReference: {fileID: 1950871296}
-    - target: {fileID: 7803803503074585911, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 1815692530}
-    - target: {fileID: 7803803503074585911, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: UseSkill1
-      objectReference: {fileID: 0}
     - target: {fileID: 7994137606967216088, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: _gridController
       value: 
