@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// 플레이어가 사용하는 의식 스킬 3종을 관리합니다.
@@ -45,11 +46,16 @@ public class RitualSystem : MonoBehaviour
     public float Skill2CooldownRemaining => _skill2CooldownTimer;
     public float Skill3CooldownRemaining => _skill3CooldownTimer;
 
+    private void Start()
+    {
+        BindSkillCooldownViews();
+    }
+
     private void Update()
     {
-        if (_skill1CooldownTimer > 0f) _skill1CooldownTimer -= Time.deltaTime;
-        if (_skill2CooldownTimer > 0f) _skill2CooldownTimer -= Time.deltaTime;
-        if (_skill3CooldownTimer > 0f) _skill3CooldownTimer -= Time.deltaTime;
+        if (_skill1CooldownTimer > 0f) _skill1CooldownTimer = Mathf.Max(0f, _skill1CooldownTimer - Time.deltaTime);
+        if (_skill2CooldownTimer > 0f) _skill2CooldownTimer = Mathf.Max(0f, _skill2CooldownTimer - Time.deltaTime);
+        if (_skill3CooldownTimer > 0f) _skill3CooldownTimer = Mathf.Max(0f, _skill3CooldownTimer - Time.deltaTime);
     }
 
     // ──────────────────────────────────────────────
@@ -58,6 +64,7 @@ public class RitualSystem : MonoBehaviour
 
     public void UseSkill1()
     {
+        if (!IsSkillUnlocked(1)) return;
         if (!IsReady(1, _skill1CooldownTimer)) return;
         if (!TryConsumeResource(_skill1Cost)) return;
         _skill1CooldownTimer = _skill1Cooldown;
@@ -66,6 +73,7 @@ public class RitualSystem : MonoBehaviour
 
     public void UseSkill2()
     {
+        if (!IsSkillUnlocked(2)) return;
         if (!IsReady(2, _skill2CooldownTimer)) return;
         if (!TryConsumeResource(_skill2Cost)) return;
         _skill2CooldownTimer = _skill2Cooldown;
@@ -74,6 +82,7 @@ public class RitualSystem : MonoBehaviour
 
     public void UseSkill3()
     {
+        if (!IsSkillUnlocked(3)) return;
         if (!IsReady(3, _skill3CooldownTimer)) return;
         if (!TryConsumeResource(_skill3Cost)) return;
         _skill3CooldownTimer = _skill3Cooldown;
@@ -154,6 +163,58 @@ public class RitualSystem : MonoBehaviour
     private void OnSkill3()
     {
         StartCoroutine(MeteorRoutine());                //메테오 떨어트리기
+    }
+
+    public bool IsSkillUnlocked(int skillIndex)
+    {
+        return UnlockManager.Instance == null || UnlockManager.Instance.IsSkillUnlocked(skillIndex);
+    }
+
+    public float GetSkillCooldownRemaining(int skillIndex)
+    {
+        return skillIndex switch
+        {
+            1 => _skill1CooldownTimer,
+            2 => _skill2CooldownTimer,
+            3 => _skill3CooldownTimer,
+            _ => 0f
+        };
+    }
+
+    public float GetSkillCooldownDuration(int skillIndex)
+    {
+        return skillIndex switch
+        {
+            1 => _skill1Cooldown,
+            2 => _skill2Cooldown,
+            3 => _skill3Cooldown,
+            _ => 0f
+        };
+    }
+
+    private void BindSkillCooldownViews()
+    {
+        BindSkillCooldownView("SkillButton_1", 1);
+        BindSkillCooldownView("SkillButton_2", 2);
+        BindSkillCooldownView("SkillButton_3", 3);
+    }
+
+    private void BindSkillCooldownView(string buttonName, int skillIndex)
+    {
+        Button[] buttons = FindObjectsByType<Button>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        for (int i = 0; i < buttons.Length; i++)
+        {
+            Button button = buttons[i];
+            if (button == null || button.name != buttonName)
+                continue;
+
+            SkillButtonCooldownView view = button.GetComponent<SkillButtonCooldownView>();
+            if (view == null)
+                view = button.gameObject.AddComponent<SkillButtonCooldownView>();
+
+            view.Initialize(skillIndex, this);
+            return;
+        }
     }
 
     // ──────────────────────────────────────────────
