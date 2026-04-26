@@ -210,7 +210,7 @@ public class StageManager : Singleton<StageManager>
         EventBus.Instance?.Publish(new WaveStartedEvent { StageIndex = CurrentStageIndex, WaveIndex = waveIndex });
     }
 
-    public void StartStageFromMapNode(int stageIndex, int waveIndex, float delay)
+    public void StartStageFromMapNode(int stageIndex, float delay)
     {
         StopMapWaveStartRoutine();
 
@@ -221,7 +221,7 @@ public class StageManager : Singleton<StageManager>
         }
 
         LoadStage(stageIndex);
-        StartWaveAfterDelay(waveIndex, WaveStartDelay);
+        StartWaveAfterDelay(0, WaveStartDelay);
     }
 
     public void StartNextWave()

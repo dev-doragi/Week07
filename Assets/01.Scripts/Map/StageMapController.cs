@@ -46,7 +46,6 @@ public class StageMapController : MonoBehaviour
     {
         public string NodeId;
         public int StageIndex;
-        public int WaveIndex;
         public Vector2 Position;
         public StageMapReward Reward;
         public readonly List<string> NextNodeIds = new List<string>();
@@ -112,6 +111,9 @@ public class StageMapController : MonoBehaviour
             _currentNodeId = _routeData.StartNodeId;
         }
 
+        UnlockManager unlockManager = FindFirstObjectByType<UnlockManager>(FindObjectsInactive.Include);
+        unlockManager?.UnlockSkillsForClearedStage(evt.StageIndex);
+
         if (_currentNodeId == _routeData.FinalNodeId)
         {
             HideMap();
@@ -142,6 +144,12 @@ public class StageMapController : MonoBehaviour
         EnsureCanvas();
         EnsureMapRoot();
         BuildRuntimeRoute();
+        UnlockManager unlockManager = FindFirstObjectByType<UnlockManager>(FindObjectsInactive.Include);
+        if (unlockManager != null)
+        {
+            unlockManager.RegisterLockedUnits(_routeData.UnlockableRatUnits);
+            unlockManager.RegisterSkillUnlocks(_routeData.SkillUnlocks);
+        }
         BuildMap();
         _currentNodeId = _routeData.StartNodeId;
         _isInitialized = true;
@@ -178,7 +186,6 @@ public class StageMapController : MonoBehaviour
             {
                 NodeId = source.NodeId,
                 StageIndex = source.StageIndex,
-                WaveIndex = source.WaveIndex,
                 Position = source.NormalizedPosition,
                 Reward = source.Reward
             };
@@ -190,11 +197,17 @@ public class StageMapController : MonoBehaviour
             _runtimeNodeList.Add(node);
         }
 
-        if (!_randomizeOnStart)
-            return;
+        if (_routeData.UnlockableRatUnits != null && _routeData.UnlockableRatUnits.Count > 0)
+        {
+            AssignRouteRewardPool();
+        }
+        else if (_randomizeOnStart)
+        {
+            RandomizeRewards();
+        }
 
-        RandomizeRewards();
-        RandomizePositionsAndConnections();
+        if (_randomizeOnStart)
+            RandomizePositionsAndConnections();
     }
 
     private void RandomizeRewards()
@@ -220,6 +233,37 @@ public class StageMapController : MonoBehaviour
 
             node.Reward = rewardPool[rewardIndex++];
         }
+    }
+
+    private void AssignRouteRewardPool()
+    {
+        var rewardNodes = new List<RuntimeNode>();
+        for (int i = 0; i < _runtimeNodeList.Count; i++)
+        {
+            RuntimeNode node = _runtimeNodeList[i];
+            if (!IsEndpoint(node.NodeId))
+                rewardNodes.Add(node);
+        }
+
+        Shuffle(rewardNodes);
+
+        var rewardPool = new List<StageMapReward>();
+        IReadOnlyList<UnitDataSO> unlockUnits = _routeData.UnlockableRatUnits;
+        for (int i = 0; i < unlockUnits.Count; i++)
+        {
+            UnitDataSO unit = unlockUnits[i];
+            if (unit != null)
+                rewardPool.Add(StageMapReward.RatTowerUnlock(unit));
+        }
+
+        while (rewardPool.Count < rewardNodes.Count)
+            rewardPool.Add(StageMapReward.ProductionFacility());
+
+        Shuffle(rewardPool);
+
+        int count = Mathf.Min(rewardNodes.Count, rewardPool.Count);
+        for (int i = 0; i < count; i++)
+            rewardNodes[i].Reward = rewardPool[i];
     }
 
     private void RandomizePositionsAndConnections()
@@ -489,8 +533,7 @@ public class StageMapController : MonoBehaviour
         EventBus.Instance?.Publish(new StageMapNodeSelectedEvent
         {
             NodeId = node.NodeId,
-            StageIndex = node.StageIndex,
-            WaveIndex = node.WaveIndex
+            StageIndex = node.StageIndex
         });
 
         if (StageManager.Instance == null)
@@ -499,7 +542,7 @@ public class StageMapController : MonoBehaviour
             return;
         }
 
-        StageManager.Instance.StartStageFromMapNode(node.StageIndex, node.WaveIndex, _routeData.WaveStartDelay);
+        StageManager.Instance.StartStageFromMapNode(node.StageIndex, _routeData.WaveStartDelay);
     }
 
     private void RefreshNodeStates()
@@ -613,7 +656,7 @@ public class StageMapController : MonoBehaviour
         return reward.Type switch
         {
             StageMapRewardType.ProductionFacility => _productionRewardIcon,
-            StageMapRewardType.RatTowerUnlock => _ratTowerRewardIcon,
+            StageMapRewardType.RatTowerUnlock => reward.UnitUnlock != null && reward.UnitUnlock.Icon != null ? reward.UnitUnlock.Icon : _ratTowerRewardIcon,
             _ => null
         };
     }

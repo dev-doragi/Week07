@@ -14,20 +14,32 @@ public class UnitCardUI : MonoBehaviour
 
     public void Setup(UnitDataSO data, Action<UnitDataSO> onSelect)
     {
-        _onSelect = onSelect;
+        Setup(data, onSelect, true);
+    }
 
-        //Debug.Log($"[UnitCardUI] Setup 호출 | 유닛={data.UnitName} | _icon null={_icon == null} | data.Icon null={data.Icon == null}");
+    public void Setup(UnitDataSO data, Action<UnitDataSO> onSelect, bool isUnlocked)
+    {
+        _onSelect = onSelect;
 
         if (_icon != null)
         {
             _icon.sprite = data.Icon;
             _icon.enabled = data.Icon != null;
-            //Debug.Log($"[UnitCardUI] 스프라이트 설정 완료 | sprite={_icon.sprite} | enabled={_icon.enabled} | size={_icon.rectTransform.sizeDelta}");
+            _icon.color = isUnlocked ? Color.white : Color.black;
         }
-        if (_nameText != null) _nameText.text = data.UnitName;
-        if (_costText != null) _costText.text = data.Cost.ToString();
+
+        if (_nameText != null)
+            _nameText.text = isUnlocked ? data.UnitName : string.Empty;
+
+        if (_costText != null)
+            _costText.text = isUnlocked ? data.Cost.ToString() : string.Empty;
+
+        if (_button == null)
+            return;
 
         _button.onClick.RemoveAllListeners();
-        _button.onClick.AddListener(() => _onSelect?.Invoke(data));
+        _button.interactable = isUnlocked;
+        if (isUnlocked)
+            _button.onClick.AddListener(() => _onSelect?.Invoke(data));
     }
 }

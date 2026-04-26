@@ -137,7 +137,7 @@ GameObject:
   - component: {fileID: 5055423527155961720}
   - component: {fileID: 2202164294151621676}
   m_Layer: 6
-  m_Name: ArcAttacker01
+  m_Name: ArcBombAttacker
   m_TagString: Ally
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

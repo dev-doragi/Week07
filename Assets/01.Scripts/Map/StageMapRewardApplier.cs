@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class StageMapRewardApplier : MonoBehaviour
 {
@@ -12,14 +13,26 @@ public class StageMapRewardApplier : MonoBehaviour
         if (reward == null || reward.Type == StageMapRewardType.None || reward.Amount <= 0)
             return;
 
+        string displayName = string.Empty;
+        Sprite displayIcon = reward.Icon;
+
         switch (reward.Type)
         {
             case StageMapRewardType.ProductionFacility:
                 IncomeInventory inventory = FindFirstObjectByType<IncomeInventory>(FindObjectsInactive.Include);
                 if (inventory != null)
                 {
+                    var blockNames = new List<string>();
                     for (int i = 0; i < reward.Amount; i++)
-                        inventory.AcquireRandomBlock();
+                    {
+                        IncomeBlockPiece piece = inventory.AcquireRandomBlock();
+                        if (piece != null)
+                            blockNames.Add(piece.BlockType.ToString());
+                    }
+
+                    displayName = blockNames.Count > 0
+                        ? $"생산 블록 획득: {string.Join(", ", blockNames)}"
+                        : "생산 블록 획득";
                 }
                 else
                 {
@@ -27,15 +40,12 @@ public class StageMapRewardApplier : MonoBehaviour
                 }
                 break;
             case StageMapRewardType.RatTowerUnlock:
-                if (string.IsNullOrWhiteSpace(reward.RewardId))
-                {
-                    Debug.LogWarning("[StageMapReward] Rat tower unlock reward has empty RewardId.");
-                    break;
-                }
-
-                EventBus.Instance?.Publish(new RatUnlockedEvent { RatId = reward.RewardId });
-                EventBus.Instance?.Publish(new FeatureUnlockedEvent { UnlockId = reward.RewardId });
-                Debug.Log($"[StageMapReward] Rat tower unlocked: {reward.RewardId}");
+                UnitDataSO unit = reward.UnitUnlock;
+                UnlockManager unlockManager = FindFirstObjectByType<UnlockManager>(FindObjectsInactive.Include);
+                bool unlocked = unlockManager != null && unlockManager.UnlockUnit(unit);
+                displayName = unit != null ? $"쥐 타워 해금: {unit.UnitName}" : $"쥐 타워 해금: {reward.RewardId}";
+                displayIcon = unit != null && unit.Icon != null ? unit.Icon : displayIcon;
+                Debug.Log($"[StageMapReward] Rat tower unlock {(unlocked ? "applied" : "queued/skipped")}: {displayName}");
                 break;
         }
 
@@ -44,7 +54,9 @@ public class StageMapRewardApplier : MonoBehaviour
             NodeId = nodeId,
             RewardType = reward.Type,
             RewardId = reward.RewardId,
-            Amount = reward.Amount
+            Amount = reward.Amount,
+            DisplayName = displayName,
+            Icon = displayIcon
         });
     }
 }

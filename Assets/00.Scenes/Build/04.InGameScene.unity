@@ -1685,7 +1685,7 @@ MonoBehaviour:
   _resourcePerCell: 1
   _useUnscaledTime: 0
   _logProduction: 1
-  _productionGaugeSlider: {fileID: 1372313794}
+  _productionGaugeSlider: {fileID: 0}
   _gaugeSize: {x: 220, y: 14}
   _gaugeOffset: {x: 0, y: -24}
   _gaugeBackgroundColor: {r: 1, g: 1, b: 1, a: 0.16}
@@ -2285,17 +2285,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 5926058635058926176, guid: 4151ae34fd998154daca0c8f637357dc, type: 3}
   m_PrefabInstance: {fileID: 1349014927}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1372313794 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8968933636211876302, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
-  m_PrefabInstance: {fileID: 6981484039542817237}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Slider
 --- !u!1 &1384917480
 GameObject:
   m_ObjectHideFlags: 0
@@ -3539,6 +3528,9 @@ MonoBehaviour:
   _shakeVibrato: 15
   _shakeRandomness: 90
   _penetration: 0
+  _doctrineSelfDamageReductionPercent: 0
+  _doctrineBonusDamagePercent: 0
+  _doctrineStunDurationSeconds: 0
 --- !u!1 &1985047566
 GameObject:
   m_ObjectHideFlags: 0
@@ -3735,12 +3727,32 @@ PrefabInstance:
       objectReference: {fileID: 556531261}
     - target: {fileID: 1678471197080052893, guid: 209d714c60f4eb74c84688b9962df88a, type: 3}
       propertyPath: _stageDatas.Array.size
-      value: 1
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 1678471197080052893, guid: 209d714c60f4eb74c84688b9962df88a, type: 3}
       propertyPath: '_stageDatas.Array.data[0]'
       value: 
       objectReference: {fileID: 11400000, guid: bfc4867ad330d9c4eb52d4fab21c9220, type: 2}
+    - target: {fileID: 1678471197080052893, guid: 209d714c60f4eb74c84688b9962df88a, type: 3}
+      propertyPath: '_stageDatas.Array.data[1]'
+      value: 
+      objectReference: {fileID: 11400000, guid: af53af52025834a4e9e3fd4e77e9c9ee, type: 2}
+    - target: {fileID: 1678471197080052893, guid: 209d714c60f4eb74c84688b9962df88a, type: 3}
+      propertyPath: '_stageDatas.Array.data[2]'
+      value: 
+      objectReference: {fileID: 11400000, guid: ba5dff4c72e053f4fb5996ccfa877657, type: 2}
+    - target: {fileID: 1678471197080052893, guid: 209d714c60f4eb74c84688b9962df88a, type: 3}
+      propertyPath: '_stageDatas.Array.data[3]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 5d148cfd0dd298b4a8b2ffd22951d92c, type: 2}
+    - target: {fileID: 1678471197080052893, guid: 209d714c60f4eb74c84688b9962df88a, type: 3}
+      propertyPath: '_stageDatas.Array.data[4]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 697218d587d4378418c64a1cfac0c81d, type: 2}
+    - target: {fileID: 1678471197080052893, guid: 209d714c60f4eb74c84688b9962df88a, type: 3}
+      propertyPath: '_stageDatas.Array.data[5]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 06fbca22d90ce2b4099e2b0f160e8b6a, type: 2}
     - target: {fileID: 3167849498145992760, guid: 209d714c60f4eb74c84688b9962df88a, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -4262,12 +4274,40 @@ PrefabInstance:
       objectReference: {fileID: 1331035396}
     - target: {fileID: 7994137606967216088, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: _allUnits.Array.size
-      value: 10
+      value: 17
       objectReference: {fileID: 0}
     - target: {fileID: 7994137606967216088, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: '_allUnits.Array.data[9]'
       value: 
       objectReference: {fileID: 11400000, guid: c1c51b752c581ff48857766478134efa, type: 2}
+    - target: {fileID: 7994137606967216088, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: '_allUnits.Array.data[10]'
+      value: 
+      objectReference: {fileID: 11400000, guid: d2824f716f68a274b8ff20f2150b7642, type: 2}
+    - target: {fileID: 7994137606967216088, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: '_allUnits.Array.data[11]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 490fc92c8802a2f43b605456cd67ef8e, type: 2}
+    - target: {fileID: 7994137606967216088, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: '_allUnits.Array.data[12]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 227b08e28dd0ccb42b712cdf6504d363, type: 2}
+    - target: {fileID: 7994137606967216088, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: '_allUnits.Array.data[13]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 4baf8057090a95442b5687d2e3297637, type: 2}
+    - target: {fileID: 7994137606967216088, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: '_allUnits.Array.data[14]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 3a6c2837145a3f148bdf0cc5d5edbb69, type: 2}
+    - target: {fileID: 7994137606967216088, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: '_allUnits.Array.data[15]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 0bf8fb6a6b632e440a5754fc12dcc176, type: 2}
+    - target: {fileID: 7994137606967216088, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: '_allUnits.Array.data[16]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 67e1321594bd8034783162a4c27fcbd3, type: 2}
     - target: {fileID: 8800759617891440508, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
