@@ -1850,6 +1850,11 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 8502611619372927216, guid: 0bf16294da6e026478556142adb51ded, type: 3}
   m_PrefabInstance: {fileID: 1077094548}
   m_PrefabAsset: {fileID: 0}
+--- !u!224 &1077094550 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 4960253351795468234, guid: 0bf16294da6e026478556142adb51ded, type: 3}
+  m_PrefabInstance: {fileID: 1077094548}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1187777830
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1897,6 +1902,38 @@ PrefabInstance:
     - target: {fileID: 490645096793774417, guid: 810ff77847dc926408aa668c6034d877, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5296992969310506774, guid: 810ff77847dc926408aa668c6034d877, type: 3}
+      propertyPath: _uiPoolRoot
+      value: 
+      objectReference: {fileID: 1077094550}
+    - target: {fileID: 5296992969310506774, guid: 810ff77847dc926408aa668c6034d877, type: 3}
+      propertyPath: _globalPools.Array.size
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 5296992969310506774, guid: 810ff77847dc926408aa668c6034d877, type: 3}
+      propertyPath: _globalPools.Array.data[8].Prefab
+      value: 
+      objectReference: {fileID: 2652602981875499589, guid: 08a7c187a2eb33d4c8aaa1aef517fce8, type: 3}
+    - target: {fileID: 5296992969310506774, guid: 810ff77847dc926408aa668c6034d877, type: 3}
+      propertyPath: _globalPools.Array.data[9].Prefab
+      value: 
+      objectReference: {fileID: 6523836865489773202, guid: 172ce31f2366f8c4ca1056e1e26ed2d8, type: 3}
+    - target: {fileID: 5296992969310506774, guid: 810ff77847dc926408aa668c6034d877, type: 3}
+      propertyPath: _globalPools.Array.data[8].MaxSize
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 5296992969310506774, guid: 810ff77847dc926408aa668c6034d877, type: 3}
+      propertyPath: _globalPools.Array.data[9].MaxSize
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 5296992969310506774, guid: 810ff77847dc926408aa668c6034d877, type: 3}
+      propertyPath: _globalPools.Array.data[8].InitialSize
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 5296992969310506774, guid: 810ff77847dc926408aa668c6034d877, type: 3}
+      propertyPath: _globalPools.Array.data[9].InitialSize
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 8831656271116653013, guid: 810ff77847dc926408aa668c6034d877, type: 3}
       propertyPath: m_Name
@@ -2999,13 +3036,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RitualSystem
   _skill1Cost: 200
-  _skill2Cost: 200
+  _skill2Cost: 0
   _skill3Cost: 200
   _skill1Cooldown: 5
   _skill2Cooldown: 5
   _skill3Cooldown: 5
   _wallObject: {fileID: 1275786568}
   _skill1Duration: 5
+  _meteorPoolKey: MeteorProjectile
+  _meteorCount: 5
+  _meteorDamage: 80
+  _splashRadius: 2
+  _spawnHeight: 15
+  _targetRadius: 3
+  _minDuration: 0.8
+  _maxDuration: 1.4
+  _meteorDelay: 0.15
 --- !u!4 &1815692531
 Transform:
   m_ObjectHideFlags: 0
@@ -4018,6 +4064,14 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 2066150188}
+    - target: {fileID: 277339360353513318, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1815692530}
+    - target: {fileID: 277339360353513318, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: UseSkill2
+      objectReference: {fileID: 0}
     - target: {fileID: 575178730942400517, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -4146,6 +4200,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1931545638337951360, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2419784750767299302, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: m_Name
       value: InGamePanel
@@ -4154,6 +4212,14 @@ PrefabInstance:
       propertyPath: _dragRoot
       value: 
       objectReference: {fileID: 284887922}
+    - target: {fileID: 5254301697450586130, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1815692530}
+    - target: {fileID: 5254301697450586130, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: UseSkill3
+      objectReference: {fileID: 0}
     - target: {fileID: 6129702662900236002, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -4170,6 +4236,10 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6905786238118524974, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -0.00003655499
+      objectReference: {fileID: 0}
     - target: {fileID: 7216775616069275396, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: _gaugePerHit
       value: 2
@@ -4178,6 +4248,14 @@ PrefabInstance:
       propertyPath: _siegeHandler
       value: 
       objectReference: {fileID: 1950871296}
+    - target: {fileID: 7803803503074585911, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1815692530}
+    - target: {fileID: 7803803503074585911, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: UseSkill1
+      objectReference: {fileID: 0}
     - target: {fileID: 7994137606967216088, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: _gridController
       value: 

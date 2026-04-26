@@ -148,12 +148,12 @@ public class RitualSystem : MonoBehaviour
 
     private void OnSkill2()
     {
-        StartCoroutine(MeteorRoutine());
+        ResourceManager.Instance?.AddMouseCount(100);       //자원 추가
     }
 
     private void OnSkill3()
     {
-        Debug.Log("[RitualSystem] 스킬 3 활성화");
+        StartCoroutine(MeteorRoutine());                //메테오 떨어트리기
     }
 
     // ──────────────────────────────────────────────
@@ -191,7 +191,7 @@ public class RitualSystem : MonoBehaviour
     {
         if(_enemyCore == null || _enemyCore.IsDead)
         {
-            Debug.LogWarning("[RitualSystem] 스킬 2: 적 코어 없음");
+            Debug.LogWarning("[RitualSystem] 스킬 3: 적 코어 없음");
             yield break;
         }
 
