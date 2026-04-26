@@ -22,7 +22,20 @@ public class RitualSystem : MonoBehaviour
     [SerializeField] private GameObject _wallObject;
     [SerializeField] private float _skill1Duration = 5f;
 
+    [Header("Skill 2 - Meteor")]
+    [SerializeField] private string _meteorPoolKey  = "MeteorProjectile";
+    [SerializeField] private int    _meteorCount    = 5;
+    [SerializeField] private float  _meteorDamage   = 80f;
+    [SerializeField] private float  _splashRadius   = 2f;
+    [SerializeField] private float  _spawnHeight    = 15f;
+    [SerializeField] private float  _targetRadius   = 3f;
+    [SerializeField] private float  _minDuration    = 0.8f;
+    [SerializeField] private float  _maxDuration    = 1.4f;
+    [SerializeField] private float  _meteorDelay    = 0.15f;
+
     private Coroutine _wallRoutine;
+    private Unit _playerCore;
+    private Unit _enemyCore;
 
     private float _skill1CooldownTimer = 0f;
     private float _skill2CooldownTimer = 0f;
@@ -77,6 +90,38 @@ public class RitualSystem : MonoBehaviour
     /// Physics 2D 충돌 매트릭스에서 설정하세요.
     /// (Wall 레이어 ↔ EnemyProjectile 충돌 ON, AllyProjectile 충돌 OFF)
     /// </summary>
+
+    private void OnEnable()
+    {
+        EventBus.Instance.Subscribe<WaveStartedEvent>(OnWaveStarted);
+        EventBus.Instance.Subscribe<WaveEndedEvent>(OnWaveEnded);
+    }
+
+    private void OnDisable()
+    {
+        EventBus.Instance.Unsubscribe<WaveStartedEvent>(OnWaveStarted);
+        EventBus.Instance.Unsubscribe<WaveEndedEvent>(OnWaveEnded);
+    }
+
+    private void OnWaveStarted(WaveStartedEvent evt)
+    {
+        _playerCore = null;
+        _enemyCore = null;
+
+        foreach(var u in FindObjectsByType<Unit>(FindObjectsSortMode.None))
+        {
+            if(u.Team == TeamType.Player && u.Category == UnitCategory.Core) _playerCore = u;
+            if(u.Team == TeamType.Enemy && u.Category == UnitCategory.Core) _enemyCore = u;
+            if(_playerCore != null && _enemyCore != null) break;
+        }
+    }
+
+    private void OnWaveEnded(WaveEndedEvent evt)
+    {
+        _playerCore = null;
+        _enemyCore = null;
+    }
+
     private void ActivateWall()
     {
         if (_wallObject == null)
@@ -103,12 +148,12 @@ public class RitualSystem : MonoBehaviour
 
     private void OnSkill2()
     {
-        Debug.Log("[RitualSystem] 스킬 2 활성화");
+        ResourceManager.Instance?.AddMouseCount(100);       //자원 추가
     }
 
     private void OnSkill3()
     {
-        Debug.Log("[RitualSystem] 스킬 3 활성화");
+        StartCoroutine(MeteorRoutine());                //메테오 떨어트리기
     }
 
     // ──────────────────────────────────────────────
@@ -140,5 +185,43 @@ public class RitualSystem : MonoBehaviour
         }
 
         return true;
+    }
+
+    private IEnumerator MeteorRoutine()
+    {
+        if(_enemyCore == null || _enemyCore.IsDead)
+        {
+            Debug.LogWarning("[RitualSystem] 스킬 3: 적 코어 없음");
+            yield break;
+        }
+
+        Vector3 corePos = _enemyCore.transform.position;
+        
+        Vector3 playerPos = (_playerCore != null && !_playerCore.IsDead) 
+            ? _playerCore.transform.position
+            : transform.position;       
+
+        for(int i = 0; i < _meteorCount; i++)
+        {
+            // 착탄 위치 : 코어 원 안 랜덤
+            Vector2 targetOffset = Random.insideUnitCircle * _targetRadius;
+            Vector3 targetPos = corePos + new Vector3(targetOffset.x, targetOffset.y, 0f);
+        
+            // 스폰 위치 : 목표 플레이어 위 + 약간의 X 랜덤 (화면 벽)
+            float spawnOffsetX = Random.Range(-_targetRadius, _targetRadius);
+            Vector3 spawnPos = new Vector3(
+                playerPos.x + spawnOffsetX,
+                playerPos.y + _spawnHeight, 0f
+                );
+
+            // 낙하 시간 랜덤 -> 빠른 것 느린 것 섞임
+            float duration = Random.Range(_minDuration, _maxDuration);
+
+            var go = PoolManager.Instance?.Spawn(_meteorPoolKey, spawnPos, Quaternion.identity);
+            if(go != null && go.TryGetComponent(out MeteorProjectile meteor))
+                meteor.Launch(spawnPos, targetPos, duration, _meteorDamage, _splashRadius); 
+        
+            yield return new WaitForSeconds(_meteorDelay);
+        }
     }
 }
