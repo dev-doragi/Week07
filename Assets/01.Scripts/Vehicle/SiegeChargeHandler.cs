@@ -72,16 +72,15 @@ public class SiegeChargeHandler : MonoBehaviour
     public void ExecuteCrash()
     {
         if (_isCrashing) return;
-        
-        if (_enemyGridObject != null)
-            _enemyGrid = _enemyGridObject.GetComponentInChildren<EnemyGridManager>();
-        
+
+        _enemyGrid = ResolveEnemyGrid();
         if (_enemyGrid == null)
         {
             Debug.LogWarning("[SiegeChargeHandler] EnemyGridManager not found, crash cancelled.");
             return;
         }
-        
+
+        _enemyGrid.RegisterExistingUnitsFromChildren();
         PlayCrashSequence();
     }
 
@@ -120,6 +119,23 @@ public class SiegeChargeHandler : MonoBehaviour
     {
         _doctrineStunDurationSeconds = Mathf.Max(0f, seconds);
         Debug.Log($"[SiegeChargeHandler] Doctrine stun duration set: {_doctrineStunDurationSeconds:0.##}s");
+    }
+
+    private EnemyGridManager ResolveEnemyGrid()
+    {
+        EnemyGridManager resolved = null;
+
+        if (_enemyGridObject != null)
+        {
+            resolved = _enemyGridObject.GetComponentInChildren<EnemyGridManager>(true);
+        }
+
+        if (resolved == null)
+        {
+            resolved = FindAnyObjectByType<EnemyGridManager>();
+        }
+
+        return resolved;
     }
 
     private void PlayCrashSequence()
@@ -185,11 +201,14 @@ public class SiegeChargeHandler : MonoBehaviour
 
     private void TriggerImpact()
     {
+        _enemyGrid = _enemyGrid != null ? _enemyGrid : ResolveEnemyGrid();
         if (_enemyGrid == null)
         {
             Debug.LogWarning("[SiegeChargeHandler] EnemyGridManager not found, skipping damage.");
             return;
         }
+
+        _enemyGrid.RegisterExistingUnitsFromChildren();
 
         float playerCP = _grid != null ? _grid.CalculateTotalCollisionPower() : 0f;
         float enemyCP = _enemyGrid.CalculateTotalCollisionPower();
@@ -304,3 +323,4 @@ public class SiegeChargeHandler : MonoBehaviour
         }
     }
 }
+

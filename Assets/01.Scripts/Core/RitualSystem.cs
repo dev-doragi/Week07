@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// 플레이어가 사용하는 의식 스킬 3종을 관리합니다.
@@ -36,6 +37,14 @@ public class RitualSystem : MonoBehaviour
     [SerializeField] private float  _minDuration    = 0.8f;
     [SerializeField] private float  _maxDuration    = 1.4f;
     [SerializeField] private float  _meteorDelay    = 0.15f;
+
+    [Header("Skill 2 - Income Block")]
+    [SerializeField] private IncomeInventory _incomeInventory;
+
+    [Header("Cooldown Gauges")]
+    [SerializeField] private Image _skill1CooldownGauge;
+    [SerializeField] private Image _skill2CooldownGauge;
+    [SerializeField] private Image _skill3CooldownGauge;
 
     private Coroutine _wallRoutine;
     private Unit _playerCore;
@@ -89,6 +98,8 @@ public class RitualSystem : MonoBehaviour
         if (_skill1CooldownTimer > 0f) _skill1CooldownTimer -= Time.deltaTime;
         if (_skill2CooldownTimer > 0f) _skill2CooldownTimer -= Time.deltaTime;
         if (_skill3CooldownTimer > 0f) _skill3CooldownTimer -= Time.deltaTime;
+
+        UpdateCooldownGauges();
     }
 
     // ──────────────────────────────────────────────
@@ -189,7 +200,16 @@ public class RitualSystem : MonoBehaviour
 
     private void OnSkill2()
     {
-        ResourceManager.Instance?.AddMouseCount(100);       //자원 추가
+        if (_incomeInventory == null)
+            _incomeInventory = FindAnyObjectByType<IncomeInventory>();
+
+        if (_incomeInventory == null)
+        {
+            Debug.LogWarning("[RitualSystem] IncomeInventory not found. Skill 2 aborted.");
+            return;
+        }
+
+        _incomeInventory.AcquireRandomBlock();
     }
 
     private void OnSkill3()
@@ -249,6 +269,50 @@ public class RitualSystem : MonoBehaviour
             return true;
 
         return _unlockManager.IsUnlocked(unlockId);
+    }
+
+    private void Awake()
+    {
+        EnsureGaugeType(_skill1CooldownGauge);
+        EnsureGaugeType(_skill2CooldownGauge);
+        EnsureGaugeType(_skill3CooldownGauge);
+        UpdateCooldownGauges();
+    }
+
+    private void OnValidate()
+    {
+        EnsureGaugeType(_skill1CooldownGauge);
+        EnsureGaugeType(_skill2CooldownGauge);
+        EnsureGaugeType(_skill3CooldownGauge);
+    }
+
+    private void UpdateCooldownGauges()
+    {
+        UpdateGauge(_skill1CooldownGauge, _skill1CooldownTimer, _skill1Cooldown);
+        UpdateGauge(_skill2CooldownGauge, _skill2CooldownTimer, _skill2Cooldown);
+        UpdateGauge(_skill3CooldownGauge, _skill3CooldownTimer, _skill3Cooldown);
+    }
+
+    private static void UpdateGauge(Image gauge, float remaining, float duration)
+    {
+        if (gauge == null)
+            return;
+
+        // Cooldown progress fills from left(0) to right(1).
+        gauge.fillAmount = duration > 0f ? Mathf.Clamp01(1f - (remaining / duration)) : 1f;
+    }
+
+    private static void EnsureGaugeType(Image gauge)
+    {
+        if (gauge == null)
+            return;
+
+        if (gauge.type != Image.Type.Filled)
+            gauge.type = Image.Type.Filled;
+
+        gauge.fillMethod = Image.FillMethod.Horizontal;
+        gauge.fillOrigin = 0; // Left
+        gauge.fillClockwise = true;
     }
 
     private IEnumerator MeteorRoutine()
