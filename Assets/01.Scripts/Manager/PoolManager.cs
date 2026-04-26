@@ -66,12 +66,12 @@ public class PoolManager : Singleton<PoolManager>
         IObjectPool<GameObject> pool = new ObjectPool<GameObject>(
             createFunc: () =>
             {
-                // [수정] _poolRoot가 아니라 계산된 targetRoot를 사용해야 함
                 GameObject obj = Instantiate(prefab, targetRoot);
                 obj.name = prefab.name;
+                obj.SetActive(false);
                 return obj;
             },
-            actionOnGet: obj => obj.SetActive(true),
+            actionOnGet: null,
             actionOnRelease: obj => obj.SetActive(false),
             actionOnDestroy: obj => Destroy(obj),
             collectionCheck: false,
@@ -100,6 +100,7 @@ public class PoolManager : Singleton<PoolManager>
 
         GameObject obj = pool.Get();
         obj.transform.SetPositionAndRotation(position, rotation);
+        obj.SetActive(true);
         return obj;
     }
 
