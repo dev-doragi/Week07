@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 550f97df3c4ad9d44a36190b24e47c3b, type: 3}
+  m_Name: DirectAttacker_3
+  m_EditorClassIdentifier: Assembly-CSharp::UnitDataSO
+  Key: 15
+  UnitName: "\uB808\uC774\uC950(\uC784\uC2DC\uBA85)"
+  Team: 1
+  Category: 3
+  Prefab: {fileID: 939399878548102891, guid: bae8b531697a16047969f9ca26157242, type: 3}
+  Icon: {fileID: 7084957924513991936, guid: 34f3abc17a75b0d4d81fe69030e8201c, type: 3}
+  Size: {x: 3, y: 1}
+  PlacementRule: 1
+  ActsAsFoundation: 0
+  WheelCapacity: 5
+  MaxHp: 100
+  BaseDefenseRate: 0
+  Cost: 90
+  DeathSpawnKey: 
+  BaseDeathSpawnCount: 0
+  Attack:
+    Damage: 10
+    Speed: 0.5
+    Distance: 30
+    AttackCost: 3
+    Trajectory: 1
+    Targeting: 2
+    Area: 0
+    RangeRadius: 0
+    PiercingCount: 0
+    Penetration: 0
+    PiercingDecay: 0
+    ProjectilePrefab: {fileID: 6579287745903239311, guid: 9290736278b58ad4a94c995674e76746, type: 3}
+  Defense:
+    CollisionPower: 0
+  Support:
+    Radius: 0
+    Effects: []
+  Heal:
+    HealRange: 10
+    HealAmount: 0
+    HealCooldown: 2

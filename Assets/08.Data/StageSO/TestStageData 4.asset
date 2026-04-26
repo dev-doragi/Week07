@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f90fda2cc71af084294a250cd0e32edd, type: 3}
+  m_Name: TestStageData 4
+  m_EditorClassIdentifier: Assembly-CSharp::StageDataSO
+  StageLayoutPrefab: {fileID: 5627074885168964547, guid: 94be48c3ee1fa8b43a276aea8e108bfb, type: 3}
+  Waves:
+  - EnemySiegePrefab: {fileID: 5906437906621369640, guid: fea4eb3e575a79947af5ecf219b08cd6, type: 3}
+    NextWaveInterval: 3
+  StageIndex: 4
