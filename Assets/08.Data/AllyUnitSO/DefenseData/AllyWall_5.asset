@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 550f97df3c4ad9d44a36190b24e47c3b, type: 3}
+  m_Name: AllyWall_5
+  m_EditorClassIdentifier: Assembly-CSharp::UnitDataSO
+  Key: 3
+  UnitName: "\uBCBD\uBCBD\uBCBD\uC950"
+  Team: 1
+  Category: 4
+  Prefab: {fileID: 664433030619585036, guid: 133aae2717435414d80594abbf2250eb, type: 3}
+  Icon: {fileID: 898551970227511676, guid: 8538a3102160c0546b32f5a4d6e96026, type: 3}
+  Size: {x: 1, y: 1}
+  PlacementRule: 2
+  ActsAsFoundation: 1
+  MaxHp: 150
+  BaseDefenseRate: 0
+  Cost: 15
+  DeathSpawnKey: 
+  BaseDeathSpawnCount: 0
+  Attack:
+    Damage: 0
+    Speed: 0
+    Distance: 0
+    AttackCost: 0
+    Trajectory: 0
+    Targeting: 0
+    Area: 0
+    RangeRadius: 0
+    PiercingCount: 0
+    Penetration: 0
+    PiercingDecay: 0
+    ProjectilePrefab: {fileID: 0}
+  Defense:
+    CollisionPower: 3
+  Support:
+    Radius: 0
+    Effects: []
