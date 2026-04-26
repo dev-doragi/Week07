@@ -200,17 +200,19 @@ public class StageMapController : MonoBehaviour
             _runtimeNodeList.Add(node);
         }
 
-        if (_routeData.UnlockableRatUnits != null && _routeData.UnlockableRatUnits.Count > 0)
-        {
-            AssignRouteRewardPool();
-        }
-        else if (_randomizeOnStart)
-        {
-            RandomizeRewards();
-        }
-
         if (_randomizeOnStart)
+        {
+            if (_routeData.UnlockableRatUnits != null && _routeData.UnlockableRatUnits.Count > 0)
+            {
+                AssignRouteRewardPool();
+            }
+            else
+            {
+                RandomizeRewards();
+            }
+
             RandomizePositionsAndConnections();
+        }
     }
 
     private void RandomizeRewards()

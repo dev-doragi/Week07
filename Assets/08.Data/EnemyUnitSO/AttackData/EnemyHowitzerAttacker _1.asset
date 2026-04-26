@@ -28,8 +28,8 @@ MonoBehaviour:
   DeathSpawnKey: 
   BaseDeathSpawnCount: 0
   Attack:
-    Damage: 2
-    Speed: 2
+    Damage: 20
+    Speed: 4
     Distance: 30
     AttackCost: 0
     Trajectory: 2
@@ -39,7 +39,7 @@ MonoBehaviour:
     PiercingCount: 0
     Penetration: 0
     PiercingDecay: 0
-    ProjectilePrefab: {fileID: 6579287745903239311, guid: c964238557a030546a624410f99dfe27, type: 3}
+    ProjectilePrefab: {fileID: 6579287745903239311, guid: 44e7b9d803cb906429430b1fb3eb89b4, type: 3}
   Defense:
     CollisionPower: 0
   Support:

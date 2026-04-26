@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 550f97df3c4ad9d44a36190b24e47c3b, type: 3}
   m_Name: SupportGuitar_3
   m_EditorClassIdentifier: Assembly-CSharp::UnitDataSO
-  Key: 53
+  Key: 54
   UnitName: "\uAE30\uD0C0\uC950"
   Team: 1
   Category: 5
