@@ -19,7 +19,10 @@ public class StageMapController : MonoBehaviour
     [SerializeField] private Vector2 _mapSize = new Vector2(1280f, 600f);
 
     [Header("Random Route")]
-    [SerializeField] private bool _randomizeOnStart = true;
+    [SerializeField] private bool _randomizeRewardOnStart = true;
+    [SerializeField] private bool _randomizePathOnStart = true;
+    [SerializeField, HideInInspector] private bool _randomizeOnStart = true; // Legacy field migration.
+    [SerializeField, HideInInspector] private bool _randomizeSettingsInitialized;
     [SerializeField] private Vector2 _randomYRange = new Vector2(0.22f, 0.78f);
     [SerializeField] private int _minConnectionsPerNode = 1;
     [SerializeField] private int _maxConnectionsPerNode = 2;
@@ -55,8 +58,15 @@ public class StageMapController : MonoBehaviour
 
     private void Awake()
     {
+        EnsureRandomizeSettingsInitialized();
+
         if (_rewardApplier == null)
             _rewardApplier = GetComponent<StageMapRewardApplier>();
+    }
+
+    private void OnValidate()
+    {
+        EnsureRandomizeSettingsInitialized();
     }
 
     private void OnEnable()
@@ -200,7 +210,7 @@ public class StageMapController : MonoBehaviour
             _runtimeNodeList.Add(node);
         }
 
-        if (_randomizeOnStart)
+        if (_randomizeRewardOnStart)
         {
             if (_routeData.UnlockableRatUnits != null && _routeData.UnlockableRatUnits.Count > 0)
             {
@@ -211,8 +221,10 @@ public class StageMapController : MonoBehaviour
                 RandomizeRewards();
             }
 
-            RandomizePositionsAndConnections();
         }
+
+        if (_randomizePathOnStart)
+            RandomizePositionsAndConnections();
     }
 
     private void RandomizeRewards()
@@ -738,5 +750,15 @@ public class StageMapController : MonoBehaviour
     {
         for (int i = parent.childCount - 1; i >= 0; i--)
             Destroy(parent.GetChild(i).gameObject);
+    }
+
+    private void EnsureRandomizeSettingsInitialized()
+    {
+        if (_randomizeSettingsInitialized)
+            return;
+
+        _randomizeRewardOnStart = _randomizeOnStart;
+        _randomizePathOnStart = _randomizeOnStart;
+        _randomizeSettingsInitialized = true;
     }
 }

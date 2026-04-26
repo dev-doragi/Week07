@@ -33,7 +33,7 @@ public class DoctrineEffectApplier : MonoBehaviour
     [SerializeField] private GridManager playerGrid;
 
     [Header("Doctrine Tunables")]
-    [SerializeField, Range(0f, 1f)] private float ritualWallHealPercent = 0.1f;
+    [SerializeField, Range(0f, 1f)] private float ritualWallHealPercent = 0.3f;
     [SerializeField, Min(0.05f)] private float wallMonitorInterval = 0.1f;
     [SerializeField, Min(1f)] private float ramGaugeGainMultiplier = 2f;
 
@@ -364,14 +364,13 @@ public class DoctrineEffectApplier : MonoBehaviour
     // EffectSummary: 伊먮꼍 ?섏떇??媛뺥솕 - ?ъ슜 ??紐⑤뱺 伊먯쓽 泥대젰 ?뚮웾 ?뚮났
     private void EnableRitualWallHeal()
     {
-        if (ritualSystem == null)
-        {
-            Debug.LogWarning("[DoctrineEffectApplier] RitualSystem not found. Ritual wall heal skipped.");
-            return;
-        }
-
         _ritualWallHealEnabled = true;
         _lastWallActiveState = false;
+
+        if (ritualSystem == null)
+        {
+            Debug.LogWarning("[DoctrineEffectApplier] RitualSystem not found yet. Ritual wall heal will activate when RitualSystem is available.");
+        }
 
         if (_ritualWallMonitorRoutine == null)
         {
@@ -387,12 +386,19 @@ public class DoctrineEffectApplier : MonoBehaviour
         while (_ritualWallHealEnabled)
         {
             ResolveReferences();
+            if (ritualSystem == null)
+            {
+                yield return new WaitForSeconds(wallMonitorInterval);
+                continue;
+            }
+
             GameObject wallObject = GetPrivateObjectField<GameObject>(ritualSystem, "_wallObject");
             bool isWallActive = wallObject != null && wallObject.activeInHierarchy;
 
             if (isWallActive && !_lastWallActiveState)
             {
                 HealAllPlayerUnitsByPercent(ritualWallHealPercent);
+                Debug.Log($"[DoctrineEffectApplier] Ritual wall cast detected. Healed all allied units by {ritualWallHealPercent * 100f:0.#}%.");
             }
 
             _lastWallActiveState = isWallActive;
@@ -406,22 +412,21 @@ public class DoctrineEffectApplier : MonoBehaviour
     private void ApplyTowerAttackDamageBuff(float bonusPercent)
     {
         float multiplier = 1f + bonusPercent;
-        int changedCount = 0;
+        EntityAttacker.SetDoctrineDamageMultiplier(multiplier);
 
-        UnitDataSO[] allData = Resources.FindObjectsOfTypeAll<UnitDataSO>();
-        for (int i = 0; i < allData.Length; i++)
+        Unit[] units = FindObjectsByType<Unit>(FindObjectsSortMode.None);
+        int affectedCount = 0;
+        for (int i = 0; i < units.Length; i++)
         {
-            UnitDataSO data = allData[i];
-            if (data == null || data.Team != TeamType.Player || data.Category != UnitCategory.Attack || data.Attack == null)
-            {
+            Unit unit = units[i];
+            if (unit == null || unit.IsDead || unit.Team != TeamType.Player || unit.Category != UnitCategory.Attack)
                 continue;
-            }
 
-            data.Attack.Damage *= multiplier;
-            changedCount++;
+            if (unit.GetComponent<EntityAttacker>() != null)
+                affectedCount++;
         }
 
-        Debug.Log($"[DoctrineEffectApplier] Applied: Player attack tower damage +{bonusPercent * 100f:0}% | Data entries changed: {changedCount}");
+        Debug.Log($"[DoctrineEffectApplier] Applied: Player attack tower damage +{bonusPercent * 100f:0}% | Runtime units affected: {affectedCount}");
     }
 
     // EffectSummary: 紐⑤뱺 諛⑹뼱 ??뚯쓽 理쒕? 泥대젰 +50

@@ -26,7 +26,7 @@ public class RitualSystem : MonoBehaviour
     [SerializeField] private GameObject _wallObject;
     [SerializeField] private float _skill1Duration = 5f;
 
-    [Header("Skill 2 - Meteor")]
+    [Header("Skill 3 - Meteor")]
     [SerializeField] private string _meteorPoolKey  = "MeteorProjectile";
     [SerializeField] private int    _meteorCount    = 5;
     [SerializeField] private float  _meteorDamage   = 80f;

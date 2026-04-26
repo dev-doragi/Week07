@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 1383089633994324034}
   - component: {fileID: 1363012408695675055}
   m_Layer: 6
-  m_Name: UpArcAttacker03
+  m_Name: LastAttacker
   m_TagString: Ally
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -62,7 +62,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74e9101c6ff40ee41b97bd4cb9889ab9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Unit
-  _data: {fileID: 11400000, guid: 227b08e28dd0ccb42b712cdf6504d363, type: 2}
+  _data: {fileID: 11400000, guid: 2e5c66f10c6378f4f8808be2c71a07c1, type: 2}
   _baseRenderer: {fileID: 5228705860646447172}
   _damageOverlays: []
   _healEffectPrefab: {fileID: 4289407542021784391, guid: 3f97cb9369cf34e489655812e97fd93c, type: 3}

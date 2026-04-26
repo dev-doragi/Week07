@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class EntityAttacker : MonoBehaviour
 {
+    private static float _doctrineDamageMultiplier = 1f;
+
     private IAttacker _arcPerformer;
     private IAttacker _directPerformer;
     private Unit _owner;
@@ -12,6 +14,12 @@ public class EntityAttacker : MonoBehaviour
     private Unit _currentTarget;
     private float _lastAttackTime;
     private float _attackCooldown = 0f;
+
+    public static void SetDoctrineDamageMultiplier(float multiplier)
+    {
+        _doctrineDamageMultiplier = Mathf.Max(0.01f, multiplier);
+        Debug.Log($"[EntityAttacker] Doctrine damage multiplier set: x{_doctrineDamageMultiplier:0.##}");
+    }
 
     public void Setup(Unit owner, AttackModule data)
     {
@@ -92,7 +100,8 @@ public class EntityAttacker : MonoBehaviour
         IAttacker performer = (_data.Trajectory == AttackTrajectoryType.Arc) ? _arcPerformer : _directPerformer;
         if (performer != null)
         {
-            if (performer.TryPerformAttack(_owner, _currentTarget, _data))
+            AttackModule attackDataForShot = BuildAttackDataForShot();
+            if (performer.TryPerformAttack(_owner, _currentTarget, attackDataForShot))
             {
                         
                 float baseAttackInterval = Mathf.Max(0.01f, _data.Speed);
@@ -116,6 +125,31 @@ public class EntityAttacker : MonoBehaviour
         {
             Debug.LogError($"[EntityAttacker] Performer가 설정되지 않음 | Trajectory: {_data.Trajectory}");
         }
+    }
+
+    private AttackModule BuildAttackDataForShot()
+    {
+        float baseDamage = _data.Damage;
+        float modifiedDamage = _owner != null && _owner.StatReceiver != null
+            ? _owner.StatReceiver.GetModifiedValue(SupportStatType.AttackDamage, baseDamage)
+            : baseDamage;
+        modifiedDamage *= _doctrineDamageMultiplier;
+
+        return new AttackModule
+        {
+            Damage = modifiedDamage,
+            Speed = _data.Speed,
+            Distance = _data.Distance,
+            AttackCost = _data.AttackCost,
+            Trajectory = _data.Trajectory,
+            Targeting = _data.Targeting,
+            Area = _data.Area,
+            RangeRadius = _data.RangeRadius,
+            PiercingCount = _data.PiercingCount,
+            Penetration = _data.Penetration,
+            PiercingDecay = _data.PiercingDecay,
+            ProjectilePrefab = _data.ProjectilePrefab
+        };
     }
 
     private Unit SearchBestTarget()

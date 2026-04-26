@@ -1982,7 +1982,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 636546770395262281, guid: 7c499f19c34edce40a8a4f4fdbd124e9, type: 3}
       propertyPath: doctrineUnitUnlocks.Array.size
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 636546770395262281, guid: 7c499f19c34edce40a8a4f4fdbd124e9, type: 3}
       propertyPath: doctrineUnitUnlocks.Array.data[0].unlockId
@@ -1997,6 +1997,10 @@ PrefabInstance:
       value: Tower_Node_0
       objectReference: {fileID: 0}
     - target: {fileID: 636546770395262281, guid: 7c499f19c34edce40a8a4f4fdbd124e9, type: 3}
+      propertyPath: doctrineUnitUnlocks.Array.data[3].unlockId
+      value: Tower_Node_4
+      objectReference: {fileID: 0}
+    - target: {fileID: 636546770395262281, guid: 7c499f19c34edce40a8a4f4fdbd124e9, type: 3}
       propertyPath: doctrineUnitUnlocks.Array.data[0].unitsToUnlock.Array.size
       value: 3
       objectReference: {fileID: 0}
@@ -2006,6 +2010,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 636546770395262281, guid: 7c499f19c34edce40a8a4f4fdbd124e9, type: 3}
       propertyPath: doctrineUnitUnlocks.Array.data[2].unitsToUnlock.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 636546770395262281, guid: 7c499f19c34edce40a8a4f4fdbd124e9, type: 3}
+      propertyPath: doctrineUnitUnlocks.Array.data[3].unitsToUnlock.Array.size
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 636546770395262281, guid: 7c499f19c34edce40a8a4f4fdbd124e9, type: 3}
@@ -2028,12 +2036,20 @@ PrefabInstance:
       propertyPath: 'doctrineUnitUnlocks.Array.data[2].unitsToUnlock.Array.data[0]'
       value: 
       objectReference: {fileID: 11400000, guid: ca5e7165cf009e947a73684efca92348, type: 2}
+    - target: {fileID: 636546770395262281, guid: 7c499f19c34edce40a8a4f4fdbd124e9, type: 3}
+      propertyPath: 'doctrineUnitUnlocks.Array.data[3].unitsToUnlock.Array.data[0]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 2e5c66f10c6378f4f8808be2c71a07c1, type: 2}
     - target: {fileID: 1145415508425108954, guid: 7c499f19c34edce40a8a4f4fdbd124e9, type: 3}
       propertyPath: m_Name
       value: '@StageMap'
       objectReference: {fileID: 0}
     - target: {fileID: 5701285067502101643, guid: 7c499f19c34edce40a8a4f4fdbd124e9, type: 3}
       propertyPath: _randomizeOnStart
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5701285067502101643, guid: 7c499f19c34edce40a8a4f4fdbd124e9, type: 3}
+      propertyPath: _randomizeRewardOnStart
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7589229047284350834, guid: 7c499f19c34edce40a8a4f4fdbd124e9, type: 3}
@@ -4360,7 +4376,7 @@ PrefabInstance:
       objectReference: {fileID: 1331035396}
     - target: {fileID: 7994137606967216088, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: _allUnits.Array.size
-      value: 18
+      value: 19
       objectReference: {fileID: 0}
     - target: {fileID: 7994137606967216088, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: '_allUnits.Array.data[9]'
@@ -4398,6 +4414,10 @@ PrefabInstance:
       propertyPath: '_allUnits.Array.data[17]'
       value: 
       objectReference: {fileID: 11400000, guid: ca5e7165cf009e947a73684efca92348, type: 2}
+    - target: {fileID: 7994137606967216088, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: '_allUnits.Array.data[18]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 2e5c66f10c6378f4f8808be2c71a07c1, type: 2}
     - target: {fileID: 8800759617891440508, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
