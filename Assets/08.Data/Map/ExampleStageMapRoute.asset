@@ -177,8 +177,13 @@ MonoBehaviour:
   _waveStartDelay: 15
   _ritualPointsPerClear: 1
   _unlockableRatUnits:
-  - {fileID: 11400000, guid: eeec5f3ed9635f447a80e53a2782b5c3, type: 2}
+  - {fileID: 11400000, guid: 67e1321594bd8034783162a4c27fcbd3, type: 2}
   - {fileID: 11400000, guid: c1c51b752c581ff48857766478134efa, type: 2}
+  - {fileID: 11400000, guid: 0bf8fb6a6b632e440a5754fc12dcc176, type: 2}
+  - {fileID: 11400000, guid: 3a6c2837145a3f148bdf0cc5d5edbb69, type: 2}
+  - {fileID: 11400000, guid: d2824f716f68a274b8ff20f2150b7642, type: 2}
+  - {fileID: 11400000, guid: 490fc92c8802a2f43b605456cd67ef8e, type: 2}
+  - {fileID: 11400000, guid: 227b08e28dd0ccb42b712cdf6504d363, type: 2}
   _skillUnlocks:
   - _clearStageIndex: 0
     _skillIndex: 1
