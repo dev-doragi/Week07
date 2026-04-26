@@ -14,6 +14,8 @@ public class StageMapController : MonoBehaviour
     [Header("Runtime UI")]
     [SerializeField] private Canvas _targetCanvas;
     [SerializeField] private RectTransform _mapRoot;
+    [SerializeField] private GameObject _doctrinePanelPrefab;
+    [SerializeField] private RectTransform _doctrinePanelRoot;
     [SerializeField] private Vector2 _mapSize = new Vector2(1280f, 600f);
 
     [Header("Random Route")]
@@ -141,6 +143,7 @@ public class StageMapController : MonoBehaviour
 
         EnsureCanvas();
         EnsureMapRoot();
+        EnsureDoctrinePanel();
         BuildRuntimeRoute();
         BuildMap();
         _currentNodeId = _routeData.StartNodeId;
@@ -394,6 +397,17 @@ public class StageMapController : MonoBehaviour
         _mapRoot.offsetMax = Vector2.zero;
     }
 
+    private void EnsureDoctrinePanel()
+    {
+        if (_doctrinePanelRoot != null || _doctrinePanelPrefab == null || _targetCanvas == null)
+            return;
+
+        GameObject instance = Instantiate(_doctrinePanelPrefab, _targetCanvas.transform, false);
+        _doctrinePanelRoot = instance.GetComponent<RectTransform>();
+        if (_doctrinePanelRoot == null)
+            _doctrinePanelRoot = instance.GetComponentInChildren<RectTransform>(true);
+    }
+
     private void BuildMap()
     {
         ClearChildren(_mapRoot);
@@ -562,12 +576,21 @@ public class StageMapController : MonoBehaviour
         RefreshNodeStates();
         SetMapVisible(true);
         _mapRoot.gameObject.SetActive(true);
+        EnsureDoctrinePanel();
+        if (_doctrinePanelRoot != null)
+        {
+            _doctrinePanelRoot.gameObject.SetActive(true);
+            _doctrinePanelRoot.SetAsLastSibling();
+        }
     }
 
     private void HideMap()
     {
         if (_mapRoot != null)
             _mapRoot.gameObject.SetActive(false);
+
+        if (_doctrinePanelRoot != null)
+            _doctrinePanelRoot.gameObject.SetActive(false);
 
         SetMapVisible(false);
     }

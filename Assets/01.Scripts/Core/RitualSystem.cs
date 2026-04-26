@@ -7,6 +7,10 @@ using UnityEngine;
 /// </summary>
 public class RitualSystem : MonoBehaviour
 {
+    [Header("Doctrine Unlock")]
+    [SerializeField] private bool _useDoctrineUnlockChecks = true;
+    [SerializeField] private UnlockManager _unlockManager;
+
     [Header("Skill Costs")]
     [SerializeField] private int _skill1Cost = 30;
     [SerializeField] private int _skill2Cost = 50;
@@ -41,6 +45,9 @@ public class RitualSystem : MonoBehaviour
     private float _skill2CooldownTimer = 0f;
     private float _skill3CooldownTimer = 0f;
 
+    private const string RitualSkill2UnlockId = "Ritual_Node_0";
+    private const string RitualSkill3UnlockId = "Ritual_Node_4";
+
     public float Skill1CooldownRemaining => _skill1CooldownTimer;
     public float Skill2CooldownRemaining => _skill2CooldownTimer;
     public float Skill3CooldownRemaining => _skill3CooldownTimer;
@@ -66,6 +73,7 @@ public class RitualSystem : MonoBehaviour
 
     public void UseSkill2()
     {
+        if (!IsDoctrineUnlocked(2, RitualSkill2UnlockId)) return;
         if (!IsReady(2, _skill2CooldownTimer)) return;
         if (!TryConsumeResource(_skill2Cost)) return;
         _skill2CooldownTimer = _skill2Cooldown;
@@ -74,6 +82,7 @@ public class RitualSystem : MonoBehaviour
 
     public void UseSkill3()
     {
+        if (!IsDoctrineUnlocked(3, RitualSkill3UnlockId)) return;
         if (!IsReady(3, _skill3CooldownTimer)) return;
         if (!TryConsumeResource(_skill3Cost)) return;
         _skill3CooldownTimer = _skill3Cooldown;
@@ -185,6 +194,32 @@ public class RitualSystem : MonoBehaviour
         }
 
         return true;
+    }
+
+    private bool IsDoctrineUnlocked(int skillIndex, string unlockId)
+    {
+        if (!_useDoctrineUnlockChecks)
+        {
+            return true;
+        }
+
+        if (_unlockManager == null)
+        {
+            _unlockManager = FindAnyObjectByType<UnlockManager>();
+        }
+
+        if (_unlockManager == null)
+        {
+            return true;
+        }
+
+        if (_unlockManager.IsUnlocked(unlockId))
+        {
+            return true;
+        }
+
+        Debug.Log($"[RitualSystem] 스킬 {skillIndex} 잠금 상태 | 필요 해금: {unlockId}");
+        return false;
     }
 
     private IEnumerator MeteorRoutine()

@@ -158,23 +158,58 @@ public class DoctrineEffectApplier : MonoBehaviour
 
             string unlockId = string.IsNullOrWhiteSpace(binding.unlockId) ? effectId : binding.unlockId;
 
-            switch (binding.eventKind)
-            {
-                case UnlockEventKind.Rat:
-                    EventBus.Instance?.Publish(new RatUnlockedEvent { RatId = unlockId });
-                    break;
-                case UnlockEventKind.Ritual:
-                    EventBus.Instance?.Publish(new RitualUnlockedEvent { RitualId = unlockId });
-                    break;
-                case UnlockEventKind.Feature:
-                    break;
-            }
+            PublishUnlockEvent(binding.eventKind, unlockId);
+            published = true;
+        }
 
-            EventBus.Instance?.Publish(new FeatureUnlockedEvent { UnlockId = unlockId });
+        if (!published && TryGetDefaultUnlockBinding(effectId, out UnlockEventKind fallbackEventKind, out string fallbackUnlockId))
+        {
+            PublishUnlockEvent(fallbackEventKind, fallbackUnlockId);
             published = true;
         }
 
         return published;
+    }
+
+    private static bool TryGetDefaultUnlockBinding(string effectId, out UnlockEventKind eventKind, out string unlockId)
+    {
+        eventKind = UnlockEventKind.Feature;
+        unlockId = effectId;
+
+        switch (effectId)
+        {
+            case "Ram_Node_0":
+            case "Tower_Node_0":
+            case "Tower_Node_2":
+            case "Tower_Node_4":
+                eventKind = UnlockEventKind.Rat;
+                return true;
+
+            case "Ritual_Node_0":
+            case "Ritual_Node_4":
+                eventKind = UnlockEventKind.Ritual;
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
+    private static void PublishUnlockEvent(UnlockEventKind eventKind, string unlockId)
+    {
+        switch (eventKind)
+        {
+            case UnlockEventKind.Rat:
+                EventBus.Instance?.Publish(new RatUnlockedEvent { RatId = unlockId });
+                break;
+            case UnlockEventKind.Ritual:
+                EventBus.Instance?.Publish(new RitualUnlockedEvent { RitualId = unlockId });
+                break;
+            case UnlockEventKind.Feature:
+                break;
+        }
+
+        EventBus.Instance?.Publish(new FeatureUnlockedEvent { UnlockId = unlockId });
     }
 
     // EffectSummary 연동 공통: 충각/의식/타워 효과에 필요한 런타임 참조 자동 탐색
