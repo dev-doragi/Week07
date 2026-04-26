@@ -27,7 +27,15 @@ public class StageMapRewardApplier : MonoBehaviour
                 }
                 break;
             case StageMapRewardType.RatTowerUnlock:
-                Debug.Log($"[StageMapReward] Rat tower unlock queued: {reward.RewardId}");
+                if (string.IsNullOrWhiteSpace(reward.RewardId))
+                {
+                    Debug.LogWarning("[StageMapReward] Rat tower unlock reward has empty RewardId.");
+                    break;
+                }
+
+                EventBus.Instance?.Publish(new RatUnlockedEvent { RatId = reward.RewardId });
+                EventBus.Instance?.Publish(new FeatureUnlockedEvent { UnlockId = reward.RewardId });
+                Debug.Log($"[StageMapReward] Rat tower unlocked: {reward.RewardId}");
                 break;
         }
 

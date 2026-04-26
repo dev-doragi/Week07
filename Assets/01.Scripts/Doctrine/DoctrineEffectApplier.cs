@@ -5,6 +5,21 @@ using UnityEngine;
 
 public class DoctrineEffectApplier : MonoBehaviour
 {
+    private enum UnlockEventKind
+    {
+        Rat = 0,
+        Ritual = 1,
+        Feature = 2
+    }
+
+    [System.Serializable]
+    private class UnlockEventBinding
+    {
+        public string effectId;
+        public string unlockId;
+        public UnlockEventKind eventKind = UnlockEventKind.Feature;
+    }
+
     [Header("Optional References")]
     [SerializeField] private RitualSystem ritualSystem;
     [SerializeField] private GaugeController gaugeController;
@@ -14,6 +29,9 @@ public class DoctrineEffectApplier : MonoBehaviour
     [Header("Doctrine Tunables")]
     [SerializeField, Range(0f, 1f)] private float ritualWallHealPercent = 0.1f;
     [SerializeField, Min(0.05f)] private float wallMonitorInterval = 0.1f;
+
+    [Header("Unlock Event Bindings")]
+    [SerializeField] private List<UnlockEventBinding> unlockEventBindings = new List<UnlockEventBinding>();
 
     private readonly HashSet<string> _appliedEffectIds = new HashSet<string>();
 
@@ -66,6 +84,7 @@ public class DoctrineEffectApplier : MonoBehaviour
         }
 
         ResolveReferences();
+        bool unlockEventPublished = TryPublishUnlockEvent(effectId);
 
         switch (effectId)
         {
@@ -75,7 +94,10 @@ public class DoctrineEffectApplier : MonoBehaviour
             case "Tower_Node_0":
             case "Tower_Node_2":
             case "Tower_Node_4":
-                Debug.Log($"[DoctrineEffectApplier] Unlock-type effect skipped (not implemented): {effectId}");
+                if (!unlockEventPublished)
+                {
+                    Debug.Log($"[DoctrineEffectApplier] Unlock-type effect has no binding: {effectId}");
+                }
                 break;
 
             case "Ram_Node_1":
@@ -120,6 +142,39 @@ public class DoctrineEffectApplier : MonoBehaviour
         }
 
         Debug.Log($"[DoctrineEffectApplier] Doctrine Effect Applied: {effectId}");
+    }
+
+    private bool TryPublishUnlockEvent(string effectId)
+    {
+        bool published = false;
+
+        for (int i = 0; i < unlockEventBindings.Count; i++)
+        {
+            UnlockEventBinding binding = unlockEventBindings[i];
+            if (binding == null || !string.Equals(binding.effectId, effectId, System.StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            string unlockId = string.IsNullOrWhiteSpace(binding.unlockId) ? effectId : binding.unlockId;
+
+            switch (binding.eventKind)
+            {
+                case UnlockEventKind.Rat:
+                    EventBus.Instance?.Publish(new RatUnlockedEvent { RatId = unlockId });
+                    break;
+                case UnlockEventKind.Ritual:
+                    EventBus.Instance?.Publish(new RitualUnlockedEvent { RitualId = unlockId });
+                    break;
+                case UnlockEventKind.Feature:
+                    break;
+            }
+
+            EventBus.Instance?.Publish(new FeatureUnlockedEvent { UnlockId = unlockId });
+            published = true;
+        }
+
+        return published;
     }
 
     // EffectSummary 연동 공통: 충각/의식/타워 효과에 필요한 런타임 참조 자동 탐색

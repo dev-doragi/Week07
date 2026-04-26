@@ -82,3 +82,21 @@ public struct EnemyHitEvent
 {
     public TeamType AttackerTeam;
 }
+
+// ============================================================================
+// [해금 이벤트]
+// ============================================================================
+public struct RatUnlockedEvent
+{
+    public string RatId;
+}
+
+public struct RitualUnlockedEvent
+{
+    public string RitualId;
+}
+
+public struct FeatureUnlockedEvent
+{
+    public string UnlockId;
+}
