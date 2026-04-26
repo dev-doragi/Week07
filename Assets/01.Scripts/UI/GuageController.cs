@@ -22,6 +22,7 @@ public class GaugeController : MonoBehaviour
     private bool _isGaugeFull = false;
     private bool _isPaused = false;
     private float _maxGaugeWidth;
+    private float _gaugeGainMultiplier = 1f;
 
     public float GaugeNormalized => _currentGauge / _maxGauge;
     public bool IsGaugeFull => _isGaugeFull;
@@ -87,7 +88,8 @@ public class GaugeController : MonoBehaviour
     {
         if (_isPaused || _isGaugeFull) return;
 
-        _currentGauge = Mathf.Min(_currentGauge + _gaugePerHit, _maxGauge);
+        float gain = _gaugePerHit * _gaugeGainMultiplier;
+        _currentGauge = Mathf.Min(_currentGauge + gain, _maxGauge);
 
         UpdateGaugeUI();
 
@@ -120,6 +122,12 @@ public class GaugeController : MonoBehaviour
     public void Resume()
     {
         _isPaused = false;
+    }
+
+    public void SetDoctrineGaugeGainMultiplier(float multiplier)
+    {
+        _gaugeGainMultiplier = Mathf.Max(0.01f, multiplier);
+        Debug.Log($"[GaugeController] Doctrine gauge gain multiplier set: {_gaugeGainMultiplier:F2}");
     }
 
     private void UpdateGaugeUI()
