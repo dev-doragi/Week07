@@ -15,8 +15,21 @@ public class DropRat : MonoBehaviour
     [SerializeField] private float _moveSpeed = 1f;
     [SerializeField] private int _rewardAmount = 2;
 
+    private int _defaultRewardAmount;
     private bool _isMoving;
     private bool _isCollected;
+
+    public int RewardAmount => Mathf.Max(0, _rewardAmount);
+
+    private void Awake()
+    {
+        _defaultRewardAmount = _rewardAmount;
+    }
+
+    public void InitializeReward(int rewardAmount)
+    {
+        _rewardAmount = Mathf.Max(0, rewardAmount);
+    }
 
     private void OnEnable()
     {
@@ -37,6 +50,7 @@ public class DropRat : MonoBehaviour
     {
         _isMoving = false;
         _isCollected = false;
+        _rewardAmount = _defaultRewardAmount;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

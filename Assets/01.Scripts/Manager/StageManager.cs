@@ -31,6 +31,7 @@ public class StageManager : Singleton<StageManager>
     private Coroutine _mapWaveStartCoroutine;
     private int _pendingWaveStartIndex = -1;
     private float _waveStartRemainingTime;
+    private float _currentWaveStartTime = -1f;
 
     public int CurrentStageIndex { get; private set; } = 0;
     public int CurrentWaveIndex { get; private set; } = 0;
@@ -42,6 +43,7 @@ public class StageManager : Singleton<StageManager>
     public bool IsWaitingForWaveStart => _mapWaveStartCoroutine != null;
     public int PendingWaveStartIndex => _pendingWaveStartIndex;
     public float WaveStartRemainingTime => Mathf.Max(0f, _waveStartRemainingTime);
+    public float CurrentWaveElapsedTime => _currentWaveStartTime < 0f ? 0f : Mathf.Max(0f, Time.time - _currentWaveStartTime);
 
     protected override void OnBootstrap()
     {
@@ -171,6 +173,7 @@ public class StageManager : Singleton<StageManager>
         EventBus.Instance.Publish(new StageCleanedUpEvent { StageIndex = CurrentStageIndex });
 
         CurrentState = InGameState.None;
+        _currentWaveStartTime = -1f;
         Debug.Log($"[StageManager] Stage {CurrentStageIndex} 정리 완료");
     }
 
@@ -206,6 +209,7 @@ public class StageManager : Singleton<StageManager>
         CurrentWaveIndex = waveIndex;
         CurrentState = InGameState.WavePlaying;
         _isWaveEnding = false;
+        _currentWaveStartTime = Time.time;
         Debug.Log($"[StageManager] Starting Wave {waveIndex}");
         EventBus.Instance?.Publish(new WaveStartedEvent { StageIndex = CurrentStageIndex, WaveIndex = waveIndex });
     }

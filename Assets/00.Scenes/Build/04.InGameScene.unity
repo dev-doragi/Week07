@@ -865,11 +865,11 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1077094549}
   - {fileID: 6981484039542817238}
   - {fileID: 2066953699}
   - {fileID: 1349014928}
   - {fileID: 66539283}
-  - {fileID: 1077094549}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1144,6 +1144,11 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!224 &385597529 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 4960253351795468234, guid: 0bf16294da6e026478556142adb51ded, type: 3}
+  m_PrefabInstance: {fileID: 1077094548}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &418727478
 GameObject:
   m_ObjectHideFlags: 0
@@ -1898,6 +1903,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5296992969310506774, guid: 810ff77847dc926408aa668c6034d877, type: 3}
+      propertyPath: _uiPoolRoot
+      value: 
+      objectReference: {fileID: 385597529}
     - target: {fileID: 8831656271116653013, guid: 810ff77847dc926408aa668c6034d877, type: 3}
       propertyPath: m_Name
       value: PoolManager

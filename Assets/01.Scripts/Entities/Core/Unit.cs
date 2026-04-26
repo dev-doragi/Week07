@@ -32,6 +32,12 @@ public class Unit : MonoBehaviour, IDamageable
     [Header("Effect Prefabs")]
     [SerializeField] private GameObject _healEffectPrefab;
 
+    [Header("Enemy Core DropRat Reward")]
+    [SerializeField] private float _maxDropRatRewardClearTime = 15f;
+    [SerializeField] private float _minDropRatRewardClearTime = 60f;
+    [SerializeField] private int _maxDropRatReward = 150;
+    [SerializeField] private int _minDropRatReward = 50;
+
     private Coroutine _hitEffectCo;
     private EntityStatReceiver _statReceiver;
     private EntityAttacker _attacker; // 공격 로직 참조
@@ -254,14 +260,51 @@ public class Unit : MonoBehaviour, IDamageable
         if (string.IsNullOrEmpty(key) || count <= 0) return;
         if (PoolManager.Instance == null) return;
 
-        if (_data.Category == UnitCategory.Core && StageManager.Instance != null)
+        if (_data.Category == UnitCategory.Core && _team == TeamType.Enemy && key == "DropRat")
         {
-            count += (StageManager.Instance.CurrentWaveIndex * 15)
-                   + (StageManager.Instance.CurrentStageIndex * 20);
+            SpawnTimeProportionalDropRatReward(key);
+            return;
         }
 
         for (int i = 0; i < count; i++)
             PoolManager.Instance.Spawn(key, transform.position, Quaternion.identity);
+    }
+
+    private void SpawnTimeProportionalDropRatReward(string key)
+    {
+        int totalReward = CalculateDropRatRewardByClearTime();
+        RewardPopupUI.ShowMouseReward(transform.position, totalReward);
+
+        int spawnCount = Mathf.Max(1, Mathf.CeilToInt(totalReward / 2f));
+        int baseReward = totalReward / spawnCount;
+        int remainder = totalReward % spawnCount;
+
+        for (int i = 0; i < spawnCount; i++)
+        {
+            GameObject rewardObject = PoolManager.Instance.Spawn(key, transform.position, Quaternion.identity);
+            if (rewardObject != null && rewardObject.TryGetComponent(out DropRat dropRat))
+            {
+                dropRat.InitializeReward(baseReward + (i < remainder ? 1 : 0));
+            }
+        }
+    }
+
+    private int CalculateDropRatRewardByClearTime()
+    {
+        float clearTime = StageManager.Instance != null ? StageManager.Instance.CurrentWaveElapsedTime : 0f;
+        float maxTime = Mathf.Min(_maxDropRatRewardClearTime, _minDropRatRewardClearTime);
+        float minTime = Mathf.Max(_maxDropRatRewardClearTime, _minDropRatRewardClearTime);
+        int maxReward = Mathf.Max(_maxDropRatReward, _minDropRatReward);
+        int minReward = Mathf.Min(_maxDropRatReward, _minDropRatReward);
+
+        if (clearTime <= maxTime)
+            return maxReward;
+
+        if (clearTime >= minTime)
+            return minReward;
+
+        float t = Mathf.InverseLerp(maxTime, minTime, clearTime);
+        return Mathf.RoundToInt(Mathf.Lerp(maxReward, minReward, t));
     }
 
     private void OnDestroy()
