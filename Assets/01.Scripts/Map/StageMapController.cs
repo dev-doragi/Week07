@@ -46,7 +46,6 @@ public class StageMapController : MonoBehaviour
     {
         public string NodeId;
         public int StageIndex;
-        public int WaveIndex;
         public Vector2 Position;
         public StageMapReward Reward;
         public readonly List<string> NextNodeIds = new List<string>();
@@ -178,7 +177,6 @@ public class StageMapController : MonoBehaviour
             {
                 NodeId = source.NodeId,
                 StageIndex = source.StageIndex,
-                WaveIndex = source.WaveIndex,
                 Position = source.NormalizedPosition,
                 Reward = source.Reward
             };
@@ -489,8 +487,7 @@ public class StageMapController : MonoBehaviour
         EventBus.Instance?.Publish(new StageMapNodeSelectedEvent
         {
             NodeId = node.NodeId,
-            StageIndex = node.StageIndex,
-            WaveIndex = node.WaveIndex
+            StageIndex = node.StageIndex
         });
 
         if (StageManager.Instance == null)
@@ -499,7 +496,7 @@ public class StageMapController : MonoBehaviour
             return;
         }
 
-        StageManager.Instance.StartStageFromMapNode(node.StageIndex, node.WaveIndex, _routeData.WaveStartDelay);
+        StageManager.Instance.StartStageFromMapNode(node.StageIndex, _routeData.WaveStartDelay);
     }
 
     private void RefreshNodeStates()

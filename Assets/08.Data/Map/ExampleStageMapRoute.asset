@@ -17,7 +17,6 @@ MonoBehaviour:
   _nodes:
   - _nodeId: start
     _stageIndex: 0
-    _waveIndex: 0
     _normalizedPosition: {x: 0.08, y: 0.5}
     _reward:
       _type: 0
@@ -30,7 +29,6 @@ MonoBehaviour:
     - c1_bot
   - _nodeId: c1_top
     _stageIndex: 0
-    _waveIndex: 0
     _normalizedPosition: {x: 0.25, y: 0.78}
     _reward:
       _type: 1
@@ -41,7 +39,6 @@ MonoBehaviour:
     - c2_mid
   - _nodeId: c1_mid
     _stageIndex: 0
-    _waveIndex: 1
     _normalizedPosition: {x: 0.25, y: 0.5}
     _reward:
       _type: 1
@@ -53,7 +50,6 @@ MonoBehaviour:
     - c2_mid
   - _nodeId: c1_bot
     _stageIndex: 0
-    _waveIndex: 0
     _normalizedPosition: {x: 0.25, y: 0.22}
     _reward:
       _type: 1
@@ -65,7 +61,6 @@ MonoBehaviour:
     - c2_bot
   - _nodeId: c2_top
     _stageIndex: 0
-    _waveIndex: 0
     _normalizedPosition: {x: 0.42, y: 0.78}
     _reward:
       _type: 1
@@ -76,7 +71,6 @@ MonoBehaviour:
     - c3_top
   - _nodeId: c2_mid
     _stageIndex: 0
-    _waveIndex: 1
     _normalizedPosition: {x: 0.42, y: 0.5}
     _reward:
       _type: 2
@@ -87,7 +81,6 @@ MonoBehaviour:
     - c3_mid
   - _nodeId: c2_bot
     _stageIndex: 0
-    _waveIndex: 0
     _normalizedPosition: {x: 0.42, y: 0.22}
     _reward:
       _type: 1
@@ -98,7 +91,6 @@ MonoBehaviour:
     - c3_bot
   - _nodeId: c3_top
     _stageIndex: 0
-    _waveIndex: 1
     _normalizedPosition: {x: 0.58, y: 0.78}
     _reward:
       _type: 2
@@ -110,7 +102,6 @@ MonoBehaviour:
     - c4_mid
   - _nodeId: c3_mid
     _stageIndex: 0
-    _waveIndex: 0
     _normalizedPosition: {x: 0.58, y: 0.5}
     _reward:
       _type: 1
@@ -122,7 +113,6 @@ MonoBehaviour:
     - c4_bot
   - _nodeId: c3_bot
     _stageIndex: 0
-    _waveIndex: 1
     _normalizedPosition: {x: 0.58, y: 0.22}
     _reward:
       _type: 2
@@ -133,7 +123,6 @@ MonoBehaviour:
     - c4_mid
   - _nodeId: c4_top
     _stageIndex: 0
-    _waveIndex: 0
     _normalizedPosition: {x: 0.75, y: 0.78}
     _reward:
       _type: 1
@@ -144,7 +133,6 @@ MonoBehaviour:
     - final
   - _nodeId: c4_mid
     _stageIndex: 0
-    _waveIndex: 1
     _normalizedPosition: {x: 0.75, y: 0.5}
     _reward:
       _type: 2
@@ -155,7 +143,6 @@ MonoBehaviour:
     - final
   - _nodeId: c4_bot
     _stageIndex: 0
-    _waveIndex: 1
     _normalizedPosition: {x: 0.75, y: 0.22}
     _reward:
       _type: 2
@@ -166,7 +153,6 @@ MonoBehaviour:
     - final
   - _nodeId: final
     _stageIndex: 0
-    _waveIndex: 1
     _normalizedPosition: {x: 0.92, y: 0.5}
     _reward:
       _type: 0
