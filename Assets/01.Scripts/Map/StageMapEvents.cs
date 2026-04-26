@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public struct StageMapNodeSelectedEvent
 {
     public string NodeId;
@@ -10,6 +12,8 @@ public struct StageMapRewardAppliedEvent
     public StageMapRewardType RewardType;
     public string RewardId;
     public int Amount;
+    public string DisplayName;
+    public Sprite Icon;
 }
 
 public struct StageMapVisibilityChangedEvent

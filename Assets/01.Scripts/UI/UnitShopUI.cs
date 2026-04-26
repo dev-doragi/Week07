@@ -52,12 +52,20 @@ public class UnitShopUI : MonoBehaviour
     {
         if(GridManager.Instance != null)
             GridManager.Instance.OnCapacityChanged += UpdateCapacityText;
+
+        UnlockManager unlockManager = FindFirstObjectByType<UnlockManager>();
+        if (unlockManager != null)
+            unlockManager.UnitUnlocked += OnUnitUnlocked;
     }
 
     private void OnDisable()
     {
         if(GridManager.Instance != null)
             GridManager.Instance.OnCapacityChanged -= UpdateCapacityText;
+
+        UnlockManager unlockManager = FindFirstObjectByType<UnlockManager>();
+        if (unlockManager != null)
+            unlockManager.UnitUnlocked -= OnUnitUnlocked;
     }
 
 
@@ -107,7 +115,7 @@ public class UnitShopUI : MonoBehaviour
                 if(data.Category != UnitCategory.Wheel) continue;
                 if(data.PlacementRule == PlacementRule.InitialOnly) continue;
                 var card = Instantiate(_cardPrefab, _cardContainer);
-                card.Setup(data, OnUnitSelected);
+                card.Setup(data, OnUnitSelected, IsUnlocked(data));
             }
         }
 
@@ -115,8 +123,20 @@ public class UnitShopUI : MonoBehaviour
         {
             if (data.Category != category) continue;
             var card = Instantiate(_cardPrefab, _cardContainer);
-            card.Setup(data, OnUnitSelected);
+            card.Setup(data, OnUnitSelected, IsUnlocked(data));
         }
+    }
+
+    private bool IsUnlocked(UnitDataSO data)
+    {
+        UnlockManager unlockManager = FindFirstObjectByType<UnlockManager>();
+        return unlockManager == null || unlockManager.IsUnitUnlocked(data);
+    }
+
+    private void OnUnitUnlocked(UnitDataSO unit)
+    {
+        if (_isOpen && _currentCategory != UnitCategory.None)
+            PopulateCards(_currentCategory);
     }
 
     private void OnUnitSelected(UnitDataSO data)

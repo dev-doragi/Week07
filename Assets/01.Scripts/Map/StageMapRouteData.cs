@@ -15,11 +15,15 @@ public class StageMapRouteData : ScriptableObject
     [Min(0)]
     [SerializeField] private int _ritualPointsPerClear = 1;
 
+    [Header("Unlock Rewards")]
+    [SerializeField] private List<UnitDataSO> _unlockableRatUnits = new List<UnitDataSO>();
+
     public string StartNodeId => _startNodeId;
     public string FinalNodeId => _finalNodeId;
     public IReadOnlyList<StageMapNodeData> Nodes => _nodes;
     public float WaveStartDelay => _waveStartDelay;
     public int RitualPointsPerClear => _ritualPointsPerClear;
+    public IReadOnlyList<UnitDataSO> UnlockableRatUnits => _unlockableRatUnits;
 
     public StageMapNodeData GetNode(string nodeId)
     {
