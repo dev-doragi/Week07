@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StageDataSO
   StageLayoutPrefab: {fileID: 5627074885168964547, guid: 94be48c3ee1fa8b43a276aea8e108bfb, type: 3}
   Waves:
-  - EnemySiegePrefab: {fileID: 3964187053809284795, guid: 9f799d0590be61e46b1e7c26bb212a86, type: 3}
+  - EnemySiegePrefab: {fileID: 2506549350981255678, guid: 7d332c42a3b35eb40af5a7acb1189798, type: 3}
     NextWaveInterval: 3
   StageIndex: 3

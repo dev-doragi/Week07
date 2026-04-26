@@ -16,7 +16,7 @@ MonoBehaviour:
   UnitName: "\uACE1\uC0AC\uD3EC"
   Team: 2
   Category: 3
-  Prefab: {fileID: 6579287745903239311, guid: a2207d352fff4cd4d8bff3351b5b2077, type: 3}
+  Prefab: {fileID: 6579287745903239311, guid: d02970c67c60f0640b77800273222cf6, type: 3}
   Icon: {fileID: 21300000, guid: fcb4b7ab413ff2f408c382b449f1fdd9, type: 3}
   Size: {x: 2, y: 2}
   PlacementRule: 1
