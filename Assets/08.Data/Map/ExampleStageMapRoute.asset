@@ -184,6 +184,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d2824f716f68a274b8ff20f2150b7642, type: 2}
   - {fileID: 11400000, guid: 490fc92c8802a2f43b605456cd67ef8e, type: 2}
   - {fileID: 11400000, guid: 227b08e28dd0ccb42b712cdf6504d363, type: 2}
+  - {fileID: 11400000, guid: ca5e7165cf009e947a73684efca92348, type: 2}
+  - {fileID: 11400000, guid: 4baf8057090a95442b5687d2e3297637, type: 2}
   _skillUnlocks:
   - _clearStageIndex: 0
     _skillIndex: 1

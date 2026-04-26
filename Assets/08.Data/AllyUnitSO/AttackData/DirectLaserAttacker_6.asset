@@ -46,6 +46,6 @@ MonoBehaviour:
     Radius: 0
     Effects: []
   Heal:
-    HealRange: 10
+    HealRange: 0
     HealAmount: 0
-    HealCooldown: 2
+    HealCooldown: 0.1

@@ -51,6 +51,38 @@ public class RitualSystem : MonoBehaviour
     public float Skill1CooldownRemaining => _skill1CooldownTimer;
     public float Skill2CooldownRemaining => _skill2CooldownTimer;
     public float Skill3CooldownRemaining => _skill3CooldownTimer;
+    public bool IsSkillUnlocked(int skillIndex)
+    {
+        return skillIndex switch
+        {
+            1 => true,
+            2 => IsDoctrineUnlockedForUI(RitualSkill2UnlockId),
+            3 => IsDoctrineUnlockedForUI(RitualSkill3UnlockId),
+            _ => true
+        };
+    }
+
+    public float GetSkillCooldownDuration(int skillIndex)
+    {
+        return skillIndex switch
+        {
+            1 => _skill1Cooldown,
+            2 => _skill2Cooldown,
+            3 => _skill3Cooldown,
+            _ => 0f
+        };
+    }
+
+    public float GetSkillCooldownRemaining(int skillIndex)
+    {
+        return skillIndex switch
+        {
+            1 => Mathf.Max(0f, _skill1CooldownTimer),
+            2 => Mathf.Max(0f, _skill2CooldownTimer),
+            3 => Mathf.Max(0f, _skill3CooldownTimer),
+            _ => 0f
+        };
+    }
 
     private void Update()
     {
@@ -162,7 +194,7 @@ public class RitualSystem : MonoBehaviour
 
     private void OnSkill3()
     {
-        StartCoroutine(MeteorRoutine());                //메테오 떨어트리기
+        StartCoroutine(MeteorRoutine());                 //메테오 떨어트리기
     }
 
     // ──────────────────────────────────────────────
@@ -173,7 +205,7 @@ public class RitualSystem : MonoBehaviour
     {
         if (timer > 0f)
         {
-            Debug.Log($"[RitualSystem] 스킬 {skillIndex} 쿨타임 중 | 남은 시간: {timer:F1}초");
+            Debug.Log($"[RitualSystem] Skill {skillIndex} is on cooldown. Remaining: {timer:F1}s");
             return false;
         }
         return true;
@@ -198,28 +230,25 @@ public class RitualSystem : MonoBehaviour
 
     private bool IsDoctrineUnlocked(int skillIndex, string unlockId)
     {
-        if (!_useDoctrineUnlockChecks)
-        {
+        if (IsDoctrineUnlockedForUI(unlockId))
             return true;
-        }
 
-        if (_unlockManager == null)
-        {
-            _unlockManager = FindAnyObjectByType<UnlockManager>();
-        }
-
-        if (_unlockManager == null)
-        {
-            return true;
-        }
-
-        if (_unlockManager.IsUnlocked(unlockId))
-        {
-            return true;
-        }
-
-        Debug.Log($"[RitualSystem] 스킬 {skillIndex} 잠금 상태 | 필요 해금: {unlockId}");
+        Debug.Log($"[RitualSystem] Skill {skillIndex} locked. Required unlock: {unlockId}");
         return false;
+    }
+
+    private bool IsDoctrineUnlockedForUI(string unlockId)
+    {
+        if (!_useDoctrineUnlockChecks)
+            return true;
+
+        if (_unlockManager == null)
+            _unlockManager = FindAnyObjectByType<UnlockManager>();
+
+        if (_unlockManager == null)
+            return true;
+
+        return _unlockManager.IsUnlocked(unlockId);
     }
 
     private IEnumerator MeteorRoutine()
