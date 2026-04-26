@@ -35,7 +35,6 @@ public class SiegeChargeHandler : MonoBehaviour
     private bool _isCrashing;
     private bool _isDashing;
     private bool _hasImpactedThisCrash;
-    private bool _suppressEndCrashOnKill;
 
     public bool IsCrashing => _isCrashing;
 
@@ -60,7 +59,7 @@ public class SiegeChargeHandler : MonoBehaviour
 
     private void OnDestroy()
     {
-        _sequence?.Kill();
+        CancelCrash();
     }
 
     public void ExecuteCrash()
@@ -79,12 +78,27 @@ public class SiegeChargeHandler : MonoBehaviour
         PlayCrashSequence();
     }
 
+    public void CancelCrash()
+    {
+        if (!_isCrashing) return;
+
+        _sequence?.Kill();
+        _sequence = null;
+        
+        // 상태 완전히 초기화 (쿨타임 안 돌기)
+        _isCrashing = false;
+        _isDashing = false;
+        _hasImpactedThisCrash = false;
+        
+        // 그리드를 원래 위치로 즉시 복귀
+        if (_grid != null)
+            _grid.transform.position = _startPosition;
+        
+        Debug.Log("[SiegeChargeHandler] Crash cancelled - all state reset");
+    }
+
     private void PlayCrashSequence()
     {
-        _suppressEndCrashOnKill = true;
-        _sequence?.Kill();
-        _suppressEndCrashOnKill = false;
-
         Vector3 leftTarget = _startPosition + Vector3.left * _pullBackDistance;
         Vector3 rightTarget = _startPosition + Vector3.right * _crashDistance;
 
@@ -105,7 +119,7 @@ public class SiegeChargeHandler : MonoBehaviour
         _sequence.Append(gridTransform.DOMove(_startPosition, _returnDuration).SetEase(Ease.InQuad));
 
         _sequence.OnComplete(EndCrash);
-        _sequence.OnKill(() => { if (!_suppressEndCrashOnKill) EndCrash(); });
+        _sequence.OnKill(EndCrash); // Kill 시에도 항상 EndCrash 호출
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
