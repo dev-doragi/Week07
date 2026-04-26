@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 550f97df3c4ad9d44a36190b24e47c3b, type: 3}
+  m_Name: SupportDance_2
+  m_EditorClassIdentifier: Assembly-CSharp::UnitDataSO
+  Key: 54
+  UnitName: "\uCDA4\uCD94\uC950"
+  Team: 1
+  Category: 5
+  Prefab: {fileID: 2279276099341820887, guid: 6f6a2dca3ef7f824b968514ac6d873fe, type: 3}
+  Icon: {fileID: -2132995636211010893, guid: e8d5b49934a0c5e488b624dec09914f4, type: 3}
+  Size: {x: 2, y: 1}
+  PlacementRule: 1
+  ActsAsFoundation: 0
+  WheelCapacity: 5
+  MaxHp: 30
+  BaseDefenseRate: 0
+  Cost: 120
+  DeathSpawnKey: 
+  BaseDeathSpawnCount: 0
+  Attack:
+    Damage: 0
+    Speed: 0
+    Distance: 0
+    AttackCost: 0
+    Trajectory: 0
+    Targeting: 0
+    Area: 0
+    RangeRadius: 0
+    PiercingCount: 0
+    Penetration: 0
+    PiercingDecay: 0
+    ProjectilePrefab: {fileID: 0}
+  Defense:
+    CollisionPower: 0
+  Support:
+    Radius: 15
+    Effects:
+    - _targetRoleType: 2
+      _targetStatType: 1
+      _modifierType: 2
+      _value: 0.5
+      _description: 
+  Heal:
+    HealRange: 10
+    HealAmount: 0
+    HealCooldown: 2

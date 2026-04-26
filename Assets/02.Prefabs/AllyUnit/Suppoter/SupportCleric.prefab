@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 378669888295955703}
   - component: {fileID: 1577473774015847846}
   m_Layer: 6
-  m_Name: Support02
+  m_Name: SupportCleric
   m_TagString: Ally
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

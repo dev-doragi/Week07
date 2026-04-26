@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8417998693798523098}
   - component: {fileID: 9074515109932797892}
   m_Layer: 6
-  m_Name: Support01
+  m_Name: SupportDance
   m_TagString: Ally
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -60,7 +60,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74e9101c6ff40ee41b97bd4cb9889ab9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Unit
-  _data: {fileID: 11400000, guid: 4b8f6362e5023af4c83cfe26c8929c4a, type: 2}
+  _data: {fileID: 11400000, guid: 3a6c2837145a3f148bdf0cc5d5edbb69, type: 2}
   _baseRenderer: {fileID: 8819439468573589140}
   _damageOverlays: []
   _healEffectPrefab: {fileID: 4289407542021784391, guid: 3f97cb9369cf34e489655812e97fd93c, type: 3}
@@ -210,7 +210,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -2132995636211010893, guid: e8d5b49934a0c5e488b624dec09914f4, type: 3}
+  m_Sprite: {fileID: 2128112624, guid: 6582f34ddd5f686408c019550cd94c9d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

@@ -11,11 +11,11 @@ GameObject:
   - component: {fileID: 8068187422609471916}
   - component: {fileID: 6645370429031910618}
   - component: {fileID: 4674465859174945287}
-  - component: {fileID: 4015324494563164626}
   - component: {fileID: 1383089633994324034}
+  - component: {fileID: 3008134117050521700}
   - component: {fileID: 1363012408695675055}
   m_Layer: 6
-  m_Name: ArcAttacker02
+  m_Name: DirectLaserAttacker
   m_TagString: Ally
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -62,25 +62,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74e9101c6ff40ee41b97bd4cb9889ab9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Unit
-  _data: {fileID: 11400000, guid: 04c9e77ccd3044547a8a56257018c70e, type: 2}
+  _data: {fileID: 11400000, guid: 227b08e28dd0ccb42b712cdf6504d363, type: 2}
   _baseRenderer: {fileID: 5228705860646447172}
   _damageOverlays: []
   _healEffectPrefab: {fileID: 4289407542021784391, guid: 3f97cb9369cf34e489655812e97fd93c, type: 3}
---- !u!114 &4015324494563164626
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 939399878548102891}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e4de64ca7530924bb5aff23eeb0726d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ArcAttacker
-  _arcHeight: 3
-  _travelTime: 0.7
-  _spawnPoint: {fileID: 587656166232336827}
 --- !u!61 &1383089633994324034
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -127,6 +112,20 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &3008134117050521700
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 939399878548102891}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b46d4611361a094b9518dbe0054303c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DirectAttacker
+  _projectileSpeed: 15
+  _spawnPoint: {fileID: 587656166232336827}
 --- !u!114 &1363012408695675055
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -261,8 +260,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 7084957924513991936, guid: 34f3abc17a75b0d4d81fe69030e8201c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: -7810328370443580990, guid: c43ed17b5c5992c4a89a51723c0f79e7, type: 3}
+  m_Color: {r: 0.8207547, g: 0.35230508, b: 0.35230508, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

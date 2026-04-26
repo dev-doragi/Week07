@@ -137,7 +137,7 @@ GameObject:
   - component: {fileID: 4473418106632027411}
   - component: {fileID: 1289700328320681788}
   m_Layer: 6
-  m_Name: DirectAttacker01
+  m_Name: DirectBatAttacker
   m_TagString: Ally
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

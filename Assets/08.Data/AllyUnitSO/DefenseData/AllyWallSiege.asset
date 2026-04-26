@@ -10,38 +10,38 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 550f97df3c4ad9d44a36190b24e47c3b, type: 3}
-  m_Name: ArcAttacker_4
+  m_Name: AllyWallSiege
   m_EditorClassIdentifier: Assembly-CSharp::UnitDataSO
-  Key: 16
-  UnitName: "\uB192\uAC8C\uB358\uC960(\uC784\uC2DC\uBA85)"
+  Key: 3
+  UnitName: "\uACF5\uC131\uC950"
   Team: 1
-  Category: 3
-  Prefab: {fileID: 939399878548102891, guid: bae8b531697a16047969f9ca26157242, type: 3}
-  Icon: {fileID: 7084957924513991936, guid: 34f3abc17a75b0d4d81fe69030e8201c, type: 3}
-  Size: {x: 1, y: 2}
-  PlacementRule: 1
-  ActsAsFoundation: 0
+  Category: 4
+  Prefab: {fileID: 664433030619585036, guid: a3e7d097ec6e6f04a84a0df88d9929bb, type: 3}
+  Icon: {fileID: 898551970227511676, guid: 8538a3102160c0546b32f5a4d6e96026, type: 3}
+  Size: {x: 3, y: 1}
+  PlacementRule: 2
+  ActsAsFoundation: 1
   WheelCapacity: 5
-  MaxHp: 110
+  MaxHp: 150
   BaseDefenseRate: 0
-  Cost: 80
+  Cost: 100
   DeathSpawnKey: 
   BaseDeathSpawnCount: 0
   Attack:
-    Damage: 40
-    Speed: 3
-    Distance: 30
-    AttackCost: 5
-    Trajectory: 2
-    Targeting: 1
-    Area: 2
+    Damage: 0
+    Speed: 0
+    Distance: 0
+    AttackCost: 0
+    Trajectory: 1
+    Targeting: 0
+    Area: 0
     RangeRadius: 0
-    PiercingCount: 3
+    PiercingCount: 0
     Penetration: 0
-    PiercingDecay: 0.9
-    ProjectilePrefab: {fileID: 6579287745903239311, guid: a529ebaa78b428240bfbd9a28e01fbdc, type: 3}
+    PiercingDecay: 0
+    ProjectilePrefab: {fileID: 0}
   Defense:
-    CollisionPower: 0
+    CollisionPower: 20
   Support:
     Radius: 0
     Effects: []

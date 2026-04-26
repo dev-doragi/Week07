@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 550f97df3c4ad9d44a36190b24e47c3b, type: 3}
+  m_Name: EnemyMissileAttacker_1
+  m_EditorClassIdentifier: Assembly-CSharp::UnitDataSO
+  Key: 113
+  UnitName: "\uBBF8\uC0AC\uC77C"
+  Team: 2
+  Category: 3
+  Prefab: {fileID: 6579287745903239311, guid: a2207d352fff4cd4d8bff3351b5b2077, type: 3}
+  Icon: {fileID: 21300000, guid: fcb4b7ab413ff2f408c382b449f1fdd9, type: 3}
+  Size: {x: 2, y: 1}
+  PlacementRule: 1
+  ActsAsFoundation: 0
+  WheelCapacity: 5
+  MaxHp: 80
+  BaseDefenseRate: 0
+  Cost: 0
+  DeathSpawnKey: 
+  BaseDeathSpawnCount: 0
+  Attack:
+    Damage: 5
+    Speed: 0.3
+    Distance: 30
+    AttackCost: 0
+    Trajectory: 1
+    Targeting: 1
+    Area: 0
+    RangeRadius: 0
+    PiercingCount: 0
+    Penetration: 0
+    PiercingDecay: 0
+    ProjectilePrefab: {fileID: 6579287745903239311, guid: c964238557a030546a624410f99dfe27, type: 3}
+  Defense:
+    CollisionPower: 0
+  Support:
+    Radius: 0
+    Effects: []
+  Heal:
+    HealRange: 10
+    HealAmount: 0
+    HealCooldown: 2

@@ -305,6 +305,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 7b3a236afa733db489828bde94b314be, type: 2}
   - {fileID: 11400000, guid: 4b8f6362e5023af4c83cfe26c8929c4a, type: 2}
   - {fileID: 11400000, guid: eeec5f3ed9635f447a80e53a2782b5c3, type: 2}
+  _capacityText: {fileID: 0}
   _slideDuration: 0.25
   _panelOpenX: 130
   _panelClosedX: -220
@@ -903,6 +904,7 @@ MonoBehaviour:
   _ghostCellPrefab: {fileID: 2027468391}
   _validColor: {r: 0, g: 0, b: 0, a: 0.39607844}
   _invalidColor: {r: 1, g: 0.2, b: 0.2, a: 0.5}
+  _hintColor: {r: 0.2, g: 1, b: 0.2, a: 0.3}
   _spritePreviewAlpha: 0.3
 --- !u!4 &803066230
 Transform:
@@ -1195,6 +1197,7 @@ MonoBehaviour:
   _genInterval: 1
   _subInterval: 1
   _countDisplayText: {fileID: 0}
+  _waveWaitDisplayText: {fileID: 0}
   _genGaugeSlider: {fileID: 0}
   _subGaugeSlider: {fileID: 0}
 --- !u!4 &950892902
@@ -2627,6 +2630,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4fb10b73d11d0c4a9aae414654975ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GridManager
+  _isDontDestroyOnLoad: 1
   _width: 8
   _height: 10
   _cellSize: 0.8
