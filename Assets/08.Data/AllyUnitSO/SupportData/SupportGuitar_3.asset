@@ -10,41 +10,46 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 550f97df3c4ad9d44a36190b24e47c3b, type: 3}
-  m_Name: ArcAttacker_1
+  m_Name: SupportGuitar_3
   m_EditorClassIdentifier: Assembly-CSharp::UnitDataSO
-  Key: 12
-  UnitName: "\uD3ED\uD0C4\uBCD1"
+  Key: 53
+  UnitName: "\uAE30\uD0C0\uC950"
   Team: 1
-  Category: 3
-  Prefab: {fileID: 8494154496769389322, guid: 843c2ccd18c217b4aad2ceb964eb011f, type: 3}
-  Icon: {fileID: -7810328370443580990, guid: c43ed17b5c5992c4a89a51723c0f79e7, type: 3}
+  Category: 5
+  Prefab: {fileID: 2279276099341820887, guid: 6f6a2dca3ef7f824b968514ac6d873fe, type: 3}
+  Icon: {fileID: -2132995636211010893, guid: e8d5b49934a0c5e488b624dec09914f4, type: 3}
   Size: {x: 1, y: 1}
   PlacementRule: 1
   ActsAsFoundation: 0
   WheelCapacity: 5
-  MaxHp: 100
+  MaxHp: 30
   BaseDefenseRate: 0
-  Cost: 50
+  Cost: 110
   DeathSpawnKey: 
   BaseDeathSpawnCount: 0
   Attack:
-    Damage: 8
-    Speed: 2
-    Distance: 30
-    AttackCost: 5
-    Trajectory: 2
+    Damage: 0
+    Speed: 0
+    Distance: 0
+    AttackCost: 0
+    Trajectory: 0
     Targeting: 0
-    Area: 1
-    RangeRadius: 2
+    Area: 0
+    RangeRadius: 0
     PiercingCount: 0
     Penetration: 0
     PiercingDecay: 0
-    ProjectilePrefab: {fileID: 6579287745903239311, guid: cd8931b0d41a86f4ebcc986ffd7c04e5, type: 3}
+    ProjectilePrefab: {fileID: 0}
   Defense:
     CollisionPower: 0
   Support:
-    Radius: 0
-    Effects: []
+    Radius: 10
+    Effects:
+    - _targetRoleType: 2
+      _targetStatType: 1
+      _modifierType: 2
+      _value: 0.3
+      _description: 
   Heal:
     HealRange: 10
     HealAmount: 0

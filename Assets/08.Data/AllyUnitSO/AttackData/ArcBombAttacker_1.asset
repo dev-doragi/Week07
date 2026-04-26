@@ -10,36 +10,36 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 550f97df3c4ad9d44a36190b24e47c3b, type: 3}
-  m_Name: DirectAttacker_2
+  m_Name: ArcBombAttacker_1
   m_EditorClassIdentifier: Assembly-CSharp::UnitDataSO
-  Key: 14
-  UnitName: "\uBD88\uBD99\uC774\uC950(\uC784\uC2DC\uBA85)"
+  Key: 12
+  UnitName: "\uD3ED\uD0C4\uBCD1"
   Team: 1
   Category: 3
-  Prefab: {fileID: 0}
-  Icon: {fileID: 0}
-  Size: {x: 2, y: 1}
+  Prefab: {fileID: 8494154496769389322, guid: 843c2ccd18c217b4aad2ceb964eb011f, type: 3}
+  Icon: {fileID: -7810328370443580990, guid: c43ed17b5c5992c4a89a51723c0f79e7, type: 3}
+  Size: {x: 1, y: 1}
   PlacementRule: 1
   ActsAsFoundation: 0
   WheelCapacity: 5
   MaxHp: 100
   BaseDefenseRate: 0
-  Cost: 60
+  Cost: 50
   DeathSpawnKey: 
   BaseDeathSpawnCount: 0
   Attack:
-    Damage: 12
-    Speed: 1
+    Damage: 8
+    Speed: 2
     Distance: 30
-    AttackCost: 1
-    Trajectory: 1
+    AttackCost: 5
+    Trajectory: 2
     Targeting: 0
     Area: 1
     RangeRadius: 2
     PiercingCount: 0
     Penetration: 0
     PiercingDecay: 0
-    ProjectilePrefab: {fileID: 6579287745903239311, guid: cc3c29d75c9105349839bf324fbc5f30, type: 3}
+    ProjectilePrefab: {fileID: 6579287745903239311, guid: cd8931b0d41a86f4ebcc986ffd7c04e5, type: 3}
   Defense:
     CollisionPower: 0
   Support:
