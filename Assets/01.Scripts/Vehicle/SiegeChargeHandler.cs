@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
@@ -27,6 +28,11 @@ public class SiegeChargeHandler : MonoBehaviour
     [Header("Damage")]
     [SerializeField, Range(0f, 1f)] private float _penetration = 0f;
 
+    [Header("Doctrine - Ram")]
+    [SerializeField, Range(0f, 1f)] private float _doctrineSelfDamageReductionPercent = 0f;
+    [SerializeField, Min(0f)] private float _doctrineBonusDamagePercent = 0f;
+    [SerializeField, Min(0f)] private float _doctrineStunDurationSeconds = 0f;
+
     public event Action OnCrashEnd;
 
     private Sequence _sequence;
@@ -35,6 +41,7 @@ public class SiegeChargeHandler : MonoBehaviour
     private bool _isCrashing;
     private bool _isDashing;
     private bool _hasImpactedThisCrash;
+    private readonly Dictionary<Unit, Coroutine> _enemyStunRoutines = new Dictionary<Unit, Coroutine>();
 
     public bool IsCrashing => _isCrashing;
 
@@ -95,6 +102,24 @@ public class SiegeChargeHandler : MonoBehaviour
             _grid.transform.position = _startPosition;
         
         Debug.Log("[SiegeChargeHandler] Crash cancelled - all state reset");
+    }
+
+    public void SetDoctrineSelfDamageReductionPercent(float percent)
+    {
+        _doctrineSelfDamageReductionPercent = Mathf.Clamp01(percent);
+        Debug.Log($"[SiegeChargeHandler] Doctrine self-damage reduction set: {_doctrineSelfDamageReductionPercent * 100f:0}%");
+    }
+
+    public void SetDoctrineBonusDamagePercent(float percent)
+    {
+        _doctrineBonusDamagePercent = Mathf.Max(0f, percent);
+        Debug.Log($"[SiegeChargeHandler] Doctrine bonus damage set: {_doctrineBonusDamagePercent * 100f:0}%");
+    }
+
+    public void SetDoctrineStunDurationSeconds(float seconds)
+    {
+        _doctrineStunDurationSeconds = Mathf.Max(0f, seconds);
+        Debug.Log($"[SiegeChargeHandler] Doctrine stun duration set: {_doctrineStunDurationSeconds:0.##}s");
     }
 
     private void PlayCrashSequence()
@@ -183,13 +208,20 @@ public class SiegeChargeHandler : MonoBehaviour
             if (isPlayerLosing)
             {
                 var targets = _grid.GetAllLivingUnits();
-                DistributeDamage(targets, delta, TeamType.Enemy, "Player");
+                float reducedDamage = delta * (1f - Mathf.Clamp01(_doctrineSelfDamageReductionPercent));
+                DistributeDamage(targets, reducedDamage, TeamType.Enemy, "Player");
             }
             else
             {
                 var targets = enemyGrid.GetAllLivingUnits();
-                DistributeDamage(targets, delta, TeamType.Player, "Enemy");
+                float boostedDamage = delta * (1f + Mathf.Max(0f, _doctrineBonusDamagePercent));
+                DistributeDamage(targets, boostedDamage, TeamType.Player, "Enemy");
             }
+        }
+
+        if (_doctrineStunDurationSeconds > 0f)
+        {
+            ApplyStunToAllEnemies(_doctrineStunDurationSeconds);
         }
 
         EventBus.Instance?.Publish(new SiegeCollisionResolvedEvent { PlayerCP = playerCP, EnemyCP = enemyCP, Delta = delta, IsPlayerLosing = isPlayerLosing });
@@ -224,5 +256,51 @@ public class SiegeChargeHandler : MonoBehaviour
         float playerCP = _grid != null ? _grid.CalculateTotalCollisionPower() : 0f;
         float enemyCP = _enemyGrid != null ? _enemyGrid.CalculateTotalCollisionPower() : 0f;
         EventBus.Instance?.Publish(new CollisionPowerUpdatedEvent { PlayerCP = playerCP, EnemyCP = enemyCP });
+    }
+
+    private void ApplyStunToAllEnemies(float duration)
+    {
+        List<Unit> targets = _enemyGrid != null ? _enemyGrid.GetAllLivingUnits() : null;
+        if (targets == null || targets.Count == 0)
+        {
+            return;
+        }
+
+        for (int i = 0; i < targets.Count; i++)
+        {
+            Unit target = targets[i];
+            if (target == null || target.IsDead)
+            {
+                continue;
+            }
+
+            if (_enemyStunRoutines.TryGetValue(target, out Coroutine existing) && existing != null)
+            {
+                StopCoroutine(existing);
+            }
+
+            _enemyStunRoutines[target] = StartCoroutine(StunRoutine(target, duration));
+        }
+    }
+
+    private IEnumerator StunRoutine(Unit target, float duration)
+    {
+        if (target == null || target.IsDead)
+        {
+            yield break;
+        }
+
+        target.ChangeState(UnitState.Stun);
+        yield return new WaitForSeconds(duration);
+
+        if (target != null && !target.IsDead && target.CurrentState == UnitState.Stun)
+        {
+            target.ChangeState(UnitState.Idle);
+        }
+
+        if (target != null)
+        {
+            _enemyStunRoutines.Remove(target);
+        }
     }
 }
