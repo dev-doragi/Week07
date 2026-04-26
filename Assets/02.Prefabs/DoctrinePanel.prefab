@@ -3670,10 +3670,8 @@ MonoBehaviour:
   playerGrid: {fileID: 0}
   ritualWallHealPercent: 0.1
   wallMonitorInterval: 0.1
-  unlockEventBindings:
-  - effectId: 
-    unlockId: 
-    eventKind: 0
+  ramGaugeGainMultiplier: 2
+  unlockEventBindings: []
 --- !u!1 &5877459970759565191
 GameObject:
   m_ObjectHideFlags: 0

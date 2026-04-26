@@ -22,7 +22,7 @@ MonoBehaviour:
       _type: 0
       _rewardId: 
       _amount: 0
-      _icon: {fileID: 0}
+      _icon: {fileID: 21300000, guid: 83bb5f401bf2c9345b8a03ff7880bf18, type: 3}
       _unitUnlock: {fileID: 0}
     _nextNodeIds:
     - c1_top
@@ -174,7 +174,7 @@ MonoBehaviour:
       _icon: {fileID: 0}
       _unitUnlock: {fileID: 0}
     _nextNodeIds: []
-  _waveStartDelay: 15
+  _waveStartDelay: 20
   _ritualPointsPerClear: 1
   _unlockableRatUnits:
   - {fileID: 11400000, guid: 67e1321594bd8034783162a4c27fcbd3, type: 2}

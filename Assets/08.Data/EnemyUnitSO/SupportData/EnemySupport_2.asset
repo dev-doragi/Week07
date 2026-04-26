@@ -48,7 +48,7 @@ MonoBehaviour:
     - _targetRoleType: 3
       _targetStatType: 4
       _modifierType: 1
-      _value: 5
+      _value: 0.2
       _description: 
   Heal:
     HealRange: 10

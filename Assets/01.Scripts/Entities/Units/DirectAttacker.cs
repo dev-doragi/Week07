@@ -14,7 +14,7 @@ public class DirectAttacker : MonoBehaviour, IAttacker
 
         if (obj.TryGetComponent(out RatProjectile ratProjectile))
         {
-            ratProjectile.Initialize(attackData, attacker.Team, startPos, target.transform.position, Vector3.Distance(startPos, target.transform.position) / Mathf.Max(0.01f, _projectileSpeed));
+            ratProjectile.Initialize(attackData, attacker.Team, startPos, target.transform.position, _projectileSpeed);
             return true;
         }
 
