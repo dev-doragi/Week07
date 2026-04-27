@@ -62,8 +62,8 @@ public class SceneLoader : Singleton<SceneLoader>
 
         if (currentSceneName == _inGameSceneName)
         {
-            int currentStageIndex = StageManager.Instance.CurrentStageIndex;
-            StageLoadContext.SetStageIndex(currentStageIndex);
+            //int currentStageIndex = StageManager.Instance.CurrentStageIndex;
+            StageLoadContext.SetStageIndex(0);
         }
 
         SceneManager.LoadScene(currentSceneName);

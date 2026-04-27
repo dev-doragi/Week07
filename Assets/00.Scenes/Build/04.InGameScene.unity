@@ -1275,7 +1275,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2e5a822822c9c0449efc43bcb74a2fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SiegeSaveLoader
-  _placedPartsRoot: {fileID: 0}
+  _isDontDestroyOnLoad: 1
 --- !u!4 &443572060
 Transform:
   m_ObjectHideFlags: 0
@@ -2236,6 +2236,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GridController
   _grid: {fileID: 1950871294}
   _camera: {fileID: 1482599247}
+  _siegeHandler: {fileID: 0}
   _wheelData: {fileID: 11400000, guid: 111364d3ed48f464aba10b441e66bf1a, type: 2}
   _coreData: {fileID: 11400000, guid: a20b726f5ee6fae40861df8b4ad0d6d3, type: 2}
   _wheelCells:
@@ -3643,10 +3644,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SiegeChargeHandler
   _grid: {fileID: 1950871294}
   _enemyGridObject: {fileID: 556531260}
-  _crashCollider: {fileID: 1950871292}
-  _enemyLayer:
-    serializedVersion: 2
-    m_Bits: 128
   _pullBackDistance: 1
   _pullBackDuration: 0.45
   _crashDistance: 9
@@ -3657,6 +3654,7 @@ MonoBehaviour:
   _shakeVibrato: 15
   _shakeRandomness: 90
   _penetration: 0
+  _attackCategoryDamageMultiplier: 0.5
   _doctrineEnemyCollisionPowerReductionPercent: 0
   _doctrineBonusDamagePercent: 0
   _doctrineStunDurationSeconds: 0
@@ -3856,7 +3854,7 @@ PrefabInstance:
       objectReference: {fileID: 556531261}
     - target: {fileID: 1678471197080052893, guid: 209d714c60f4eb74c84688b9962df88a, type: 3}
       propertyPath: _initialWaveStartDelay
-      value: 30
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 1678471197080052893, guid: 209d714c60f4eb74c84688b9962df88a, type: 3}
       propertyPath: _stageDatas.Array.size
@@ -4610,6 +4608,58 @@ PrefabInstance:
       propertyPath: _dragRoot
       value: 
       objectReference: {fileID: 284887922}
+    - target: {fileID: 4434203174804606556, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_fontSize
+      value: 32
+      objectReference: {fileID: 0}
+    - target: {fileID: 4434203174804606556, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_fontColor.b
+      value: 0.6415094
+      objectReference: {fileID: 0}
+    - target: {fileID: 4434203174804606556, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_fontColor.g
+      value: 0.30036905
+      objectReference: {fileID: 0}
+    - target: {fileID: 4434203174804606556, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_fontColor.r
+      value: 0.069597736
+      objectReference: {fileID: 0}
+    - target: {fileID: 4434203174804606556, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 32
+      objectReference: {fileID: 0}
+    - target: {fileID: 4494011676556705334, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_fontSize
+      value: 48
+      objectReference: {fileID: 0}
+    - target: {fileID: 4494011676556705334, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_margin.x
+      value: -53.657166
+      objectReference: {fileID: 0}
+    - target: {fileID: 4494011676556705334, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_margin.z
+      value: -67.77734
+      objectReference: {fileID: 0}
+    - target: {fileID: 4494011676556705334, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_fontStyle
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4494011676556705334, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_fontColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4494011676556705334, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_fontColor.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4494011676556705334, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_fontColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4494011676556705334, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 48
+      objectReference: {fileID: 0}
     - target: {fileID: 5139120421178601618, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -4654,6 +4704,26 @@ PrefabInstance:
       propertyPath: _gridController
       value: 
       objectReference: {fileID: 1331035396}
+    - target: {fileID: 8177813127618885960, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_fontSize
+      value: 32
+      objectReference: {fileID: 0}
+    - target: {fileID: 8177813127618885960, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_fontColor.b
+      value: 0.6415094
+      objectReference: {fileID: 0}
+    - target: {fileID: 8177813127618885960, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_fontColor.g
+      value: 0.30036905
+      objectReference: {fileID: 0}
+    - target: {fileID: 8177813127618885960, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_fontColor.r
+      value: 0.069597736
+      objectReference: {fileID: 0}
+    - target: {fileID: 8177813127618885960, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 32
+      objectReference: {fileID: 0}
     - target: {fileID: 8800759617891440508, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -4665,6 +4735,10 @@ PrefabInstance:
     - target: {fileID: 8800759617891440508, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9135846984315680420, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -111
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
