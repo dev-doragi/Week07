@@ -328,16 +328,15 @@ public class SiegeChargeHandler : MonoBehaviour
             return;
         }
 
-        float perUnitDamage = totalDamage / targets.Count;
         var hitData = new DamageData
         {
-            Damage       = perUnitDamage,
+            Damage       = totalDamage * 1.25f,
             AttackerTeam = attackerTeam,
             HitPoint     = Vector2.zero,
             IsPiercing   = _penetration >= 1f
         };
 
-        Debug.Log($"[Damage] {victimTeam} team | 총 데미지: {totalDamage} | 개별: {perUnitDamage} | 유닛 수: {targets.Count}");
+        Debug.Log($"[Damage] {victimTeam} team | 총 데미지: {totalDamage} | 유닛 수: {targets.Count}");
 
         int damageCount = 0;
         foreach (Unit unit in targets)
