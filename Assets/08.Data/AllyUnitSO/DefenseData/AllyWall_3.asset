@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: AllyWall_3
   m_EditorClassIdentifier: Assembly-CSharp::UnitDataSO
   Key: 3
-  UnitName: "\uBCBD\uBCBD\uBCBD\uC950"
+  UnitName: "\uBB49\uD0F1\uC774\uC950"
   Team: 1
   Category: 4
   Prefab: {fileID: 664433030619585036, guid: 133aae2717435414d80594abbf2250eb, type: 3}
   Icon: {fileID: 898551970227511676, guid: 8538a3102160c0546b32f5a4d6e96026, type: 3}
+  Description: "\"\uC720\uB9AC\uAC8C\uC29D\""
   Size: {x: 1, y: 1}
   PlacementRule: 2
   ActsAsFoundation: 1
