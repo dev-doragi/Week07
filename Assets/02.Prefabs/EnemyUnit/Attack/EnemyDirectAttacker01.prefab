@@ -112,7 +112,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: fcb4b7ab413ff2f408c382b449f1fdd9, type: 3}
+  m_Sprite: {fileID: -8909814870418877444, guid: a523ff2695cdc3146a5c5ff11e2ef5b0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -135,6 +135,7 @@ GameObject:
   - component: {fileID: 5847496527665062495}
   - component: {fileID: 4463408479474835428}
   - component: {fileID: 4121333745290424414}
+  - component: {fileID: 5984302734084836148}
   m_Layer: 7
   m_Name: EnemyDirectAttacker01
   m_TagString: Enemy
@@ -174,6 +175,7 @@ MonoBehaviour:
   _data: {fileID: 11400000, guid: fae3433d89cd678429181260f91b9573, type: 2}
   _baseRenderer: {fileID: 8707529686961373768}
   _damageOverlays: []
+  _healEffectPrefab: {fileID: 0}
 --- !u!114 &5847496527665062495
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -246,3 +248,23 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &5984302734084836148
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6579287745903239311}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66fb84c84f667e64db386d8d3da3db94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitAnimator
+  _idleFrames: []
+  _attackFrames:
+  - {fileID: -8909814870418877444, guid: a523ff2695cdc3146a5c5ff11e2ef5b0, type: 3}
+  - {fileID: 1306399421, guid: a523ff2695cdc3146a5c5ff11e2ef5b0, type: 3}
+  - {fileID: 647269254, guid: a523ff2695cdc3146a5c5ff11e2ef5b0, type: 3}
+  - {fileID: 2025920813, guid: a523ff2695cdc3146a5c5ff11e2ef5b0, type: 3}
+  - {fileID: 710440985, guid: a523ff2695cdc3146a5c5ff11e2ef5b0, type: 3}
+  - {fileID: -356830042, guid: a523ff2695cdc3146a5c5ff11e2ef5b0, type: 3}

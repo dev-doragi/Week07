@@ -156,6 +156,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 2572644079534170481}
   - {fileID: 4015329220916688866}
   - {fileID: 4203783604318682595}
   m_Father: {fileID: 0}
@@ -186,7 +187,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Unit
   _data: {fileID: 11400000, guid: 490fc92c8802a2f43b605456cd67ef8e, type: 2}
   _baseRenderer: {fileID: 5907671321792023873}
-  _damageOverlays: []
+  _damageOverlays:
+  - {fileID: 2625465048647611244}
+  - {fileID: 3421475138803404585}
+  - {fileID: 8859969581378046306}
   _healEffectPrefab: {fileID: 4289407542021784391, guid: 3f97cb9369cf34e489655812e97fd93c, type: 3}
 --- !u!114 &5193325366856743645
 MonoBehaviour:
@@ -272,3 +276,80 @@ MonoBehaviour:
   - {fileID: -2209446963912461935, guid: 13b7e4b947e00f447b299fafe1069214, type: 3}
   - {fileID: -6440990356280995724, guid: 13b7e4b947e00f447b299fafe1069214, type: 3}
   - {fileID: -6672272948183174452, guid: 13b7e4b947e00f447b299fafe1069214, type: 3}
+--- !u!1001 &4237044108420743687
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 4331854716987896546}
+    m_Modifications:
+    - target: {fileID: 1837150898136146806, guid: 8bd8b96f98c2d65408266cfff63d52e2, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1837150898136146806, guid: 8bd8b96f98c2d65408266cfff63d52e2, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1837150898136146806, guid: 8bd8b96f98c2d65408266cfff63d52e2, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1837150898136146806, guid: 8bd8b96f98c2d65408266cfff63d52e2, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1837150898136146806, guid: 8bd8b96f98c2d65408266cfff63d52e2, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1837150898136146806, guid: 8bd8b96f98c2d65408266cfff63d52e2, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1837150898136146806, guid: 8bd8b96f98c2d65408266cfff63d52e2, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1837150898136146806, guid: 8bd8b96f98c2d65408266cfff63d52e2, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1837150898136146806, guid: 8bd8b96f98c2d65408266cfff63d52e2, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1837150898136146806, guid: 8bd8b96f98c2d65408266cfff63d52e2, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3254821399172137774, guid: 8bd8b96f98c2d65408266cfff63d52e2, type: 3}
+      propertyPath: m_Name
+      value: DamageOverlays
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 8bd8b96f98c2d65408266cfff63d52e2, type: 3}
+--- !u!4 &2572644079534170481 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1837150898136146806, guid: 8bd8b96f98c2d65408266cfff63d52e2, type: 3}
+  m_PrefabInstance: {fileID: 4237044108420743687}
+  m_PrefabAsset: {fileID: 0}
+--- !u!212 &2625465048647611244 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 2207475922432209259, guid: 8bd8b96f98c2d65408266cfff63d52e2, type: 3}
+  m_PrefabInstance: {fileID: 4237044108420743687}
+  m_PrefabAsset: {fileID: 0}
+--- !u!212 &3421475138803404585 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 1564583778253376814, guid: 8bd8b96f98c2d65408266cfff63d52e2, type: 3}
+  m_PrefabInstance: {fileID: 4237044108420743687}
+  m_PrefabAsset: {fileID: 0}
+--- !u!212 &8859969581378046306 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 4627992113405660005, guid: 8bd8b96f98c2d65408266cfff63d52e2, type: 3}
+  m_PrefabInstance: {fileID: 4237044108420743687}
+  m_PrefabAsset: {fileID: 0}
