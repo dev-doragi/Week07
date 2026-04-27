@@ -249,12 +249,17 @@ public class DoctrineManager : MonoBehaviour
         for (int i = 0; i < allNodes.Count; i++)
         {
             DoctrineNodeUI node = allNodes[i];
-            if (node == null || node.GetData() == null)
+            DoctrineNodeData nodeData = node != null ? node.GetData() : null;
+            if (nodeData == null)
             {
                 continue;
             }
 
-            if (node.GetData().rowIndex < currentRowIndex)
+            if (IsConfirmedNode(nodeData.nodeId))
+            {
+                node.SetState(DoctrineNodeState.Confirmed);
+            }
+            else if (nodeData.rowIndex < currentRowIndex)
             {
                 node.SetState(DoctrineNodeState.Disabled);
             }
@@ -265,6 +270,16 @@ public class DoctrineManager : MonoBehaviour
         }
 
         UnlockCurrentRow();
+    }
+
+    private bool IsConfirmedNode(string nodeId)
+    {
+        if (string.IsNullOrWhiteSpace(nodeId))
+        {
+            return false;
+        }
+
+        return confirmedNodeIds.Contains(nodeId);
     }
 
     private void UnlockCurrentRow()
