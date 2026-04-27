@@ -22,7 +22,7 @@ MonoBehaviour:
   PlacementRule: 2
   ActsAsFoundation: 1
   WheelCapacity: 5
-  MaxHp: 400
+  MaxHp: 300
   BaseDefenseRate: 0
   Cost: 0
   DeathSpawnKey: 
