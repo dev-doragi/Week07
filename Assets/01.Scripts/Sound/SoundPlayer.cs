@@ -3,23 +3,76 @@ using System.Collections;
 
 public class SoundPlayer : MonoBehaviour
 {
+    [Header("SFX Volume")]
+    [SerializeField, Range(0f, 1f)] private float _masterSfxVolume = 0.5f;
+
     private AudioSource _source;
+    private Coroutine _returnRoutine;
 
-    private void Awake() => _source = GetComponent<AudioSource>();
-
-    public void Play(AudioClip clip, float volume)
+    private void Awake()
     {
-        _source.clip = clip;
-        _source.volume = volume;
-        _source.Play();
+        _source = GetComponent<AudioSource>();
 
-        // ì†Œë¦¬ ì¬ìƒì´ ëë‚˜ë©´ í’€ë¡œ ë°˜í™˜
-        StartCoroutine(ReturnToPoolRoutine(clip.length));
+        if (_source == null)
+        {
+            _source = gameObject.AddComponent<AudioSource>();
+            Debug.LogWarning("[SoundPlayer] AudioSource°¡ ¾ø¾î¼­ Ãß°¡Çß½À´Ï´Ù.", gameObject);
+        }
+
+        _source.spatialBlend = 0f;  // 2D ¿Àµğ¿À
+        _source.loop = false;        // ·çÇÁ ¾È ÇÔ
+        _source.playOnAwake = false; // ÀÚµ¿ Àç»ı ¾È ÇÔ
+    }
+
+
+
+    public void Play(AudioClip clip, float volume = 1f)
+    {
+        if (_source == null) return;
+        if (clip == null) return;
+
+        if (_returnRoutine != null)
+            StopCoroutine(_returnRoutine);
+
+        _source.clip = clip;
+        _source.volume = Mathf.Clamp01(volume) * Mathf.Clamp01(_masterSfxVolume);
+        _source.Play();
+        _returnRoutine = StartCoroutine(ReturnToPoolRoutine(clip.length));
     }
 
     private IEnumerator ReturnToPoolRoutine(float duration)
     {
         yield return new WaitForSeconds(duration);
-        PoolManager.Instance.Despawn(gameObject);
+
+        if (_source != null && _source.isPlaying)
+            _source.Stop();
+
+        _returnRoutine = null;
+
+        if (PoolManager.Instance != null)
+        {
+            PoolManager.Instance.Despawn(gameObject);
+            Debug.Log("[SoundPlayer] Ç®·Î ¹İÈ¯µÊ");
+        }
+        else
+        {
+
+        }
+        {
+            Debug.LogError("[SoundPlayer] PoolManager ¾øÀ½!");
+            Destroy(gameObject);
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (_returnRoutine != null)
+        {
+            StopCoroutine(_returnRoutine);
+            _returnRoutine = null;
+        }
+
+        if (_source != null)
+            _source.Stop();
     }
 }

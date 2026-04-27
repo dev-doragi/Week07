@@ -8,6 +8,9 @@ public class MeteorProjectile : MonoBehaviour
     [Header("Explosion")]
     [SerializeField] private string _explosionEffectPoolKey;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip _impactSFX;
+
     private float _damage;
     private float _splashRadius;
     private Vector3 _from;
@@ -65,6 +68,10 @@ public class MeteorProjectile : MonoBehaviour
                     fx.AddComponent<DespawnController>().Setup(ps);
             }
         }
+
+        // SFX 재생
+        if (_impactSFX != null)
+            SoundManager.Instance.PlaySFX(_impactSFX, explodePos, 1f);
 
         // 카메라 쉐이크 (작게)
         CameraManager.Instance?.ShakeWeak();

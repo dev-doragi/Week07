@@ -185,6 +185,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ArcProjectile
   _lifeTime: 5
+  _impactSFX: {fileID: 8300000, guid: ae7bba1b42975744ca5fd91854dec1a1, type: 3}
 --- !u!50 &7425670535368512564
 Rigidbody2D:
   serializedVersion: 5

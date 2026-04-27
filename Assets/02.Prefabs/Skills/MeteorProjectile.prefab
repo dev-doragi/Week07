@@ -27,7 +27,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 1}
+  m_LocalScale: {x: 2.25, y: 2.25, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 434444918612189011}
@@ -139,7 +139,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MeteorProjectile
   _explosionEffectPoolKey: Explosion
-  _smallCameraShakeAmount: 0.1
+  _impactSFX: {fileID: 8300000, guid: a4ae10f60b7d7604780da9245b84cc6f, type: 3}
 --- !u!58 &1954392930261955598
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -175,7 +175,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.8
+  m_Radius: 0.9
 --- !u!50 &4762439328200390404
 Rigidbody2D:
   serializedVersion: 5

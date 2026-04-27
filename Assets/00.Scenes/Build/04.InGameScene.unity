@@ -3785,6 +3785,22 @@ PrefabInstance:
       propertyPath: _uiPoolRoot
       value: 
       objectReference: {fileID: 4960253352866123614}
+    - target: {fileID: 5296992969310506774, guid: 810ff77847dc926408aa668c6034d877, type: 3}
+      propertyPath: _globalPools.Array.size
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 5296992969310506774, guid: 810ff77847dc926408aa668c6034d877, type: 3}
+      propertyPath: _globalPools.Array.data[16].Prefab
+      value: 
+      objectReference: {fileID: 123432135945263676, guid: e35825151b3160243a68e910be4128e4, type: 3}
+    - target: {fileID: 5296992969310506774, guid: 810ff77847dc926408aa668c6034d877, type: 3}
+      propertyPath: _globalPools.Array.data[16].MaxSize
+      value: 300
+      objectReference: {fileID: 0}
+    - target: {fileID: 5296992969310506774, guid: 810ff77847dc926408aa668c6034d877, type: 3}
+      propertyPath: _globalPools.Array.data[16].InitialSize
+      value: 200
+      objectReference: {fileID: 0}
     - target: {fileID: 8831656271116653013, guid: 810ff77847dc926408aa668c6034d877, type: 3}
       propertyPath: m_Name
       value: PoolManager
