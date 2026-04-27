@@ -16,4 +16,9 @@ public class StageLoader : MonoBehaviour
     {
         SceneLoader.Instance.GoToStageSelect();
     }
+
+    public void QuitGame()
+    {
+        SceneLoader.Instance.Quit();
+    }
 }
