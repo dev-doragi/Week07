@@ -7504,7 +7504,7 @@ MonoBehaviour:
   _shakeVibrato: 15
   _shakeRandomness: 90
   _penetration: 0
-  _attackCategoryDamageMultiplier: 0.5
+  _attackCategoryDamageMultiplier: 0.3
   _doctrineEnemyCollisionPowerReductionPercent: 0
   _doctrineBonusDamagePercent: 0
   _doctrineStunDurationSeconds: 0
