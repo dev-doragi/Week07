@@ -1275,6 +1275,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2e5a822822c9c0449efc43bcb74a2fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SiegeSaveLoader
+  _isDontDestroyOnLoad: 1
 --- !u!4 &443572060
 Transform:
   m_ObjectHideFlags: 0
@@ -3613,6 +3614,15 @@ MonoBehaviour:
   _height: 12
   _cellSize: 1
   _origin: {x: -7, y: -1, z: 0}
+  _failureTextFont: {fileID: 11400000, guid: e4dba54daa22213498a58638f5792dcd, type: 2}
+  _failureFeedbackCooldown: 0.5
+  _capacityFailureTextColor: {r: 1, g: 0, b: 0, a: 1}
+  _capacityFailureTextSize: 7
+  _resourceFailureTextColor: {r: 1, g: 0, b: 0, a: 1}
+  _resourceFailureTextSize: 7
+  _uiFailureTextSizeMultiplier: 7
+  _failureTextDuration: 0.75
+  _failureTextRiseDistance: 0.6
 --- !u!4 &1950871295
 Transform:
   m_ObjectHideFlags: 0
