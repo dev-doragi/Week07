@@ -18,6 +18,7 @@ MonoBehaviour:
   Category: 4
   Prefab: {fileID: 664433030619585036, guid: 133aae2717435414d80594abbf2250eb, type: 3}
   Icon: {fileID: 898551970227511676, guid: 8538a3102160c0546b32f5a4d6e96026, type: 3}
+  Description: "\"\uC644\uC804\uD788 \uC138\uB1CC\uB41C \uAC83 \uAC19\uC2B5\uB2C8\uB2E4..\""
   Size: {x: 1, y: 1}
   PlacementRule: 2
   ActsAsFoundation: 1
