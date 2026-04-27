@@ -14,10 +14,15 @@ public class StageMapController : MonoBehaviour
     [Header("Runtime UI")]
     [SerializeField] private Canvas _targetCanvas;
     [SerializeField] private RectTransform _mapRoot;
+    [SerializeField] private GameObject _doctrinePanelPrefab;
+    [SerializeField] private RectTransform _doctrinePanelRoot;
     [SerializeField] private Vector2 _mapSize = new Vector2(1280f, 600f);
 
     [Header("Random Route")]
-    [SerializeField] private bool _randomizeOnStart = true;
+    [SerializeField] private bool _randomizeRewardOnStart = true;
+    [SerializeField] private bool _randomizePathOnStart = true;
+    [SerializeField, HideInInspector] private bool _randomizeOnStart = true; // Legacy field migration.
+    [SerializeField, HideInInspector] private bool _randomizeSettingsInitialized;
     [SerializeField] private Vector2 _randomYRange = new Vector2(0.22f, 0.78f);
     [SerializeField] private int _minConnectionsPerNode = 1;
     [SerializeField] private int _maxConnectionsPerNode = 2;
@@ -53,8 +58,15 @@ public class StageMapController : MonoBehaviour
 
     private void Awake()
     {
+        EnsureRandomizeSettingsInitialized();
+
         if (_rewardApplier == null)
             _rewardApplier = GetComponent<StageMapRewardApplier>();
+    }
+
+    private void OnValidate()
+    {
+        EnsureRandomizeSettingsInitialized();
     }
 
     private void OnEnable()
@@ -143,6 +155,7 @@ public class StageMapController : MonoBehaviour
 
         EnsureCanvas();
         EnsureMapRoot();
+        EnsureDoctrinePanel();
         BuildRuntimeRoute();
         UnlockManager unlockManager = FindFirstObjectByType<UnlockManager>(FindObjectsInactive.Include);
         if (unlockManager != null)
@@ -197,16 +210,20 @@ public class StageMapController : MonoBehaviour
             _runtimeNodeList.Add(node);
         }
 
-        if (_routeData.UnlockableRatUnits != null && _routeData.UnlockableRatUnits.Count > 0)
+        if (_randomizeRewardOnStart)
         {
-            AssignRouteRewardPool();
-        }
-        else if (_randomizeOnStart)
-        {
-            RandomizeRewards();
+            if (_routeData.UnlockableRatUnits != null && _routeData.UnlockableRatUnits.Count > 0)
+            {
+                AssignRouteRewardPool();
+            }
+            else
+            {
+                RandomizeRewards();
+            }
+
         }
 
-        if (_randomizeOnStart)
+        if (_randomizePathOnStart)
             RandomizePositionsAndConnections();
     }
 
@@ -438,6 +455,17 @@ public class StageMapController : MonoBehaviour
         _mapRoot.offsetMax = Vector2.zero;
     }
 
+    private void EnsureDoctrinePanel()
+    {
+        if (_doctrinePanelRoot != null || _doctrinePanelPrefab == null || _targetCanvas == null)
+            return;
+
+        GameObject instance = Instantiate(_doctrinePanelPrefab, _targetCanvas.transform, false);
+        _doctrinePanelRoot = instance.GetComponent<RectTransform>();
+        if (_doctrinePanelRoot == null)
+            _doctrinePanelRoot = instance.GetComponentInChildren<RectTransform>(true);
+    }
+
     private void BuildMap()
     {
         ClearChildren(_mapRoot);
@@ -605,12 +633,21 @@ public class StageMapController : MonoBehaviour
         RefreshNodeStates();
         SetMapVisible(true);
         _mapRoot.gameObject.SetActive(true);
+        EnsureDoctrinePanel();
+        if (_doctrinePanelRoot != null)
+        {
+            _doctrinePanelRoot.gameObject.SetActive(true);
+            _doctrinePanelRoot.SetAsLastSibling();
+        }
     }
 
     private void HideMap()
     {
         if (_mapRoot != null)
             _mapRoot.gameObject.SetActive(false);
+
+        if (_doctrinePanelRoot != null)
+            _doctrinePanelRoot.gameObject.SetActive(false);
 
         SetMapVisible(false);
     }
@@ -713,5 +750,15 @@ public class StageMapController : MonoBehaviour
     {
         for (int i = parent.childCount - 1; i >= 0; i--)
             Destroy(parent.GetChild(i).gameObject);
+    }
+
+    private void EnsureRandomizeSettingsInitialized()
+    {
+        if (_randomizeSettingsInitialized)
+            return;
+
+        _randomizeRewardOnStart = _randomizeOnStart;
+        _randomizePathOnStart = _randomizeOnStart;
+        _randomizeSettingsInitialized = true;
     }
 }

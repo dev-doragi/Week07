@@ -14,10 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DoctrineNodeData
   nodeId: 11
   nodeName: 1
-  description: "\uC2E0\uC758 \uAC00\uB974\uCE68\uC744 \uC804\uD30C\uD574\uC904 \uC0C8\uB85C\uC6B4
-    \uC2E0\uC790\uB2E4."
+  description: "\uC2E0\uC758 \uAC00\uB974\uCE68 \uC55E\uC5D0\uC120 \uBAA8\uB4E0 \uAC83\uC774
+    \uC0AC\uC18C\uD55C \uBC95\uC774\uC9C0."
   doctrineType: 2
   rowIndex: 0
   columnIndex: 2
-  effectId: Ram_Node_0
-  effectSummary: "\uCDA9\uAC01 \uC804\uC6A9 \uC720\uB2DB \uD574\uAE08"
+  effectId: Ram_Node_1
+  effectSummary: "\uCDA9\uAC01\uC2DC \uC801\uAD70 \uACF5\uC131\uB825 50% \uAC10\uC18C
+    \uD55C \uAC83\uC73C\uB85C \uCDE8\uAE09"

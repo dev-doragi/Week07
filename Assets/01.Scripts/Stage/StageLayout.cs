@@ -69,7 +69,7 @@ public class StageLayout : MonoBehaviour
             Debug.LogWarning($"[StageLayout] Spawned enemy has no Unit component: {_currentEnemySiege.name}");
         }
 
-        EnemyGridManager enemyGrid = _currentEnemySiege.GetComponent<EnemyGridManager>();
+        EnemyGridManager enemyGrid = _currentEnemySiege.GetComponentInChildren<EnemyGridManager>(true);
         if (enemyGrid != null)
         {
             enemyGrid.RegisterExistingUnitsFromChildren();
@@ -97,3 +97,4 @@ public class StageLayout : MonoBehaviour
         }
     }
 }
+

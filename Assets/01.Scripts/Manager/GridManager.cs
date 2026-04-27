@@ -445,6 +445,26 @@ public class GridManager : Singleton<GridManager>
         return result;
     }
 
+    public List<PlacedUnit> GetPlacedUnitsSnapshot(bool includeInitialUnits = true)
+    {
+        var placedUnits = CollectAllPlaced();
+        if (includeInitialUnits)
+        {
+            return placedUnits;
+        }
+
+        for (int i = placedUnits.Count - 1; i >= 0; i--)
+        {
+            UnitDataSO data = placedUnits[i]?.Data;
+            if (data == null || data.Category == UnitCategory.Wheel || data.Category == UnitCategory.Core)
+            {
+                placedUnits.RemoveAt(i);
+            }
+        }
+
+        return placedUnits;
+    }
+
     #region 디버그 시각화
 
     private void OnDrawGizmos()

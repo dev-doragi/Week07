@@ -15,7 +15,7 @@ public class ArcAttacker : MonoBehaviour, IAttacker
 
         if (obj.TryGetComponent(out RatArcProjectile ratBomb))
         {
-            ratBomb.Initialize(attacker, startPos, target.transform.position, _travelTime, _arcHeight);
+            ratBomb.Initialize(attackData, attacker.Team, startPos, target.transform.position, _travelTime, _arcHeight);
             return true;
         }
 

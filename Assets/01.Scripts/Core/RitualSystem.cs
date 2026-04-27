@@ -8,6 +8,10 @@ using UnityEngine.UI;
 /// </summary>
 public class RitualSystem : MonoBehaviour
 {
+    [Header("Doctrine Unlock")]
+    [SerializeField] private bool _useDoctrineUnlockChecks = true;
+    [SerializeField] private UnlockManager _unlockManager;
+
     [Header("Skill Costs")]
     [SerializeField] private int _skill1Cost = 30;
     [SerializeField] private int _skill2Cost = 50;
@@ -23,7 +27,7 @@ public class RitualSystem : MonoBehaviour
     [SerializeField] private GameObject _wallObject;
     [SerializeField] private float _skill1Duration = 5f;
 
-    [Header("Skill 2 - Meteor")]
+    [Header("Skill 3 - Meteor")]
     [SerializeField] private string _meteorPoolKey  = "MeteorProjectile";
     [SerializeField] private int    _meteorCount    = 5;
     [SerializeField] private float  _meteorDamage   = 80f;
@@ -34,6 +38,14 @@ public class RitualSystem : MonoBehaviour
     [SerializeField] private float  _maxDuration    = 1.4f;
     [SerializeField] private float  _meteorDelay    = 0.15f;
 
+    [Header("Skill 2 - Income Block")]
+    [SerializeField] private IncomeInventory _incomeInventory;
+
+    [Header("Cooldown Gauges")]
+    [SerializeField] private Image _skill1CooldownGauge;
+    [SerializeField] private Image _skill2CooldownGauge;
+    [SerializeField] private Image _skill3CooldownGauge;
+
     private Coroutine _wallRoutine;
     private Unit _playerCore;
     private Unit _enemyCore;
@@ -42,20 +54,52 @@ public class RitualSystem : MonoBehaviour
     private float _skill2CooldownTimer = 0f;
     private float _skill3CooldownTimer = 0f;
 
+    private const string RitualSkill2UnlockId = "Ritual_Node_0";
+    private const string RitualSkill3UnlockId = "Ritual_Node_4";
+
     public float Skill1CooldownRemaining => _skill1CooldownTimer;
     public float Skill2CooldownRemaining => _skill2CooldownTimer;
     public float Skill3CooldownRemaining => _skill3CooldownTimer;
-
-    private void Start()
+    public bool IsSkillUnlocked(int skillIndex)
     {
-        BindSkillCooldownViews();
+        return skillIndex switch
+        {
+            1 => true,
+            2 => IsDoctrineUnlockedForUI(RitualSkill2UnlockId),
+            3 => IsDoctrineUnlockedForUI(RitualSkill3UnlockId),
+            _ => true
+        };
+    }
+
+    public float GetSkillCooldownDuration(int skillIndex)
+    {
+        return skillIndex switch
+        {
+            1 => _skill1Cooldown,
+            2 => _skill2Cooldown,
+            3 => _skill3Cooldown,
+            _ => 0f
+        };
+    }
+
+    public float GetSkillCooldownRemaining(int skillIndex)
+    {
+        return skillIndex switch
+        {
+            1 => Mathf.Max(0f, _skill1CooldownTimer),
+            2 => Mathf.Max(0f, _skill2CooldownTimer),
+            3 => Mathf.Max(0f, _skill3CooldownTimer),
+            _ => 0f
+        };
     }
 
     private void Update()
     {
-        if (_skill1CooldownTimer > 0f) _skill1CooldownTimer = Mathf.Max(0f, _skill1CooldownTimer - Time.deltaTime);
-        if (_skill2CooldownTimer > 0f) _skill2CooldownTimer = Mathf.Max(0f, _skill2CooldownTimer - Time.deltaTime);
-        if (_skill3CooldownTimer > 0f) _skill3CooldownTimer = Mathf.Max(0f, _skill3CooldownTimer - Time.deltaTime);
+        if (_skill1CooldownTimer > 0f) _skill1CooldownTimer -= Time.deltaTime;
+        if (_skill2CooldownTimer > 0f) _skill2CooldownTimer -= Time.deltaTime;
+        if (_skill3CooldownTimer > 0f) _skill3CooldownTimer -= Time.deltaTime;
+
+        UpdateCooldownGauges();
     }
 
     // ──────────────────────────────────────────────
@@ -64,29 +108,31 @@ public class RitualSystem : MonoBehaviour
 
     public void UseSkill1()
     {
-        if (!IsSkillUnlocked(1)) return;
         if (!IsReady(1, _skill1CooldownTimer)) return;
         if (!TryConsumeResource(_skill1Cost)) return;
         _skill1CooldownTimer = _skill1Cooldown;
         ActivateWall();
+        GameLogger.Instance?.RecordRitualSkillUsed(1, "Wall");
     }
 
     public void UseSkill2()
     {
-        if (!IsSkillUnlocked(2)) return;
+        if (!IsDoctrineUnlocked(2, RitualSkill2UnlockId)) return;
         if (!IsReady(2, _skill2CooldownTimer)) return;
         if (!TryConsumeResource(_skill2Cost)) return;
         _skill2CooldownTimer = _skill2Cooldown;
         OnSkill2();
+        GameLogger.Instance?.RecordRitualSkillUsed(2, "IncomeBlock");
     }
 
     public void UseSkill3()
     {
-        if (!IsSkillUnlocked(3)) return;
+        if (!IsDoctrineUnlocked(3, RitualSkill3UnlockId)) return;
         if (!IsReady(3, _skill3CooldownTimer)) return;
         if (!TryConsumeResource(_skill3Cost)) return;
         _skill3CooldownTimer = _skill3Cooldown;
         OnSkill3();
+        GameLogger.Instance?.RecordRitualSkillUsed(3, "Meteor");
     }
 
     // ──────────────────────────────────────────────
@@ -157,64 +203,21 @@ public class RitualSystem : MonoBehaviour
 
     private void OnSkill2()
     {
-        ResourceManager.Instance?.AddMouseCount(100);       //자원 추가
+        if (_incomeInventory == null)
+            _incomeInventory = FindAnyObjectByType<IncomeInventory>();
+
+        if (_incomeInventory == null)
+        {
+            Debug.LogWarning("[RitualSystem] IncomeInventory not found. Skill 2 aborted.");
+            return;
+        }
+
+        _incomeInventory.AcquireRandomBlock();
     }
 
     private void OnSkill3()
     {
-        StartCoroutine(MeteorRoutine());                //메테오 떨어트리기
-    }
-
-    public bool IsSkillUnlocked(int skillIndex)
-    {
-        return UnlockManager.Instance == null || UnlockManager.Instance.IsSkillUnlocked(skillIndex);
-    }
-
-    public float GetSkillCooldownRemaining(int skillIndex)
-    {
-        return skillIndex switch
-        {
-            1 => _skill1CooldownTimer,
-            2 => _skill2CooldownTimer,
-            3 => _skill3CooldownTimer,
-            _ => 0f
-        };
-    }
-
-    public float GetSkillCooldownDuration(int skillIndex)
-    {
-        return skillIndex switch
-        {
-            1 => _skill1Cooldown,
-            2 => _skill2Cooldown,
-            3 => _skill3Cooldown,
-            _ => 0f
-        };
-    }
-
-    private void BindSkillCooldownViews()
-    {
-        BindSkillCooldownView("SkillButton_1", 1);
-        BindSkillCooldownView("SkillButton_2", 2);
-        BindSkillCooldownView("SkillButton_3", 3);
-    }
-
-    private void BindSkillCooldownView(string buttonName, int skillIndex)
-    {
-        Button[] buttons = FindObjectsByType<Button>(FindObjectsInactive.Include, FindObjectsSortMode.None);
-        for (int i = 0; i < buttons.Length; i++)
-        {
-            Button button = buttons[i];
-            if (button == null || button.name != buttonName)
-                continue;
-
-            SkillButtonCooldownView view = button.GetComponent<SkillButtonCooldownView>();
-            if (view == null)
-                view = button.gameObject.AddComponent<SkillButtonCooldownView>();
-
-            view.Initialize(skillIndex, this);
-            return;
-        }
+        StartCoroutine(MeteorRoutine());                 //메테오 떨어트리기
     }
 
     // ──────────────────────────────────────────────
@@ -225,7 +228,7 @@ public class RitualSystem : MonoBehaviour
     {
         if (timer > 0f)
         {
-            Debug.Log($"[RitualSystem] 스킬 {skillIndex} 쿨타임 중 | 남은 시간: {timer:F1}초");
+            Debug.Log($"[RitualSystem] Skill {skillIndex} is on cooldown. Remaining: {timer:F1}s");
             return false;
         }
         return true;
@@ -246,6 +249,73 @@ public class RitualSystem : MonoBehaviour
         }
 
         return true;
+    }
+
+    private bool IsDoctrineUnlocked(int skillIndex, string unlockId)
+    {
+        if (IsDoctrineUnlockedForUI(unlockId))
+            return true;
+
+        Debug.Log($"[RitualSystem] Skill {skillIndex} locked. Required unlock: {unlockId}");
+        return false;
+    }
+
+    private bool IsDoctrineUnlockedForUI(string unlockId)
+    {
+        if (!_useDoctrineUnlockChecks)
+            return true;
+
+        if (_unlockManager == null)
+            _unlockManager = FindAnyObjectByType<UnlockManager>();
+
+        if (_unlockManager == null)
+            return true;
+
+        return _unlockManager.IsUnlocked(unlockId);
+    }
+
+    private void Awake()
+    {
+        EnsureGaugeType(_skill1CooldownGauge);
+        EnsureGaugeType(_skill2CooldownGauge);
+        EnsureGaugeType(_skill3CooldownGauge);
+        UpdateCooldownGauges();
+    }
+
+    private void OnValidate()
+    {
+        EnsureGaugeType(_skill1CooldownGauge);
+        EnsureGaugeType(_skill2CooldownGauge);
+        EnsureGaugeType(_skill3CooldownGauge);
+    }
+
+    private void UpdateCooldownGauges()
+    {
+        UpdateGauge(_skill1CooldownGauge, _skill1CooldownTimer, _skill1Cooldown);
+        UpdateGauge(_skill2CooldownGauge, _skill2CooldownTimer, _skill2Cooldown);
+        UpdateGauge(_skill3CooldownGauge, _skill3CooldownTimer, _skill3Cooldown);
+    }
+
+    private static void UpdateGauge(Image gauge, float remaining, float duration)
+    {
+        if (gauge == null)
+            return;
+
+        // Cooldown progress fills from left(0) to right(1).
+        gauge.fillAmount = duration > 0f ? Mathf.Clamp01(1f - (remaining / duration)) : 1f;
+    }
+
+    private static void EnsureGaugeType(Image gauge)
+    {
+        if (gauge == null)
+            return;
+
+        if (gauge.type != Image.Type.Filled)
+            gauge.type = Image.Type.Filled;
+
+        gauge.fillMethod = Image.FillMethod.Horizontal;
+        gauge.fillOrigin = 0; // Left
+        gauge.fillClockwise = true;
     }
 
     private IEnumerator MeteorRoutine()

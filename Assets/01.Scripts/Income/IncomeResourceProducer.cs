@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,10 +21,15 @@ public class IncomeResourceProducer : MonoBehaviour
 
     [Header("UI")]
     [SerializeField] private Slider _productionGaugeSlider;
+    [SerializeField] private TextMeshProUGUI _predictionText;
     [SerializeField] private Vector2 _gaugeSize = new Vector2(220f, 14f);
     [SerializeField] private Vector2 _gaugeOffset = new Vector2(0f, -24f);
     [SerializeField] private Color _gaugeBackgroundColor = new Color(1f, 1f, 1f, 0.16f);
     [SerializeField] private Color _gaugeFillColor = new Color(0.35f, 0.95f, 0.45f, 0.95f);
+    [SerializeField] private Vector2 _predictionTextOffset = new Vector2(0f, -44f);
+    [SerializeField] private int _predictionFontSize = 22;
+    [SerializeField] private Color _predictionTextColor = new Color(1f, 1f, 1f, 0.95f);
+    [SerializeField] private string _predictionTextFormat = "예상 획득: +{0} / {1:0.#}s";
 
     public int TotalProduced { get; private set; }
     public int LastProduced { get; private set; }
@@ -41,6 +47,8 @@ public class IncomeResourceProducer : MonoBehaviour
             EventBus.Instance.Subscribe<StageMapVisibilityChangedEvent>(OnStageMapVisibilityChanged);
 
         EnsureProductionGauge();
+        EnsurePredictionText();
+        UpdatePredictionText();
 
         if (!StageMapController.IsMapVisible())
             StartScanning();
@@ -56,6 +64,8 @@ public class IncomeResourceProducer : MonoBehaviour
 
     private void Update()
     {
+        UpdatePredictionText();
+
         if (_scanRoutine == null || StageMapController.IsMapVisible())
             return;
 
@@ -204,9 +214,13 @@ public class IncomeResourceProducer : MonoBehaviour
     public void BuildProductionGaugeUI()
     {
         EnsureProductionGauge();
+        EnsurePredictionText();
 
         if (_productionGaugeSlider != null && !Application.isPlaying)
             _productionGaugeSlider.gameObject.SetActive(true);
+
+        if (_predictionText != null && !Application.isPlaying)
+            _predictionText.gameObject.SetActive(true);
     }
 
     private void EnsureProductionGauge()
@@ -267,12 +281,69 @@ public class IncomeResourceProducer : MonoBehaviour
         _productionGaugeSlider.direction = Slider.Direction.LeftToRight;
     }
 
+    private void EnsurePredictionText()
+    {
+        if (_predictionText != null || _gridBoard == null)
+            return;
+
+        RectTransform boardRect = _gridBoard.transform as RectTransform;
+        if (boardRect == null)
+            return;
+
+        Transform existing = boardRect.Find("IncomePredictionText");
+        if (existing != null && existing.TryGetComponent(out TextMeshProUGUI existingText))
+        {
+            _predictionText = existingText;
+            return;
+        }
+
+        GameObject textObj = new GameObject("IncomePredictionText", typeof(RectTransform), typeof(TextMeshProUGUI));
+        RectTransform textRect = textObj.GetComponent<RectTransform>();
+        textRect.SetParent(boardRect, false);
+        textRect.anchorMin = new Vector2(0.5f, 1f);
+        textRect.anchorMax = new Vector2(0.5f, 1f);
+        textRect.pivot = new Vector2(0.5f, 0.5f);
+        textRect.sizeDelta = new Vector2(260f, 30f);
+        textRect.anchoredPosition = _predictionTextOffset;
+
+        _predictionText = textObj.GetComponent<TextMeshProUGUI>();
+        _predictionText.fontSize = Mathf.Max(14, _predictionFontSize);
+        _predictionText.alignment = TextAlignmentOptions.Center;
+        _predictionText.color = _predictionTextColor;
+        _predictionText.raycastTarget = false;
+        _predictionText.text = string.Empty;
+    }
+
     private void UpdateProductionGauge(float value)
     {
         EnsureProductionGauge();
 
         if (_productionGaugeSlider != null)
             _productionGaugeSlider.value = value;
+    }
+
+    private void UpdatePredictionText()
+    {
+        EnsurePredictionText();
+
+        if (_predictionText == null)
+            return;
+
+        float interval = Mathf.Max(0.1f, _scanInterval);
+        int predicted = GetPredictedProductionPerCycle();
+        _predictionText.text = string.Format(_predictionTextFormat, predicted, interval);
+    }
+
+    private int GetPredictedProductionPerCycle()
+    {
+        if (_gridBoard == null)
+            return 0;
+
+        int occupied = _gridBoard.GetOccupiedCellCount();
+        if (occupied <= 0)
+            return 0;
+
+        return occupied * Mathf.Max(1, _resourcePerCell);
     }
 
     private static void Stretch(RectTransform rect)

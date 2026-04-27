@@ -29,7 +29,7 @@ public class SiegeChargeHandler : MonoBehaviour
     [SerializeField, Range(0f, 1f)] private float _penetration = 0f;
 
     [Header("Doctrine - Ram")]
-    [SerializeField, Range(0f, 1f)] private float _doctrineSelfDamageReductionPercent = 0f;
+    [SerializeField, Range(0f, 1f)] private float _doctrineEnemyCollisionPowerReductionPercent = 0f;
     [SerializeField, Min(0f)] private float _doctrineBonusDamagePercent = 0f;
     [SerializeField, Min(0f)] private float _doctrineStunDurationSeconds = 0f;
 
@@ -72,16 +72,16 @@ public class SiegeChargeHandler : MonoBehaviour
     public void ExecuteCrash()
     {
         if (_isCrashing) return;
-        
-        if (_enemyGridObject != null)
-            _enemyGrid = _enemyGridObject.GetComponentInChildren<EnemyGridManager>();
-        
+
+        _enemyGrid = ResolveEnemyGrid();
         if (_enemyGrid == null)
         {
             Debug.LogWarning("[SiegeChargeHandler] EnemyGridManager not found, crash cancelled.");
             return;
         }
-        
+
+        _enemyGrid.RegisterExistingUnitsFromChildren();
+        GameLogger.Instance?.RecordRamUsed(nameof(SiegeChargeHandler));
         PlayCrashSequence();
     }
 
@@ -104,10 +104,10 @@ public class SiegeChargeHandler : MonoBehaviour
         Debug.Log("[SiegeChargeHandler] Crash cancelled - all state reset");
     }
 
-    public void SetDoctrineSelfDamageReductionPercent(float percent)
+    public void SetDoctrineEnemyCollisionPowerReductionPercent(float percent)
     {
-        _doctrineSelfDamageReductionPercent = Mathf.Clamp01(percent);
-        Debug.Log($"[SiegeChargeHandler] Doctrine self-damage reduction set: {_doctrineSelfDamageReductionPercent * 100f:0}%");
+        _doctrineEnemyCollisionPowerReductionPercent = Mathf.Clamp01(percent);
+        Debug.Log($"[SiegeChargeHandler] Doctrine enemy collision power reduction set: {_doctrineEnemyCollisionPowerReductionPercent * 100f:0}%");
     }
 
     public void SetDoctrineBonusDamagePercent(float percent)
@@ -120,6 +120,23 @@ public class SiegeChargeHandler : MonoBehaviour
     {
         _doctrineStunDurationSeconds = Mathf.Max(0f, seconds);
         Debug.Log($"[SiegeChargeHandler] Doctrine stun duration set: {_doctrineStunDurationSeconds:0.##}s");
+    }
+
+    private EnemyGridManager ResolveEnemyGrid()
+    {
+        EnemyGridManager resolved = null;
+
+        if (_enemyGridObject != null)
+        {
+            resolved = _enemyGridObject.GetComponentInChildren<EnemyGridManager>(true);
+        }
+
+        if (resolved == null)
+        {
+            resolved = FindAnyObjectByType<EnemyGridManager>();
+        }
+
+        return resolved;
     }
 
     private void PlayCrashSequence()
@@ -185,14 +202,18 @@ public class SiegeChargeHandler : MonoBehaviour
 
     private void TriggerImpact()
     {
+        _enemyGrid = _enemyGrid != null ? _enemyGrid : ResolveEnemyGrid();
         if (_enemyGrid == null)
         {
             Debug.LogWarning("[SiegeChargeHandler] EnemyGridManager not found, skipping damage.");
             return;
         }
 
+        _enemyGrid.RegisterExistingUnitsFromChildren();
+
         float playerCP = _grid != null ? _grid.CalculateTotalCollisionPower() : 0f;
         float enemyCP = _enemyGrid.CalculateTotalCollisionPower();
+        enemyCP *= 1f - _doctrineEnemyCollisionPowerReductionPercent;
         ResolveCollision(playerCP, enemyCP, _enemyGrid);
     }
 
@@ -208,8 +229,7 @@ public class SiegeChargeHandler : MonoBehaviour
             if (isPlayerLosing)
             {
                 var targets = _grid.GetAllLivingUnits();
-                float reducedDamage = delta * (1f - Mathf.Clamp01(_doctrineSelfDamageReductionPercent));
-                DistributeDamage(targets, reducedDamage, TeamType.Enemy, "Player");
+                DistributeDamage(targets, delta, TeamType.Enemy, "Player");
             }
             else
             {
@@ -304,3 +324,4 @@ public class SiegeChargeHandler : MonoBehaviour
         }
     }
 }
+

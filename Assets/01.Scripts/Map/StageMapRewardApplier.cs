@@ -5,6 +5,8 @@ public class StageMapRewardApplier : MonoBehaviour
 {
     public void Apply(string nodeId, StageMapReward reward, int ritualPoints)
     {
+        TryAddDoctrinePointOnStageClear();
+
         if (ritualPoints > 0)
         {
             Debug.Log($"[StageMapReward] Ritual points +{ritualPoints} (pending persistent ritual point system).");
@@ -58,5 +60,17 @@ public class StageMapRewardApplier : MonoBehaviour
             DisplayName = displayName,
             Icon = displayIcon
         });
+    }
+
+    private static void TryAddDoctrinePointOnStageClear()
+    {
+        DoctrineManager doctrineManager = FindFirstObjectByType<DoctrineManager>(FindObjectsInactive.Include);
+        if (doctrineManager == null)
+        {
+            Debug.LogWarning("[StageMapReward] DoctrineManager not found. Doctrine point reward skipped.");
+            return;
+        }
+
+        doctrineManager.AddDoctrinePoint(1);
     }
 }

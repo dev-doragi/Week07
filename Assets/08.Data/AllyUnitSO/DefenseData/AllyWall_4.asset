@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 550f97df3c4ad9d44a36190b24e47c3b, type: 3}
   m_Name: AllyWall_4
   m_EditorClassIdentifier: Assembly-CSharp::UnitDataSO
-  Key: 3
+  Key: 4
   UnitName: "\uAE61\uBCBD\uC950"
   Team: 1
   Category: 4

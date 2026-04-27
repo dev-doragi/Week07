@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -7,18 +7,37 @@ using System.Threading;
 using System.Threading.Tasks;
 using Unity.Services.Analytics;
 using Unity.Services.Core;
-//using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UnityConsent;
 
 /// <summary>
-/// 파일 로그 기록 및 Unity Analytics 연동을 담당하는 로거 매니저입니다.
+/// Current-game statistics logger.
+/// Writes local session logs and mirrors compact custom events to Unity Analytics.
 /// </summary>
 [DefaultExecutionOrder(-200)]
 public class GameLogger : Singleton<GameLogger>
 {
-    private const string ANALYTICS_CONSENT_PREF_KEY = "analytics_consent_v1";
+    private const string AnalyticsConsentPrefKey = "analytics_consent_v1";
+
+    private readonly struct StageStats
+    {
+        public readonly int Attempts;
+        public readonly int Wins;
+        public readonly int Losses;
+
+        public StageStats(int attempts, int wins, int losses)
+        {
+            Attempts = attempts;
+            Wins = wins;
+            Losses = losses;
+        }
+
+        public StageStats WithResult(bool isWin)
+        {
+            return new StageStats(Attempts + 1, Wins + (isWin ? 1 : 0), Losses + (isWin ? 0 : 1));
+        }
+    }
 
     private string _logFilePath;
     public string LogFilePath => _logFilePath;
@@ -33,16 +52,22 @@ public class GameLogger : Singleton<GameLogger>
     private bool _isAnalyticsInitialized;
     private bool _isAnalyticsConsentGranted;
 
-    public bool IsAnalyticsConsentGranted => PlayerPrefs.GetInt(ANALYTICS_CONSENT_PREF_KEY, 0) == 1;
+    private readonly Dictionary<int, StageStats> _stageStats = new Dictionary<int, StageStats>();
+    private readonly Dictionary<string, int> _doctrineTypeCounts = new Dictionary<string, int>();
+    private readonly Dictionary<int, string> _doctrinePathByRow = new Dictionary<int, string>();
+    private readonly Dictionary<int, int> _ritualSkillUseCounts = new Dictionary<int, int>();
+    private readonly Dictionary<string, int> _ratTileStageTotalCounts = new Dictionary<string, int>();
+    private readonly Dictionary<string, int> _rewardCounts = new Dictionary<string, int>();
+    private int _ramUseCount;
+
+    public bool IsAnalyticsConsentGranted => PlayerPrefs.GetInt(AnalyticsConsentPrefKey, 0) == 1;
 
     protected override void OnBootstrap()
     {
         try
         {
-            // 1. 파일 로그 시스템 초기화
             InitializeFileSystem();
 
-            // 2. 백그라운드 쓰레드 시작
             _isRunning = true;
             _writeThread = new Thread(ProcessLogQueue) { IsBackground = true };
             _writeThread.Start();
@@ -50,16 +75,14 @@ public class GameLogger : Singleton<GameLogger>
             _mainThreadId = Thread.CurrentThread.ManagedThreadId;
             _analyticsSessionId = Guid.NewGuid().ToString("N");
 
-            // 3. 유니티 콜백 및 이벤트 구독 (DDOL이므로 여기서 1회만 수행)
             Application.logMessageReceived += HandleUnityLog;
             SceneManager.sceneLoaded += OnSceneLoaded;
 
             SubscribeEvents();
 
-            Log("=== Game Session Started ===");
+            Log("=== Game Statistics Session Started ===");
             Log($"Platform: {Application.platform}, PersistentDataPath: {Application.persistentDataPath}");
 
-            // 4. Analytics 초기화
             _ = InitializeAnalyticsAsync();
         }
         catch (Exception ex)
@@ -76,7 +99,7 @@ public class GameLogger : Singleton<GameLogger>
             Directory.CreateDirectory(logDir);
         }
 
-        string fileName = $"GameLog_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.txt";
+        string fileName = $"GameStats_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.txt";
         _logFilePath = Path.Combine(logDir, fileName);
         _streamWriter = new StreamWriter(_logFilePath, true, Encoding.UTF8) { AutoFlush = true };
     }
@@ -91,6 +114,7 @@ public class GameLogger : Singleton<GameLogger>
         EventBus.Instance.Subscribe<WaveEndedEvent>(OnWaveEnded);
         EventBus.Instance.Subscribe<StageClearedEvent>(OnStageCleared);
         EventBus.Instance.Subscribe<StageFailedEvent>(OnStageFailed);
+        EventBus.Instance.Subscribe<StageMapRewardAppliedEvent>(OnStageMapRewardApplied);
         EventBus.Instance.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
         EventBus.Instance.Subscribe<InGameStateChangedEvent>(OnInGameStateChanged);
     }
@@ -108,9 +132,12 @@ public class GameLogger : Singleton<GameLogger>
             EventBus.Instance.Unsubscribe<WaveEndedEvent>(OnWaveEnded);
             EventBus.Instance.Unsubscribe<StageClearedEvent>(OnStageCleared);
             EventBus.Instance.Unsubscribe<StageFailedEvent>(OnStageFailed);
+            EventBus.Instance.Unsubscribe<StageMapRewardAppliedEvent>(OnStageMapRewardApplied);
             EventBus.Instance.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
             EventBus.Instance.Unsubscribe<InGameStateChangedEvent>(OnInGameStateChanged);
         }
+
+        LogSessionSummary("session_end");
 
         _isRunning = false;
         if (_writeThread != null && _writeThread.IsAlive)
@@ -123,7 +150,64 @@ public class GameLogger : Singleton<GameLogger>
         base.OnDestroy();
     }
 
+    #region Public Record API
+
+    public void RecordDoctrineSelected(DoctrineNodeData data)
+    {
+        if (data == null) return;
+
+        string doctrineType = data.doctrineType.ToString();
+        Increment(_doctrineTypeCounts, doctrineType, 1);
+        _doctrinePathByRow[data.rowIndex] = doctrineType;
+
+        string path = BuildDoctrinePath();
+        Log($"[DOCTRINE] Selected | Row: {data.rowIndex + 1}, Type: {doctrineType}, NodeId: {data.nodeId}, Path: {path}");
+
+        TrackAnalyticsEvent("doctrine_selected", new Dictionary<string, object>
+        {
+            { "row_index", data.rowIndex },
+            { "row_step", data.rowIndex + 1 },
+            { "column_index", data.columnIndex },
+            { "doctrine_type", doctrineType },
+            { "node_id", SafeString(data.nodeId) },
+            { "node_name", SafeString(data.nodeName) },
+            { "path", path }
+        });
+    }
+
+    public void RecordRitualSkillUsed(int skillIndex, string skillId = null)
+    {
+        Increment(_ritualSkillUseCounts, skillIndex, 1);
+        int total = SumValues(_ritualSkillUseCounts);
+
+        Log($"[RITUAL] Skill Used | Skill: {skillIndex}, SkillId: {SafeString(skillId, "RitualSkill" + skillIndex)}, TotalUses: {total}");
+
+        TrackAnalyticsEvent("ritual_skill_used", new Dictionary<string, object>
+        {
+            { "skill_index", skillIndex },
+            { "skill_id", SafeString(skillId, "RitualSkill" + skillIndex) },
+            { "skill_session_count", _ritualSkillUseCounts[skillIndex] },
+            { "ritual_total_uses", total }
+        });
+    }
+
+    public void RecordRamUsed(string source = null)
+    {
+        _ramUseCount += 1;
+
+        Log($"[RAM] Used | Source: {SafeString(source, "Unknown")}, TotalUses: {_ramUseCount}");
+
+        TrackAnalyticsEvent("ram_used", new Dictionary<string, object>
+        {
+            { "source", SafeString(source, "Unknown") },
+            { "ram_total_uses", _ramUseCount }
+        });
+    }
+
+    #endregion
+
     #region Logging Logic
+
     public void Log(string message)
     {
         string formatted = $"[{DateTime.Now:HH:mm:ss}] {message}";
@@ -151,7 +235,6 @@ public class GameLogger : Singleton<GameLogger>
             }
         }
 
-        // 종료 시 남은 로그 처리
         while (_logQueue.TryDequeue(out string pendingLog))
         {
             _streamWriter?.WriteLine(pendingLog);
@@ -170,12 +253,14 @@ public class GameLogger : Singleton<GameLogger>
 
         EnqueueLog(formatted);
     }
+
     #endregion
 
     #region Analytics Logic
+
     public void SetAnalyticsConsent(bool granted)
     {
-        PlayerPrefs.SetInt(ANALYTICS_CONSENT_PREF_KEY, granted ? 1 : 0);
+        PlayerPrefs.SetInt(AnalyticsConsentPrefKey, granted ? 1 : 0);
         PlayerPrefs.Save();
         ApplyAnalyticsConsent(granted);
         Log($"[ANALYTICS] Consent {(granted ? "Granted" : "Denied")}");
@@ -218,33 +303,350 @@ public class GameLogger : Singleton<GameLogger>
             CustomEvent customEvent = new CustomEvent(eventName);
             customEvent["gl_session_id"] = _analyticsSessionId;
             customEvent["gl_client_ts_ms"] = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            customEvent["gl_app_version"] = Application.version;
+            customEvent["gl_platform"] = Application.platform.ToString();
             customEvent["gl_scene_name"] = SceneManager.GetActiveScene().name;
 
             if (parameters != null)
             {
-                foreach (var kv in parameters) customEvent[kv.Key] = kv.Value;
+                foreach (var kv in parameters)
+                {
+                    customEvent[kv.Key] = kv.Value;
+                }
             }
 
             AnalyticsService.Instance.RecordEvent(customEvent);
         }
         catch (Exception ex) { Debug.LogWarning($"[GameLogger] Record Event Error '{eventName}': {ex}"); }
     }
+
     #endregion
 
     #region Event Handlers
+
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        TrackAnalyticsEvent("scene_loaded", new Dictionary<string, object> { { "scene_name", scene.name } });
-        Log($"[SCENE] Load Completed >> {scene.name}");
+        TrackAnalyticsEvent("scene_loaded", new Dictionary<string, object>
+        {
+            { "scene_name", scene.name },
+            { "load_mode", mode.ToString() }
+        });
+        Log($"[SCENE] Load Completed | Scene: {scene.name}");
     }
 
-    private void OnStageLoaded(StageLoadedEvent evt) => Log($"[STAGE] Load Started >> Index: {evt.StageIndex}");
-    private void OnStageGenerated(StageGenerateCompleteEvent evt) => Log("[STAGE] Generation Completed.");
-    private void OnWaveStarted(WaveStartedEvent evt) => Log($"[WAVE] Started >> Index: {evt.WaveIndex}");
-    private void OnWaveEnded(WaveEndedEvent evt) => Log($"[WAVE] Ended >> Result: {(evt.IsWin ? "SUCCESS" : "FAILED")}");
-    private void OnStageCleared(StageClearedEvent evt) => Log($"[RESULT] Stage Cleared >> Index: {evt.StageIndex}");
-    private void OnStageFailed(StageFailedEvent evt) => Log($"[RESULT] Stage Failed >> Index: {evt.StageIndex}");
+    private void OnStageLoaded(StageLoadedEvent evt)
+    {
+        Log($"[STAGE] Loaded | Stage: {evt.StageIndex}");
+        TrackAnalyticsEvent("stage_loaded", new Dictionary<string, object> { { "stage_index", evt.StageIndex } });
+    }
+
+    private void OnStageGenerated(StageGenerateCompleteEvent evt)
+    {
+        Log("[STAGE] Generation Completed");
+    }
+
+    private void OnWaveStarted(WaveStartedEvent evt)
+    {
+        Log($"[WAVE] Started | Stage: {evt.StageIndex}, Wave: {evt.WaveIndex}");
+    }
+
+    private void OnWaveEnded(WaveEndedEvent evt)
+    {
+        Log($"[WAVE] Ended | Stage: {evt.StageIndex}, Wave: {evt.WaveIndex}, Result: {(evt.IsWin ? "SUCCESS" : "FAILED")}");
+    }
+
+    private void OnStageCleared(StageClearedEvent evt)
+    {
+        RecordStageResult(evt.StageIndex, true, evt.IsFinalStage);
+        LogStageTileSnapshot(evt.StageIndex, true);
+
+        if (evt.IsFinalStage)
+        {
+            LogSessionSummary("final_stage_cleared");
+        }
+    }
+
+    private void OnStageFailed(StageFailedEvent evt)
+    {
+        RecordStageResult(evt.StageIndex, false, false);
+        LogStageTileSnapshot(evt.StageIndex, false);
+    }
+
+    private void OnStageMapRewardApplied(StageMapRewardAppliedEvent evt)
+    {
+        string rewardKind = evt.RewardType switch
+        {
+            StageMapRewardType.ProductionFacility => "IncomeReward",
+            StageMapRewardType.RatTowerUnlock => "TowerReward",
+            _ => evt.RewardType.ToString()
+        };
+
+        Increment(_rewardCounts, rewardKind, 1);
+
+        Log($"[REWARD] Selected | Type: {rewardKind}, Node: {SafeString(evt.NodeId)}, RewardId: {SafeString(evt.RewardId)}, Amount: {evt.Amount}, Total: {_rewardCounts[rewardKind]}");
+
+        TrackAnalyticsEvent("map_reward_selected", new Dictionary<string, object>
+        {
+            { "node_id", SafeString(evt.NodeId) },
+            { "reward_kind", rewardKind },
+            { "reward_type", evt.RewardType.ToString() },
+            { "reward_id", SafeString(evt.RewardId) },
+            { "amount", evt.Amount },
+            { "reward_session_count", _rewardCounts[rewardKind] }
+        });
+    }
+
     private void OnGameStateChanged(GameStateChangedEvent evt) => Log($"[SYSTEM] Global State: {evt.NewState}");
     private void OnInGameStateChanged(InGameStateChangedEvent evt) => Log($"[SYSTEM] In-Game Flow: {evt.NewState}");
+
+    #endregion
+
+    #region Statistics
+
+    private void RecordStageResult(int stageIndex, bool isWin, bool isFinalStage)
+    {
+        if (!_stageStats.TryGetValue(stageIndex, out StageStats stats))
+        {
+            stats = new StageStats(0, 0, 0);
+        }
+
+        stats = stats.WithResult(isWin);
+        _stageStats[stageIndex] = stats;
+
+        float winRate = stats.Attempts > 0 ? (float)stats.Wins / stats.Attempts : 0f;
+        Log($"[STAGE_RESULT] Stage: {stageIndex}, Result: {(isWin ? "WIN" : "LOSE")}, Attempts: {stats.Attempts}, Wins: {stats.Wins}, Losses: {stats.Losses}, SessionWinRate: {winRate:P1}");
+
+        TrackAnalyticsEvent("stage_result", new Dictionary<string, object>
+        {
+            { "stage_index", stageIndex },
+            { "is_win", isWin },
+            { "is_final_stage", isFinalStage },
+            { "stage_attempts_in_session", stats.Attempts },
+            { "stage_wins_in_session", stats.Wins },
+            { "stage_losses_in_session", stats.Losses },
+            { "stage_win_rate_in_session", winRate }
+        });
+    }
+
+    private void LogStageTileSnapshot(int stageIndex, bool isStageClear)
+    {
+        GridManager grid = GridManager.Instance;
+        if (grid == null)
+        {
+            Log($"[TILE_SNAPSHOT] Stage: {stageIndex}, GridManager missing");
+            return;
+        }
+
+        List<PlacedUnit> placedUnits = grid.GetPlacedUnitsSnapshot(includeInitialUnits: false);
+        Dictionary<string, int> tileCounts = new Dictionary<string, int>();
+        int attackCount = 0;
+        int defenseCount = 0;
+        int supportCount = 0;
+        int minX = int.MaxValue;
+        int minY = int.MaxValue;
+        int maxX = int.MinValue;
+        int maxY = int.MinValue;
+
+        StringBuilder layout = new StringBuilder();
+        placedUnits.Sort((a, b) =>
+        {
+            int yCompare = a.OriginCell.y.CompareTo(b.OriginCell.y);
+            return yCompare != 0 ? yCompare : a.OriginCell.x.CompareTo(b.OriginCell.x);
+        });
+
+        for (int i = 0; i < placedUnits.Count; i++)
+        {
+            PlacedUnit placed = placedUnits[i];
+            if (placed == null || placed.Data == null) continue;
+
+            UnitDataSO data = placed.Data;
+            string tileId = BuildTileId(data);
+            Increment(tileCounts, tileId, 1);
+            Increment(_ratTileStageTotalCounts, tileId, 1);
+
+            if (data.Category == UnitCategory.Attack) attackCount++;
+            if (data.Category == UnitCategory.Defense) defenseCount++;
+            if (data.Category == UnitCategory.Support) supportCount++;
+
+            minX = Mathf.Min(minX, placed.OriginCell.x);
+            minY = Mathf.Min(minY, placed.OriginCell.y);
+            maxX = Mathf.Max(maxX, placed.OriginCell.x + data.Size.x - 1);
+            maxY = Mathf.Max(maxY, placed.OriginCell.y + data.Size.y - 1);
+
+            if (layout.Length > 0) layout.Append(" | ");
+            layout.Append(tileId)
+                .Append("@")
+                .Append(placed.OriginCell.x)
+                .Append(",")
+                .Append(placed.OriginCell.y)
+                .Append("[")
+                .Append(data.Size.x)
+                .Append("x")
+                .Append(data.Size.y)
+                .Append("]");
+        }
+
+        string layoutString = layout.Length > 0 ? layout.ToString() : "empty";
+        string tileCountString = FormatCounts(tileCounts);
+        int layoutWidth = placedUnits.Count > 0 ? maxX - minX + 1 : 0;
+        int layoutHeight = placedUnits.Count > 0 ? maxY - minY + 1 : 0;
+        string layoutSignature = StableHash(layoutString);
+
+        Log($"[TILE_SNAPSHOT] Stage: {stageIndex}, Result: {(isStageClear ? "CLEAR" : "FAILED")}, UnitCount: {placedUnits.Count}, Counts: {tileCountString}");
+        Log($"[TILE_LAYOUT] Stage: {stageIndex}, Signature: {layoutSignature}, Bounds: {layoutWidth}x{layoutHeight}, Layout: {layoutString}");
+
+        TrackAnalyticsEvent("stage_tile_snapshot", new Dictionary<string, object>
+        {
+            { "stage_index", stageIndex },
+            { "is_stage_clear", isStageClear },
+            { "unit_count", placedUnits.Count },
+            { "attack_count", attackCount },
+            { "defense_count", defenseCount },
+            { "support_count", supportCount },
+            { "layout_width", layoutWidth },
+            { "layout_height", layoutHeight },
+            { "layout_signature", layoutSignature },
+            { "tile_counts", tileCountString }
+        });
+    }
+
+    private void LogSessionSummary(string reason)
+    {
+        Log($"=== Game Statistics Summary ({reason}) ===");
+        Log($"[SUMMARY] StageResults: {FormatStageStats()}");
+        Log($"[SUMMARY] DoctrineTypeCounts: {FormatCounts(_doctrineTypeCounts)}");
+        Log($"[SUMMARY] DoctrinePath: {BuildDoctrinePath()}");
+        Log($"[SUMMARY] RitualSkillUses: {FormatCounts(_ritualSkillUseCounts)}, Total: {SumValues(_ritualSkillUseCounts)}");
+        Log($"[SUMMARY] RatTileStageTotals: {FormatCounts(_ratTileStageTotalCounts)}");
+        Log($"[SUMMARY] RewardSelections: {FormatCounts(_rewardCounts)}");
+        Log($"[SUMMARY] RamUses: {_ramUseCount}");
+
+        TrackAnalyticsEvent("game_statistics_summary", new Dictionary<string, object>
+        {
+            { "reason", reason },
+            { "doctrine_path", BuildDoctrinePath() },
+            { "ritual_total_uses", SumValues(_ritualSkillUseCounts) },
+            { "ram_total_uses", _ramUseCount },
+            { "reward_counts", FormatCounts(_rewardCounts) },
+            { "rat_tile_stage_totals", FormatCounts(_ratTileStageTotalCounts) }
+        });
+    }
+
+    #endregion
+
+    #region Helpers
+
+    private string BuildDoctrinePath()
+    {
+        if (_doctrinePathByRow.Count == 0) return "none";
+
+        List<int> rows = new List<int>(_doctrinePathByRow.Keys);
+        rows.Sort();
+
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < rows.Count; i++)
+        {
+            if (builder.Length > 0) builder.Append(" - ");
+            int row = rows[i];
+            builder.Append(row + 1).Append(":").Append(_doctrinePathByRow[row]);
+        }
+
+        return builder.ToString();
+    }
+
+    private string FormatStageStats()
+    {
+        if (_stageStats.Count == 0) return "none";
+
+        List<int> stages = new List<int>(_stageStats.Keys);
+        stages.Sort();
+
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < stages.Count; i++)
+        {
+            if (builder.Length > 0) builder.Append(", ");
+            int stage = stages[i];
+            StageStats stats = _stageStats[stage];
+            float winRate = stats.Attempts > 0 ? (float)stats.Wins / stats.Attempts : 0f;
+            builder.Append("Stage")
+                .Append(stage)
+                .Append("=")
+                .Append(stats.Wins)
+                .Append("/")
+                .Append(stats.Attempts)
+                .Append("(")
+                .Append((winRate * 100f).ToString("0.#"))
+                .Append("%)");
+        }
+
+        return builder.ToString();
+    }
+
+    private static string BuildTileId(UnitDataSO data)
+    {
+        if (data == null) return "Unknown";
+        string name = string.IsNullOrWhiteSpace(data.UnitName) ? data.name : data.UnitName;
+        return $"{data.Key}:{name}:{data.Category}";
+    }
+
+    private static string FormatCounts<TKey>(Dictionary<TKey, int> counts)
+    {
+        if (counts == null || counts.Count == 0) return "none";
+
+        List<TKey> keys = new List<TKey>(counts.Keys);
+        keys.Sort((a, b) => string.CompareOrdinal(a.ToString(), b.ToString()));
+
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < keys.Count; i++)
+        {
+            if (builder.Length > 0) builder.Append(", ");
+            TKey key = keys[i];
+            builder.Append(key).Append("=").Append(counts[key]);
+        }
+
+        return builder.ToString();
+    }
+
+    private static void Increment<TKey>(Dictionary<TKey, int> counts, TKey key, int amount)
+    {
+        if (counts.TryGetValue(key, out int current))
+        {
+            counts[key] = current + amount;
+        }
+        else
+        {
+            counts.Add(key, amount);
+        }
+    }
+
+    private static int SumValues<TKey>(Dictionary<TKey, int> counts)
+    {
+        int total = 0;
+        foreach (int value in counts.Values)
+        {
+            total += value;
+        }
+        return total;
+    }
+
+    private static string SafeString(string value, string fallback = "none")
+    {
+        return string.IsNullOrWhiteSpace(value) ? fallback : value;
+    }
+
+    private static string StableHash(string value)
+    {
+        unchecked
+        {
+            uint hash = 2166136261;
+            for (int i = 0; i < value.Length; i++)
+            {
+                hash ^= value[i];
+                hash *= 16777619;
+            }
+            return hash.ToString("X8");
+        }
+    }
+
     #endregion
 }

@@ -22,7 +22,7 @@ MonoBehaviour:
       _type: 0
       _rewardId: 
       _amount: 0
-      _icon: {fileID: 0}
+      _icon: {fileID: 21300000, guid: 83bb5f401bf2c9345b8a03ff7880bf18, type: 3}
       _unitUnlock: {fileID: 0}
     _nextNodeIds:
     - c1_top
@@ -79,10 +79,10 @@ MonoBehaviour:
     _normalizedPosition: {x: 0.42, y: 0.5}
     _reward:
       _type: 2
-      _rewardId: mouse_base
+      _rewardId: 54
       _amount: 1
       _icon: {fileID: 21300000, guid: 9e09145af0cf4c04da2ad33486f9a382, type: 3}
-      _unitUnlock: {fileID: 0}
+      _unitUnlock: {fileID: 11400000, guid: 0bf8fb6a6b632e440a5754fc12dcc176, type: 2}
     _nextNodeIds:
     - c3_mid
   - _nodeId: c2_bot
@@ -101,10 +101,10 @@ MonoBehaviour:
     _normalizedPosition: {x: 0.58, y: 0.78}
     _reward:
       _type: 2
-      _rewardId: mouse_base
+      _rewardId: 55
       _amount: 1
       _icon: {fileID: 21300000, guid: 9e09145af0cf4c04da2ad33486f9a382, type: 3}
-      _unitUnlock: {fileID: 0}
+      _unitUnlock: {fileID: 11400000, guid: 3a6c2837145a3f148bdf0cc5d5edbb69, type: 2}
     _nextNodeIds:
     - c4_top
     - c4_mid
@@ -125,10 +125,10 @@ MonoBehaviour:
     _normalizedPosition: {x: 0.58, y: 0.22}
     _reward:
       _type: 2
-      _rewardId: mouse_base
+      _rewardId: 55
       _amount: 1
       _icon: {fileID: 21300000, guid: 9e09145af0cf4c04da2ad33486f9a382, type: 3}
-      _unitUnlock: {fileID: 0}
+      _unitUnlock: {fileID: 11400000, guid: 3a6c2837145a3f148bdf0cc5d5edbb69, type: 2}
     _nextNodeIds:
     - c4_mid
   - _nodeId: c4_top
@@ -147,20 +147,20 @@ MonoBehaviour:
     _normalizedPosition: {x: 0.75, y: 0.5}
     _reward:
       _type: 2
-      _rewardId: mouse_base
+      _rewardId: 56
       _amount: 1
       _icon: {fileID: 21300000, guid: 9e09145af0cf4c04da2ad33486f9a382, type: 3}
-      _unitUnlock: {fileID: 0}
+      _unitUnlock: {fileID: 11400000, guid: 67e1321594bd8034783162a4c27fcbd3, type: 2}
     _nextNodeIds:
     - final
   - _nodeId: c4_bot
     _stageIndex: 4
     _normalizedPosition: {x: 0.75, y: 0.22}
     _reward:
-      _type: 2
-      _rewardId: mouse_base
+      _type: 1
+      _rewardId: generator
       _amount: 1
-      _icon: {fileID: 21300000, guid: 9e09145af0cf4c04da2ad33486f9a382, type: 3}
+      _icon: {fileID: 21300000, guid: 83bb5f401bf2c9345b8a03ff7880bf18, type: 3}
       _unitUnlock: {fileID: 0}
     _nextNodeIds:
     - final
@@ -174,7 +174,7 @@ MonoBehaviour:
       _icon: {fileID: 0}
       _unitUnlock: {fileID: 0}
     _nextNodeIds: []
-  _waveStartDelay: 15
+  _waveStartDelay: 20
   _ritualPointsPerClear: 1
   _unlockableRatUnits:
   - {fileID: 11400000, guid: 67e1321594bd8034783162a4c27fcbd3, type: 2}
@@ -184,6 +184,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d2824f716f68a274b8ff20f2150b7642, type: 2}
   - {fileID: 11400000, guid: 490fc92c8802a2f43b605456cd67ef8e, type: 2}
   - {fileID: 11400000, guid: 227b08e28dd0ccb42b712cdf6504d363, type: 2}
+  - {fileID: 11400000, guid: ca5e7165cf009e947a73684efca92348, type: 2}
+  - {fileID: 11400000, guid: 4baf8057090a95442b5687d2e3297637, type: 2}
+  - {fileID: 11400000, guid: 2e5c66f10c6378f4f8808be2c71a07c1, type: 2}
   _skillUnlocks:
   - _clearStageIndex: 0
     _skillIndex: 1
