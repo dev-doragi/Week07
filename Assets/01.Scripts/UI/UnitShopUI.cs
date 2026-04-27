@@ -24,6 +24,9 @@ public class UnitShopUI : MonoBehaviour
     [SerializeField] private List<UnitDataSO> _allUnits;
     [SerializeField] private TextMeshProUGUI _capacityText;     //수용량 텍스트 UI
 
+    [Header("Tooltip")]
+    [SerializeField] private UnitTooltipUI _tooltip;
+
     [Header("Slide Settings")]
     [SerializeField] private float _slideDuration = 0.25f;
     [SerializeField] private float _panelOpenX = 80f;
@@ -115,7 +118,7 @@ public class UnitShopUI : MonoBehaviour
                 if(data.Category != UnitCategory.Wheel) continue;
                 if(data.PlacementRule == PlacementRule.InitialOnly) continue;
                 var card = Instantiate(_cardPrefab, _cardContainer);
-                card.Setup(data, OnUnitSelected, IsUnlocked(data));
+                card.Setup(data, OnUnitSelected, _tooltip);
             }
         }
 
@@ -123,7 +126,7 @@ public class UnitShopUI : MonoBehaviour
         {
             if (data.Category != category) continue;
             var card = Instantiate(_cardPrefab, _cardContainer);
-            card.Setup(data, OnUnitSelected, IsUnlocked(data));
+            card.Setup(data, OnUnitSelected, _tooltip, IsUnlocked(data));
         }
     }
 
