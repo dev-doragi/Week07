@@ -345,6 +345,8 @@ public class DoctrineEffectApplier : MonoBehaviour
         ReducePrivateIntField(ritualSystem, "_skill1Cost", multiplier);
         ReducePrivateIntField(ritualSystem, "_skill2Cost", multiplier);
         ReducePrivateIntField(ritualSystem, "_skill3Cost", multiplier);
+
+        EventBus.Instance?.Publish(new RitualCostChangedEvnet());
     }
 
     // EffectSummary: ?섏떇??荑⑦???50% 媛먯냼
