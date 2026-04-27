@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// 프로젝트의 모든 매니저 초기화 순서를 중앙 통제하는 클래스입니다.
 /// </summary>
-[DefaultExecutionOrder(-500)] // 가장 먼저 실행되어 매니저들을 세팅함
+[DefaultExecutionOrder(-500)]
 public class Bootstrapper : MonoBehaviour
 {
     [Header("Global Managers (DDOL)")]
@@ -20,6 +20,8 @@ public class Bootstrapper : MonoBehaviour
     [SerializeField] private SceneLoader _sceneLoaderPrefab;
     [SerializeField] private UIManager _uiManagerPrefab;
     [SerializeField] private PoolManager _poolManagerPrefab;
+    [SerializeField] private CameraManager _cameraManagerPrefab;
+    //[SerializeField] private SiegeSaveLoader _siegeSaveLoaderPrefab;
 
     private void Awake()
     {
@@ -32,16 +34,17 @@ public class Bootstrapper : MonoBehaviour
         EnsureInstance(_pauseManagerPrefab);
         EnsureInstance(_soundManagerPrefab);
 
-        // 2. 씬 종속 매니저 (인게임 씬 부트스트래퍼에서 할당되어 있다면 여기서 생성됨)
+        // 2. 씬 종속 매니저
         EnsureInstance(_stageManagerPrefab);
         EnsureInstance(_sceneLoaderPrefab);
         EnsureInstance(_uiManagerPrefab);
         EnsureInstance(_poolManagerPrefab);
+        EnsureInstance(_cameraManagerPrefab);
+        //EnsureInstance(_siegeSaveLoaderPrefab);
     }
 
     private void Start()
     {
-        // 2. 확정적 순서에 따른 논리적 초기화 (OnBootstrap 호출)
         InitializeLogic();
     }
 
@@ -53,13 +56,15 @@ public class Bootstrapper : MonoBehaviour
         if (SceneLoader.Instance != null) SceneLoader.Instance.BootstrapIfNeeded();
         if (InputReader.Instance != null) InputReader.Instance.BootstrapIfNeeded();
 
-        // [순서 2] 게임 코어 및 전투 흐름 상태 (수신자 먼저)
+        // [순서 2] 게임 코어 및 전투 흐름 상태
         if (GameManager.Instance != null) GameManager.Instance.BootstrapIfNeeded();
         if (GameFlowManager.Instance != null) GameFlowManager.Instance.BootstrapIfNeeded();
 
-        // [순서 3] 스테이지 및 환경 로드 (발행자 나중에)
+        // [순서 3] 스테이지 및 환경 로드
+        if (SiegeSaveLoader.Instance != null) SiegeSaveLoader.Instance.BootstrapIfNeeded();
         if (StageManager.Instance != null) StageManager.Instance.BootstrapIfNeeded();
         if (GridManager.Instance != null) GridManager.Instance.BootstrapIfNeeded();
+        if (CameraManager.Instance != null) CameraManager.Instance.BootstrapIfNeeded();
         if (PauseManager.Instance != null) PauseManager.Instance.BootstrapIfNeeded();
 
         // [순서 4] 뷰 및 풀링
@@ -73,10 +78,7 @@ public class Bootstrapper : MonoBehaviour
     private void EnsureInstance<T>(T prefab) where T : MonoBehaviour
     {
         if (prefab == null) return;
-
-        // 씬에 이미 존재하거나 DDOL로 넘어온 인스턴스가 있는지 확인
         if (FindAnyObjectByType<T>() != null) return;
-
         Instantiate(prefab);
     }
 }
