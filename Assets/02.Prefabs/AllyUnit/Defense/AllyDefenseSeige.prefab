@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6476460231606284066}
   - component: {fileID: 2363077493396989417}
   - component: {fileID: 3881786071951429347}
+  - component: {fileID: 253022365176627025}
   m_Layer: 6
   m_Name: AllyDefenseSeige
   m_TagString: Ally
@@ -107,8 +108,26 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 2, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &253022365176627025
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 664433030619585036}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66fb84c84f667e64db386d8d3da3db94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitAnimator
+  _idleFrames:
+  - {fileID: -1433208436501525446, guid: a07f423ee427d4e43b256f0e8dd30c35, type: 3}
+  - {fileID: 1881286889, guid: a07f423ee427d4e43b256f0e8dd30c35, type: 3}
+  - {fileID: -833698057, guid: a07f423ee427d4e43b256f0e8dd30c35, type: 3}
+  - {fileID: 936567797, guid: a07f423ee427d4e43b256f0e8dd30c35, type: 3}
+  _attackFrames: []
 --- !u!1 &6340764246030054573
 GameObject:
   m_ObjectHideFlags: 0
@@ -190,12 +209,12 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: a07f423ee427d4e43b256f0e8dd30c35, type: 3}
+  m_Sprite: {fileID: -1433208436501525446, guid: a07f423ee427d4e43b256f0e8dd30c35, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 2, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
