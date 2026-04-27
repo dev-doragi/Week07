@@ -1,9 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 /// <summary>
 /// 드래그/회전/배치를 담당하는 개별 수익 블록 UI.
@@ -33,6 +38,16 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     [SerializeField] private Sprite _cellSprite;
     [SerializeField] private float _rotationTweenDuration = 0.15f; // 부드러운 회전 지속 시간
 
+    [Header("Drag Hint")]
+    [SerializeField] private string _dragHintLabel = "R 회전";
+    [SerializeField] private Vector2 _dragHintOffset = new Vector2(28f, 34f);
+    [SerializeField] private Vector2 _dragHintSize = new Vector2(120f, 40f);
+    [SerializeField] private int _dragHintFontSize = 24;
+    [SerializeField] private Color _dragHintColor = Color.white;
+    [SerializeField] private Color _dragHintOutlineColor = new Color(0f, 0f, 0f, 0.85f);
+    [SerializeField] private Vector2 _dragHintOutlineDistance = new Vector2(1.5f, -1.5f);
+    [SerializeField] private TMP_FontAsset _dragHintFontAsset;
+
     private RectTransform _rectTransform;
     private CanvasGroup _canvasGroup;
 
@@ -48,6 +63,8 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     private RectTransform _outlineRoot;
     private readonly List<Image> _outlineSegments = new List<Image>();
     private readonly HashSet<Vector2Int> _cellLookup = new HashSet<Vector2Int>();
+    private RectTransform _dragHintRect;
+    private TextMeshProUGUI _dragHintText;
 
     private RectTransform _homeParent;
     private Vector2 _homePosition;
@@ -154,6 +171,7 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
         ApplyVisualState(_draggingColor);
         StickCenterToPointer(eventData.position, eventData.pressEventCamera);
+        ShowDragHint(eventData.position, eventData.pressEventCamera);
         UpdatePlacementPreview();
     }
 
@@ -164,6 +182,7 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         _dragEventCamera = eventData.pressEventCamera;
         _lastPointerScreenPosition = eventData.position;
         StickCenterToPointer(eventData.position, eventData.pressEventCamera);
+        UpdateDragHintPosition(eventData.position, eventData.pressEventCamera);
         UpdatePlacementPreview();
     }
 
@@ -180,6 +199,7 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         _isDragging = false;
         _canvasGroup.blocksRaycasts = true;
         _gridBoard?.ClearPlacementPreview();
+        HideDragHint();
 
         bool placed = TryPlaceAtCurrentTransform(_dragEventCamera != null ? _dragEventCamera : eventData.pressEventCamera);
         if (!placed)
@@ -210,6 +230,7 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         _isDragging = false;
         _canvasGroup.blocksRaycasts = true;
         _gridBoard?.ClearPlacementPreview();
+        HideDragHint();
         RestoreFromSnapshot();
         ApplyVisualState(_blockColor);
     }
@@ -223,6 +244,7 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         // 내부 셀 레이아웃은 즉시 재계산 (논리적 충돌 처리용)
         RefreshShapeVisual();
         StickCenterToPointer(_lastPointerScreenPosition, _dragEventCamera);
+        UpdateDragHintPosition(_lastPointerScreenPosition, _dragEventCamera);
         UpdatePlacementPreview();
 
         // 껍데기(VisualRoot)만 역방향으로 틀어 부드럽게 돌아오는 트윈 실행
@@ -543,6 +565,82 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         }
     }
 
+    private void ShowDragHint(Vector2 screenPoint, Camera eventCamera)
+    {
+        EnsureDragHint();
+        if (_dragHintRect == null)
+            return;
+
+        _dragHintRect.gameObject.SetActive(true);
+        _dragHintRect.SetAsLastSibling();
+        UpdateDragHintPosition(screenPoint, eventCamera);
+    }
+
+    private void HideDragHint()
+    {
+        if (_dragHintRect != null)
+            _dragHintRect.gameObject.SetActive(false);
+    }
+
+    private void UpdateDragHintPosition(Vector2 screenPoint, Camera eventCamera)
+    {
+        if (_dragHintRect == null || !_dragHintRect.gameObject.activeSelf)
+            return;
+
+        RectTransform parent = _dragHintRect.parent as RectTransform;
+        if (parent == null)
+            return;
+
+        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(parent, screenPoint, eventCamera, out Vector2 localPoint))
+            _dragHintRect.anchoredPosition = localPoint + _dragHintOffset;
+    }
+
+    private void EnsureDragHint()
+    {
+        RectTransform hintParent = _dragRoot != null ? _dragRoot : _rectTransform.root as RectTransform;
+        if (hintParent == null)
+            return;
+
+        if (_dragHintRect != null && _dragHintRect.parent != hintParent)
+            _dragHintRect.SetParent(hintParent, false);
+
+        if (_dragHintRect == null)
+        {
+            var hintGo = new GameObject("__IncomeDragHint", typeof(RectTransform), typeof(TextMeshProUGUI), typeof(Outline));
+            _dragHintRect = hintGo.GetComponent<RectTransform>();
+            _dragHintRect.SetParent(hintParent, false);
+            _dragHintText = hintGo.GetComponent<TextMeshProUGUI>();
+        }
+        else if (_dragHintText == null)
+        {
+            _dragHintText = _dragHintRect.GetComponent<TextMeshProUGUI>();
+        }
+
+        _dragHintRect.anchorMin = new Vector2(0.5f, 0.5f);
+        _dragHintRect.anchorMax = new Vector2(0.5f, 0.5f);
+        _dragHintRect.pivot = new Vector2(0f, 0.5f);
+        _dragHintRect.sizeDelta = _dragHintSize;
+
+        if (_dragHintText != null)
+        {
+            _dragHintText.text = _dragHintLabel;
+            _dragHintText.fontSize = _dragHintFontSize;
+            _dragHintText.color = _dragHintColor;
+            _dragHintText.alignment = TextAlignmentOptions.Left;
+            _dragHintText.raycastTarget = false;
+            if (_dragHintFontAsset != null)
+                _dragHintText.font = _dragHintFontAsset;
+        }
+
+        var outline = _dragHintRect.GetComponent<Outline>();
+        if (outline != null)
+        {
+            outline.effectColor = _dragHintOutlineColor;
+            outline.effectDistance = _dragHintOutlineDistance;
+            outline.useGraphicAlpha = true;
+        }
+    }
+
     private void EnsureComponents()
     {
         if (_rectTransform == null) _rectTransform = GetComponent<RectTransform>();
@@ -648,6 +746,7 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     private void OnDisable()
     {
         _gridBoard?.ClearPlacementPreview();
+        HideDragHint();
     }
 
     public void SetCellSprite(Sprite sprite)
@@ -669,4 +768,19 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         RefreshShapeVisual();
         _visualRoot.localEulerAngles = Vector3.zero;
     }
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        if (_dragHintFontAsset == null)
+        {
+            string[] guids = AssetDatabase.FindAssets("Galmuri9 t:TMP_FontAsset");
+            if (guids != null && guids.Length > 0)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guids[0]);
+                _dragHintFontAsset = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(path);
+            }
+        }
+    }
+#endif
 }

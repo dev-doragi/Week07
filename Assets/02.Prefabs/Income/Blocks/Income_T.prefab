@@ -70,3 +70,12 @@ MonoBehaviour:
   _outlineWidth: 3
   _cellPadding: 4
   _cellSprite: {fileID: 21300000, guid: 83bb5f401bf2c9345b8a03ff7880bf18, type: 3}
+  _rotationTweenDuration: 0.15
+  _dragHintLabel: "R \uD68C\uC804"
+  _dragHintOffset: {x: -40, y: 80}
+  _dragHintSize: {x: 120, y: 40}
+  _dragHintFontSize: 32
+  _dragHintColor: {r: 1, g: 1, b: 1, a: 1}
+  _dragHintOutlineColor: {r: 0, g: 0, b: 0, a: 0.85}
+  _dragHintOutlineDistance: {x: 1.5, y: -1.5}
+  _dragHintFontAsset: {fileID: 11400000, guid: e4dba54daa22213498a58638f5792dcd, type: 2}
