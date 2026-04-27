@@ -128,9 +128,7 @@ MonoBehaviour:
   - {fileID: 7180056873152389656, guid: 739b85737b59dfc4eb8a9335d18aba72, type: 3}
   - {fileID: 8974744836144455243, guid: 739b85737b59dfc4eb8a9335d18aba72, type: 3}
   - {fileID: 2388881503075478227, guid: 739b85737b59dfc4eb8a9335d18aba72, type: 3}
-  _idleDuration: 1
   _attackFrames: []
-  _attackDuration: 0
 --- !u!1 &5144084208058120485
 GameObject:
   m_ObjectHideFlags: 0
@@ -210,7 +208,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_MaskInteraction: 0
   m_Sprite: {fileID: -2417847074671435042, guid: 739b85737b59dfc4eb8a9335d18aba72, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

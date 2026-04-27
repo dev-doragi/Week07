@@ -18,7 +18,8 @@ MonoBehaviour:
   Category: 3
   Prefab: {fileID: 7695974667498831695, guid: ba91597623a41f04b8e7e5d77cfe4ec5, type: 3}
   Icon: {fileID: -9002678494941771478, guid: 1c476c5309865f941849911d468d70b1, type: 3}
-  Size: {x: 2, y: 1}
+  Description: 
+  Size: {x: 1, y: 1}
   PlacementRule: 1
   ActsAsFoundation: 0
   WheelCapacity: 5

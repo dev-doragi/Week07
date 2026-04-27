@@ -3846,58 +3846,6 @@ PrefabInstance:
       propertyPath: _uiPoolRoot
       value: 
       objectReference: {fileID: 4960253352866123614}
-    - target: {fileID: 5296992969310506774, guid: 810ff77847dc926408aa668c6034d877, type: 3}
-      propertyPath: _globalPools.Array.size
-      value: 12
-      objectReference: {fileID: 0}
-    - target: {fileID: 5296992969310506774, guid: 810ff77847dc926408aa668c6034d877, type: 3}
-      propertyPath: _globalPools.Array.data[8].Prefab
-      value: 
-      objectReference: {fileID: 2652602981875499589, guid: 08a7c187a2eb33d4c8aaa1aef517fce8, type: 3}
-    - target: {fileID: 5296992969310506774, guid: 810ff77847dc926408aa668c6034d877, type: 3}
-      propertyPath: _globalPools.Array.data[9].Prefab
-      value: 
-      objectReference: {fileID: 6523836865489773202, guid: 172ce31f2366f8c4ca1056e1e26ed2d8, type: 3}
-    - target: {fileID: 5296992969310506774, guid: 810ff77847dc926408aa668c6034d877, type: 3}
-      propertyPath: _globalPools.Array.data[10].Prefab
-      value: 
-      objectReference: {fileID: 6579287745903239311, guid: cc3c29d75c9105349839bf324fbc5f30, type: 3}
-    - target: {fileID: 5296992969310506774, guid: 810ff77847dc926408aa668c6034d877, type: 3}
-      propertyPath: _globalPools.Array.data[11].Prefab
-      value: 
-      objectReference: {fileID: 6579287745903239311, guid: 9290736278b58ad4a94c995674e76746, type: 3}
-    - target: {fileID: 5296992969310506774, guid: 810ff77847dc926408aa668c6034d877, type: 3}
-      propertyPath: _globalPools.Array.data[8].MaxSize
-      value: 50
-      objectReference: {fileID: 0}
-    - target: {fileID: 5296992969310506774, guid: 810ff77847dc926408aa668c6034d877, type: 3}
-      propertyPath: _globalPools.Array.data[9].MaxSize
-      value: 50
-      objectReference: {fileID: 0}
-    - target: {fileID: 5296992969310506774, guid: 810ff77847dc926408aa668c6034d877, type: 3}
-      propertyPath: _globalPools.Array.data[10].MaxSize
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 5296992969310506774, guid: 810ff77847dc926408aa668c6034d877, type: 3}
-      propertyPath: _globalPools.Array.data[11].MaxSize
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 5296992969310506774, guid: 810ff77847dc926408aa668c6034d877, type: 3}
-      propertyPath: _globalPools.Array.data[8].InitialSize
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 5296992969310506774, guid: 810ff77847dc926408aa668c6034d877, type: 3}
-      propertyPath: _globalPools.Array.data[9].InitialSize
-      value: 20
-      objectReference: {fileID: 0}
-    - target: {fileID: 5296992969310506774, guid: 810ff77847dc926408aa668c6034d877, type: 3}
-      propertyPath: _globalPools.Array.data[10].InitialSize
-      value: 20
-      objectReference: {fileID: 0}
-    - target: {fileID: 5296992969310506774, guid: 810ff77847dc926408aa668c6034d877, type: 3}
-      propertyPath: _globalPools.Array.data[11].InitialSize
-      value: 20
-      objectReference: {fileID: 0}
     - target: {fileID: 8831656271116653013, guid: 810ff77847dc926408aa668c6034d877, type: 3}
       propertyPath: m_Name
       value: PoolManager
