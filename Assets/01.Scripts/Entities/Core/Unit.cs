@@ -43,6 +43,7 @@ public class Unit : MonoBehaviour, IDamageable
     private bool _isOnGrid = false;
 
     public UnitDataSO Data => _data;
+    public SpriteRenderer BaseRenderer => _baseRenderer;
     public TeamType Team => _team;
     public UnitCategory Category => _data.Category;
     public float CurrentHp => _currentHp;
