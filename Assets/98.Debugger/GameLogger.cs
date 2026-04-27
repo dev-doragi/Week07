@@ -102,7 +102,7 @@ public class GameLogger : Singleton<GameLogger>
             SubscribeEvents();
 
             Log("=== Game Statistics Session Started ===");
-            Log($"Platform: {Application.platform}, PersistentDataPath: {Application.persistentDataPath}");
+            Log($"Platform: {Application.platform}, LogFilePath: {_logFilePath}");
 
             _ = InitializeAnalyticsAsync();
         }
@@ -114,15 +114,29 @@ public class GameLogger : Singleton<GameLogger>
 
     private void InitializeFileSystem()
     {
-        string logDir = Path.Combine(Application.persistentDataPath, "logs");
-        if (!Directory.Exists(logDir))
+        string logDir = GetDefaultLogDirectory();
+
+        try
         {
             Directory.CreateDirectory(logDir);
         }
+        catch (Exception ex)
+        {
+            Debug.LogWarning($"[GameLogger] Failed to create build Logs directory '{logDir}'. Falling back to persistentDataPath. Error: {ex}");
+            logDir = Path.Combine(Application.persistentDataPath, "Logs");
+            Directory.CreateDirectory(logDir);
+        }
 
-        string fileName = $"GameStats_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.txt";
+        string fileName = $"GameLogs_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.txt";
         _logFilePath = Path.Combine(logDir, fileName);
         _streamWriter = new StreamWriter(_logFilePath, true, Encoding.UTF8) { AutoFlush = true };
+    }
+
+    private static string GetDefaultLogDirectory()
+    {
+        DirectoryInfo dataDirectory = Directory.GetParent(Application.dataPath);
+        string rootPath = dataDirectory != null ? dataDirectory.FullName : Application.persistentDataPath;
+        return Path.Combine(rootPath, "Logs");
     }
 
     private void SubscribeEvents()
