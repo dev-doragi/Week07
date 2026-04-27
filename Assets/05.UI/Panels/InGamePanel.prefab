@@ -2907,10 +2907,10 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 642260051713880498}
+  - {fileID: 910580662452263128}
   - {fileID: 2829941983738385510}
   - {fileID: 5726641389671934492}
   - {fileID: 5648274909334620657}
-  - {fileID: 910580662452263128}
   - {fileID: 525021245276226309}
   - {fileID: 548476535305856500}
   - {fileID: 655429525941157895}
@@ -6119,7 +6119,7 @@ MonoBehaviour:
   m_Padding:
     m_Left: 0
     m_Right: 0
-    m_Top: 8
+    m_Top: 80
     m_Bottom: 150
   m_ChildAlignment: 4
   m_Spacing: 100
