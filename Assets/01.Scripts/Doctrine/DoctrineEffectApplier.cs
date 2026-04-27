@@ -108,7 +108,7 @@ public class DoctrineEffectApplier : MonoBehaviour
                 break;
 
             case "Ram_Node_1":
-                ApplyRamSelfDamageReduction(0.3f);
+                ApplyRamEnemyCollisionPowerReduction(0.5f);
                 break;
 
             case "Ram_Node_2":
@@ -284,16 +284,16 @@ public class DoctrineEffectApplier : MonoBehaviour
         }
     }
 
-    // EffectSummary: 異⑷컖 ??뵾??30% 媛먯냼
-    private void ApplyRamSelfDamageReduction(float percent)
+    // EffectSummary: 충각 시 적 공성력 50% 감소로 계산
+    private void ApplyRamEnemyCollisionPowerReduction(float percent)
     {
         if (siegeChargeHandler == null)
         {
-            Debug.LogWarning("[DoctrineEffectApplier] SiegeChargeHandler not found. Ram self-damage reduction skipped.");
+            Debug.LogWarning("[DoctrineEffectApplier] SiegeChargeHandler not found. Ram enemy collision power reduction skipped.");
             return;
         }
 
-        siegeChargeHandler.SetDoctrineSelfDamageReductionPercent(percent);
+        siegeChargeHandler.SetDoctrineEnemyCollisionPowerReductionPercent(percent);
     }
 
     // EffectSummary: 異⑷컖 荑⑦???50% 媛먯냼

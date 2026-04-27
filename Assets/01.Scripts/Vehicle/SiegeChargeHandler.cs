@@ -29,7 +29,7 @@ public class SiegeChargeHandler : MonoBehaviour
     [SerializeField, Range(0f, 1f)] private float _penetration = 0f;
 
     [Header("Doctrine - Ram")]
-    [SerializeField, Range(0f, 1f)] private float _doctrineSelfDamageReductionPercent = 0f;
+    [SerializeField, Range(0f, 1f)] private float _doctrineEnemyCollisionPowerReductionPercent = 0f;
     [SerializeField, Min(0f)] private float _doctrineBonusDamagePercent = 0f;
     [SerializeField, Min(0f)] private float _doctrineStunDurationSeconds = 0f;
 
@@ -103,10 +103,10 @@ public class SiegeChargeHandler : MonoBehaviour
         Debug.Log("[SiegeChargeHandler] Crash cancelled - all state reset");
     }
 
-    public void SetDoctrineSelfDamageReductionPercent(float percent)
+    public void SetDoctrineEnemyCollisionPowerReductionPercent(float percent)
     {
-        _doctrineSelfDamageReductionPercent = Mathf.Clamp01(percent);
-        Debug.Log($"[SiegeChargeHandler] Doctrine self-damage reduction set: {_doctrineSelfDamageReductionPercent * 100f:0}%");
+        _doctrineEnemyCollisionPowerReductionPercent = Mathf.Clamp01(percent);
+        Debug.Log($"[SiegeChargeHandler] Doctrine enemy collision power reduction set: {_doctrineEnemyCollisionPowerReductionPercent * 100f:0}%");
     }
 
     public void SetDoctrineBonusDamagePercent(float percent)
@@ -212,6 +212,7 @@ public class SiegeChargeHandler : MonoBehaviour
 
         float playerCP = _grid != null ? _grid.CalculateTotalCollisionPower() : 0f;
         float enemyCP = _enemyGrid.CalculateTotalCollisionPower();
+        enemyCP *= 1f - _doctrineEnemyCollisionPowerReductionPercent;
         ResolveCollision(playerCP, enemyCP, _enemyGrid);
     }
 
@@ -227,8 +228,7 @@ public class SiegeChargeHandler : MonoBehaviour
             if (isPlayerLosing)
             {
                 var targets = _grid.GetAllLivingUnits();
-                float reducedDamage = delta * (1f - Mathf.Clamp01(_doctrineSelfDamageReductionPercent));
-                DistributeDamage(targets, reducedDamage, TeamType.Enemy, "Player");
+                DistributeDamage(targets, delta, TeamType.Enemy, "Player");
             }
             else
             {
