@@ -344,7 +344,14 @@ public class GridManager : Singleton<GridManager>
             unit.OnDead += (deadUnit) => OnUnitDied(placed);
         }
 
-        // [Merge Resolved] 브랜치별 알림 로직 통합
+        // CompositeCollider2D 갱신
+        var compositeCollider = GetComponent<CompositeCollider2D>();
+        if (compositeCollider != null)
+        {
+            compositeCollider.GenerateGeometry();
+            Debug.Log($"[GridManager] CompositeCollider2D 갱신 완료 - {data.UnitName} 추가됨");
+        }
+
         OnCapacityChanged?.Invoke();
         EventBus.Instance?.Publish(new PlayerGridChangedEvent());
     }
