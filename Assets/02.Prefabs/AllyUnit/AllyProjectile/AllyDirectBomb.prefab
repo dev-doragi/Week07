@@ -212,5 +212,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RatProjectile
   _lifeTime: 5
-  _fragmentPoolKey: FragmentRat
+  _fragmentPoolKey: Explosion
   _fragmentCount: 1
