@@ -69,15 +69,40 @@ public class GridController : MonoBehaviour
     // ==========================================
     // Unity 생명주기
     // ==========================================
-    // 시작 시: 고스트 루트 생성 + 초기 유닛 배치
+    // 시작 시: 고스트 루트 생성
     private void Start()
     {
         BuildGhostHierarchy();
+        _grid.OnCapacityChanged += OnGridChanged;
+
+        // 최초 씬 진입 시 직접 호출 (StageGenerateCompleteEvent는 이미 발행된 상태일 수 있음)
+        PlaceInitialUnits();
+    }
+
+    private void OnEnable()
+    {
+        if (EventBus.Instance != null)
+            EventBus.Instance.Subscribe<StageGenerateCompleteEvent>(OnStageGenerateComplete);
+    }
+
+    private void OnDisable()
+    {
+        if (EventBus.Instance != null)
+            EventBus.Instance.Unsubscribe<StageGenerateCompleteEvent>(OnStageGenerateComplete);
+    }
+
+    private void OnStageGenerateComplete(StageGenerateCompleteEvent evt)
+    {
+        PlaceInitialUnits();
+    }
+
+    private void PlaceInitialUnits()
+    {
+        if (_grid == null || _wheelData == null || _coreData == null) return;
 
         foreach (var pos in _wheelCells)
             _grid.PlaceInitial(_wheelData, pos);
         _grid.PlaceInitial(_coreData, _coreCell);
-        _grid.OnCapacityChanged += OnGridChanged;
     }
 
     // 매 프레임: 선택 → 프리뷰 → 클릭 순

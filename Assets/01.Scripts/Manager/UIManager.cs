@@ -135,19 +135,13 @@ public class UIManager : Singleton<UIManager>
 
     public void OnRetryClicked()
     {
-        VehicleCache.Clear();
+        // 게임 오버 후 재시작: 캐시를 유지하여 직전 상태에서 재도전 가능
+        // (StageClearedEvent에서 이미 저장된 배치를 복원함)
         SceneLoader.Instance.ReloadCurrentScene();
     }
 
     public void OnNextStageClicked()
     {
-        // 현재 차량 상태를 캐싱한 뒤 다음 스테이지 로드
-        var saver = FindAnyObjectByType<VehicleSaveLoader>();
-        if (saver != null)
-        {
-            saver.SaveCurrentVehicle(StageManager.Instance.CurrentStageIndex);
-        }
-
         HideAllPanels();
         if (_inGamePanel != null) _inGamePanel.SetActive(true);
         StageManager.Instance.LoadNextStage();

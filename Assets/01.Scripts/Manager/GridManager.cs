@@ -233,6 +233,24 @@ public class GridManager : Singleton<GridManager>
         CreateAndRegister(data, origin);
     }
 
+    /// <summary>
+    /// 스테이지 전환 시 그리드에 남은 모든 유닛과 셀 데이터를 초기화합니다.
+    /// StageManager.ClearCurrentStage()에서 호출됩니다.
+    /// </summary>
+    public void ClearAllUnits()
+    {
+        var allUnits = CollectAllPlaced();
+        foreach (var unit in allUnits)
+        {
+            if (unit?.Instance != null)
+                Destroy(unit.Instance);
+        }
+        _cells = new PlacedUnit[_width, _height];
+        OnCapacityChanged?.Invoke();
+        EventBus.Instance?.Publish(new PlayerGridChangedEvent());
+        Debug.Log("[GridManager] 전체 유닛 및 셀 초기화 완료");
+    }
+
     public bool TryRemove(Vector2Int cell)
     {
         var unit = GetUnitAt(cell);

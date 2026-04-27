@@ -167,6 +167,13 @@ public class StageManager : Singleton<StageManager>
     {
         StopMapWaveStartRoutine();
 
+        // 그리드 셀 데이터와 유닛 인스턴스를 먼저 초기화합니다.
+        // 이것은 다음 스테이지 로드 시 PlaceInitial이 정상 동작하도록 합니다.
+        if (GridManager.Instance != null)
+        {
+            GridManager.Instance.ClearAllUnits();
+        }
+
         if (_currentLayout != null)
         {
             Destroy(_currentLayout.gameObject);
