@@ -198,10 +198,17 @@ public class IncomeResourceProducer : MonoBehaviour
 
     private ResourceManager ResolveResourceManager()
     {
-        if (_resourceManager != null)
-            return _resourceManager;
+        if (_resourceManager != null) return _resourceManager;
 
-        _resourceManager = FindSceneObject<ResourceManager>();
+        try
+        {
+            _resourceManager = ResourceManager.Instance;
+        }
+        catch
+        {
+
+        }
+
         return _resourceManager;
     }
 

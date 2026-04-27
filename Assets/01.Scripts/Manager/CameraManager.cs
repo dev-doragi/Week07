@@ -1,7 +1,8 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Camera))]
-public class CameraManager : MonoBehaviour
+[DefaultExecutionOrder(-110)]
+public class CameraManager : Singleton<CameraManager>
 {
     [Header("Bounds")]
     [SerializeField] private BoxCollider2D _cameraBounds;
@@ -12,15 +13,19 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private float _maxZoom = 15f;
 
     private Camera _mainCamera;
-    // v1.9 규칙: InputReader.Instance 직접 사용
+    private Vector3 _originalPos;
+    private Coroutine _shakeCoroutine;
 
     private float _targetZoom;
     private float _initialZoom;
     private bool _isDragging;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+
         _mainCamera = GetComponent<Camera>();
+        _originalPos = transform.localPosition;
 
         if (_mainCamera == null)
         {
@@ -36,23 +41,19 @@ public class CameraManager : MonoBehaviour
             return;
         }
 
-
-
         _initialZoom = _mainCamera.orthographicSize;
         _targetZoom = _initialZoom;
     }
 
-    private void Start()
+    protected override void OnBootstrap()
     {
         transform.position = ClampCameraPosition(transform.position, _mainCamera.orthographicSize);
-    }
 
-    private void OnEnable()
-    {
-        if (EventBus.Instance == null) return;
-
-        EventBus.Instance.Subscribe<RightClickEvent>(HandleRightClick);
-        EventBus.Instance.Subscribe<ScrollEvent>(HandleScroll);
+        if (EventBus.Instance != null)
+        {
+            EventBus.Instance.Subscribe<RightClickEvent>(HandleRightClick);
+            EventBus.Instance.Subscribe<ScrollEvent>(HandleScroll);
+        }
     }
 
     private void OnDisable()
@@ -63,7 +64,6 @@ public class CameraManager : MonoBehaviour
         EventBus.Instance.Unsubscribe<ScrollEvent>(HandleScroll);
     }
 
-
     private void Update()
     {
         if (Time.timeScale <= 0f) return;
@@ -72,21 +72,18 @@ public class CameraManager : MonoBehaviour
 
     private void LateUpdate()
     {
-        // Lerp zoom for smooth transition
         float currentZoom = _mainCamera.orthographicSize;
         if (Mathf.Abs(currentZoom - _targetZoom) > 0.01f)
         {
             float lerped = Mathf.Lerp(currentZoom, _targetZoom, Time.deltaTime * 10f);
             _mainCamera.orthographicSize = lerped;
-            // 위치 보정 (줌 중 마우스 위치 기준)
             transform.position = ClampCameraPosition(transform.position, _mainCamera.orthographicSize);
         }
     }
 
     private void HandlePanning()
     {
-        if (_isDragging == false || InputReader.Instance == null) return;
-
+        if (!_isDragging || InputReader.Instance == null) return;
         if (Mathf.Abs(_mainCamera.orthographicSize - _maxZoom) < 0.001f) return;
 
         Vector2 mouseDelta = InputReader.Instance.GetMouseDelta();
@@ -95,8 +92,8 @@ public class CameraManager : MonoBehaviour
         float unitsPerPixel = (_mainCamera.orthographicSize * 2f) / Screen.height;
         Vector3 move = new Vector3(-mouseDelta.x, -mouseDelta.y, 0f) * unitsPerPixel;
 
-        Vector3 nextPos = transform.position + move;
-        transform.position = ClampCameraPosition(nextPos, _mainCamera.orthographicSize);
+        Vector3 nextPos = transform.localPosition + move;
+        transform.localPosition = ClampCameraPosition(nextPos, _mainCamera.orthographicSize);
     }
 
     private void HandleRightClick(RightClickEvent e)
@@ -109,19 +106,14 @@ public class CameraManager : MonoBehaviour
     {
         if (InputReader.Instance != null && InputReader.Instance.IsPointerOverUI) return;
 
-        // direction: -1 = zoom in (smaller size), +1 = zoom out (larger size)
         float direction = e.Delta > 0 ? -1f : 1f;
         float nextZoom = _targetZoom + direction * _zoomStep;
 
-        // Detect whether user is zooming out (increasing orthographicSize)
         bool isZoomingOut = direction > 0f;
-
-        // Will cross initial zoom this tick?
         bool willCrossInitial =
             (_targetZoom < _initialZoom && nextZoom >= _initialZoom) ||
             (_targetZoom > _initialZoom && nextZoom <= _initialZoom);
 
-        // If zooming out and we will cross the initial zoom, snap to initial once
         if (isZoomingOut && willCrossInitial && Mathf.Abs(_targetZoom - _initialZoom) > 0.01f)
         {
             _targetZoom = _initialZoom;
@@ -129,14 +121,13 @@ public class CameraManager : MonoBehaviour
             return;
         }
 
-        // Existing behavior: handle crossing in other direction or normal clamping
         bool isCrossingInitial =
             (_targetZoom > _initialZoom && nextZoom < _initialZoom) ||
             (_targetZoom < _initialZoom && nextZoom > _initialZoom);
 
         bool isAlreadyAtInitial = Mathf.Abs(_targetZoom - _initialZoom) < 0.01f;
 
-        if (isCrossingInitial && isAlreadyAtInitial == false)
+        if (isCrossingInitial && !isAlreadyAtInitial)
             _targetZoom = _initialZoom;
         else
             _targetZoom = Mathf.Clamp(nextZoom, _minZoom, _maxZoom);
@@ -153,22 +144,18 @@ public class CameraManager : MonoBehaviour
 
         Vector3 beforeWorld = _mainCamera.ScreenToWorldPoint(mouseScreen);
 
-        // orthographicSize는 LateUpdate에서 Lerp로 적용
-        // 여기서는 _targetZoom만 갱신
         _targetZoom = newZoom;
 
-        // Lerp 후 위치 보정이 LateUpdate에서 이뤄짐
-        // (즉시 위치 보정 필요시 아래 코드 유지)
         Vector3 afterWorld = _mainCamera.ScreenToWorldPoint(mouseScreen);
         Vector3 delta = beforeWorld - afterWorld;
-        Vector3 nextPos = transform.position + new Vector3(delta.x, delta.y, 0f);
-        transform.position = ClampCameraPosition(nextPos, _mainCamera.orthographicSize);
+        Vector3 nextPos = transform.localPosition + new Vector3(delta.x, delta.y, 0f);
+        transform.localPosition = ClampCameraPosition(nextPos, _mainCamera.orthographicSize);
     }
 
     private Vector3 ClampCameraPosition(Vector3 targetPos, float zoomSize)
     {
         if (_cameraBounds == null)
-            return new Vector3(targetPos.x, targetPos.y, transform.position.z);
+            return new Vector3(targetPos.x, targetPos.y, transform.localPosition.z);
 
         Bounds bounds = _cameraBounds.bounds;
 
@@ -197,6 +184,34 @@ public class CameraManager : MonoBehaviour
         float clampedX = Mathf.Clamp(targetPos.x, minX, maxX);
         float clampedY = Mathf.Clamp(targetPos.y, minY, maxY);
 
-        return new Vector3(clampedX, clampedY, transform.position.z);
+        return new Vector3(clampedX, clampedY, transform.localPosition.z);
+    }
+
+    // --- 카메라 쉐이크 구현 (강도별) ---
+    public void ShakeWeak()   => StartShake(0.18f, 0.08f);
+    public void ShakeMedium() => StartShake(0.18f, 0.15f);
+    public void ShakeStrong() => StartShake(0.18f, 0.25f);
+
+    private void StartShake(float duration, float magnitude)
+    {
+        if (_shakeCoroutine != null)
+            return; // 이미 쉐이크 중이면 무시
+        _shakeCoroutine = StartCoroutine(ShakeCoroutine(duration, magnitude));
+    }
+
+    private System.Collections.IEnumerator ShakeCoroutine(float duration, float magnitude)
+    {
+        float elapsed = 0f;
+        Vector3 basePos = transform.localPosition;
+        while (elapsed < duration)
+        {
+            float offsetX = Random.Range(-1f, 1f) * magnitude;
+            float offsetY = Random.Range(-1f, 1f) * magnitude;
+            transform.localPosition = basePos + new Vector3(offsetX, offsetY, 0f);
+            elapsed += Time.unscaledDeltaTime;
+            yield return null;
+        }
+        transform.localPosition = basePos;
+        _shakeCoroutine = null;
     }
 }

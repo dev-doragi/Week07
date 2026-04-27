@@ -139,7 +139,10 @@ public class GridManager : Singleton<GridManager>
             for (int y = 0; y < data.Size.y; y++)
             {
                 var cell = new Vector2Int(origin.x + x, origin.y + y);
-                if (!IsInBounds(cell) || !IsEmpty(cell)) return false;
+                if (!IsInBounds(cell) || !IsEmpty(cell)) 
+                {
+                    return false;
+                }
             }
         }
 
@@ -193,6 +196,7 @@ public class GridManager : Singleton<GridManager>
             if (CurrentUnitCount >= MaxCapacity)
             {
                 Debug.Log($"[GridManager] 수용량 초과 | {CurrentUnitCount}/{MaxCapacity}");
+                CameraManager.Instance?.ShakeWeak();
                 return false;
             }
         }
@@ -203,6 +207,7 @@ public class GridManager : Singleton<GridManager>
             if (!ResourceManager.Instance.SubtractMouseCount(data.Cost))
             {
                 Debug.Log($"[GridManager] {data.UnitName} 배치 실패 | 보유: {before} / 필요: {data.Cost}");
+                CameraManager.Instance?.ShakeWeak();
                 return false;
             }
             Debug.Log($"[GridManager] {data.UnitName} 배치 완료 | 사용: {data.Cost} | {before} → {ResourceManager.Instance.CurrentMouse}");
@@ -237,6 +242,8 @@ public class GridManager : Singleton<GridManager>
         if (WouldCauseCollapse(unit))
         {
             Debug.Log($"[GridManager] {unit.Data.UnitName} 제거 거부 | 연쇄 붕괴 발생 위험");
+            CameraManager.Instance?.ShakeWeak();
+
             return false;
         }
 

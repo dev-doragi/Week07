@@ -105,7 +105,6 @@ public class SiegeChargeHandler : MonoBehaviour
             // 아군 자신 무시
             if (col.transform.IsChildOf(_grid.transform)) continue;
 
-            Debug.Log($"[SiegeChargeHandler] 충돌 감지: {col.gameObject.name}");
             OnEnemyHit();
             return;
         }
@@ -201,7 +200,6 @@ public class SiegeChargeHandler : MonoBehaviour
             _isDashing = false;
             if (!_hasImpactedThisCrash)
             {
-                Debug.Log("[SiegeChargeHandler] 목표 지점까지 도달 - 충돌 없음, 기본 처리");
                 TriggerImpact();
                 PlayReturnSequenceFromCurrentPosition();
             }
@@ -225,7 +223,6 @@ public class SiegeChargeHandler : MonoBehaviour
 
         // 현재 위치(충돌 지점) 기록
         Vector3 impactPosition = _grid.transform.position;
-        Debug.Log($"[SiegeChargeHandler] 충돌 지점 정지: {impactPosition}");
 
         // 돌진 시퀀스 중단 (OnKill에서 EndCrash 안 부름)
         _sequence?.Kill();
@@ -270,6 +267,8 @@ public class SiegeChargeHandler : MonoBehaviour
 
     private void TriggerImpact()
     {
+        CameraManager.Instance?.ShakeStrong();
+
         _enemyGrid = _enemyGrid != null ? _enemyGrid : ResolveEnemyGrid();
         if (_enemyGrid == null)
         {
@@ -330,7 +329,7 @@ public class SiegeChargeHandler : MonoBehaviour
 
         var hitData = new DamageData
         {
-            Damage       = totalDamage * 1.25f,
+            Damage       = totalDamage * 1.5f,
             AttackerTeam = attackerTeam,
             HitPoint     = Vector2.zero,
             IsPiercing   = _penetration >= 1f

@@ -1,5 +1,4 @@
-﻿using Unity.VisualScripting;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
@@ -22,9 +21,9 @@ public class SceneLoader : Singleton<SceneLoader>
 
     public void GoToLobby()
     {
-        if (ManagerRegistry.TryGet(out GameManager gameManager))
+        if (GameManager.Instance != null)
         {
-            gameManager.ChangeState(GameState.Ready);
+            GameManager.Instance.ChangeState(GameState.Ready);
         }
 
         SceneManager.LoadScene(_lobbySceneName);

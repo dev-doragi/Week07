@@ -98,7 +98,7 @@ public class StageManager : Singleton<StageManager>
     /// </summary>
     private void OnWaveStarted(WaveStartedEvent evt)
     {
-        Debug.Log($"[StageManager] Wave {evt.WaveIndex} 시작 - 적 스폰 위임 중...");
+        Debug.Log($"[StageManager] Wave {evt.WaveIndex} 시작 - 적 스폰 중...");
 
         if (_currentLayout == null)
         {
@@ -142,9 +142,11 @@ public class StageManager : Singleton<StageManager>
         }
 
         EventBus.Instance.Publish(new StageLoadedEvent { StageIndex = CurrentStageIndex });
-        EventBus.Instance.Publish(new StageGenerateCompleteEvent());
 
-        Debug.Log($"[StageManager] Stage {stageIndex} 로드 및 그리드 배치 완료.");
+        // ⚠️ GridManager가 준비될 시간을 제공 (1프레임 대기)
+        StartCoroutine(PublishStageGenerateCompleteAfterDelay());
+
+        Debug.Log($"[StageManager] Stage {stageIndex} 로드 준비 완료.");
     }
 
     public void LoadNextStage()
@@ -154,6 +156,9 @@ public class StageManager : Singleton<StageManager>
             Debug.Log("[StageManager] 이미 마지막 스테이지입니다.");
             return;
         }
+
+        // StageClearedEvent에서 이미 현재 그리드 상태가 저장되었습니다.
+        // SiegeSaveLoader가 StageGenerateCompleteEvent를 받아 복원합니다.
         LoadStage(CurrentStageIndex + 1);
         StartWaveAfterDelay(0, WaveStartDelay);
     }
@@ -255,6 +260,18 @@ public class StageManager : Singleton<StageManager>
         CurrentState = InGameState.WaveEnded;
         Debug.Log($"[StageManager] Wave {CurrentWaveIndex} 종료 - isWin: {isWin}");
         EventBus.Instance?.Publish(new WaveEndedEvent { StageIndex = CurrentStageIndex, WaveIndex = CurrentWaveIndex, IsWin = isWin });
+    }
+
+    private IEnumerator PublishStageGenerateCompleteAfterDelay()
+    {
+        // 1프레임 대기: Instantiate된 오브젝트의 OnEnable/OnBootstrap 완료 시간 제공
+        yield return null;
+
+        Debug.Log("[StageManager] StageGenerateCompleteEvent 발행");
+        if (EventBus.Instance != null)
+        {
+            EventBus.Instance.Publish(new StageGenerateCompleteEvent());
+        }
     }
 
     private IEnumerator StartMapWaveAfterDelay(int waveIndex, float delay)
