@@ -718,7 +718,7 @@ Canvas:
   m_GameObject: {fileID: 284887918}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 1
+  m_RenderMode: 0
   m_Camera: {fileID: 1482599247}
   m_PlaneDistance: 10
   m_PixelPerfect: 0
@@ -4104,6 +4104,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 4b8f6362e5023af4c83cfe26c8929c4a, type: 2}
   - {fileID: 11400000, guid: eeec5f3ed9635f447a80e53a2782b5c3, type: 2}
   _capacityText: {fileID: 0}
+  _tooltip: {fileID: 0}
   _slideDuration: 0.25
   _panelOpenX: 130
   _panelClosedX: -220
@@ -4934,7 +4935,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7792928885561684642, guid: 6377a14270baffa40ab9119cfe91a22b, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -369.99997
+      value: 322
       objectReference: {fileID: 0}
     - target: {fileID: 7792928885561684642, guid: 6377a14270baffa40ab9119cfe91a22b, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -4951,6 +4952,10 @@ PrefabInstance:
     - target: {fileID: 7792928885561684642, guid: 6377a14270baffa40ab9119cfe91a22b, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8046492780495173437, guid: 6377a14270baffa40ab9119cfe91a22b, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -872
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

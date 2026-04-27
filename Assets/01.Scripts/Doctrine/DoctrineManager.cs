@@ -136,6 +136,21 @@ public class DoctrineManager : MonoBehaviour
             return;
         }
 
+        if (_pendingNode == node && state == DoctrineNodeState.Pending)
+        {
+            _pendingNode.SetState(DoctrineNodeState.Available);
+            _pendingNode = null;
+
+            if (tooltipUI != null)
+            {
+                tooltipUI.UnpinAndHide();
+            }
+
+            Debug.Log($"[DoctrineManager] Pending canceled | Row: {data.rowIndex}, Col: {data.columnIndex}, NodeId: {data.nodeId}");
+            RefreshConfirmButtonState();
+            return;
+        }
+
         if (_pendingNode != null && _pendingNode != node)
         {
             _pendingNode.SetState(DoctrineNodeState.Available);
