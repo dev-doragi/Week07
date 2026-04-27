@@ -60,7 +60,7 @@ public class RitualSkillButtonUI : MonoBehaviour, IPointerEnterHandler, IPointer
     {
         if(_ritualSystem == null || _buttonLabel == null) return;
         int cost = _ritualSystem.GetSkillCost(_skillIndex);
-        _buttonLabel.text = $"{_skillName} - {cost}";
+        _buttonLabel.text = $"{_skillName}";
     }
 
     public void OnPointerEnter(PointerEventData eventData)

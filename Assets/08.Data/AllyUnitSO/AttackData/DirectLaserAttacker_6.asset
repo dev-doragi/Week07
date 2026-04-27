@@ -17,7 +17,7 @@ MonoBehaviour:
   Team: 1
   Category: 3
   Prefab: {fileID: 939399878548102891, guid: 2c32796076d240d48892431232e59066, type: 3}
-  Icon: {fileID: 7084957924513991936, guid: 34f3abc17a75b0d4d81fe69030e8201c, type: 3}
+  Icon: {fileID: 1645226026, guid: 2c12f9b1a6f9a30428fce46b50ac0af7, type: 3}
   Description: "\"\uD654\uB0AC\uC950\""
   Size: {x: 1, y: 1}
   PlacementRule: 1
