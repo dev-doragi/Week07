@@ -10,4 +10,10 @@ public class StageLoader : MonoBehaviour
     {
         SceneLoader.Instance.EnterInGame(stageIndex);
     }
+
+    // 버튼에 직접 할당해서 스테이지 선택 씬으로 이동
+    public void LoadStageSelect()
+    {
+        SceneLoader.Instance.GoToStageSelect();
+    }
 }
