@@ -18,6 +18,7 @@ MonoBehaviour:
   Category: 3
   Prefab: {fileID: 7695974667498831695, guid: b322db5e49421b94788b7fd0c44c1ee0, type: 3}
   Icon: {fileID: 3924230511630168413, guid: 13b7e4b947e00f447b299fafe1069214, type: 3}
+  Description: "\uBC29\uB9DD\uC774!"
   Size: {x: 1, y: 1}
   PlacementRule: 1
   ActsAsFoundation: 0

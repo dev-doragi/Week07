@@ -18,6 +18,7 @@ MonoBehaviour:
   Category: 1
   Prefab: {fileID: 8185261341758472092, guid: daf1868f4aebdb04f8ca9db0883e158d, type: 3}
   Icon: {fileID: -4422140865799512813, guid: 8e696400559cad541864e54b5206fdaa, type: 3}
+  Description: "\uC218\uC6A9\uB7C9 5 \uCD94\uAC00"
   Size: {x: 1, y: 1}
   PlacementRule: 2
   ActsAsFoundation: 1
@@ -45,3 +46,7 @@ MonoBehaviour:
   Support:
     Radius: 0
     Effects: []
+  Heal:
+    HealRange: 10
+    HealAmount: 0
+    HealCooldown: 2

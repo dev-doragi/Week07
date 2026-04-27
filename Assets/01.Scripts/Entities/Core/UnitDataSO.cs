@@ -15,6 +15,9 @@ public class UnitDataSO : ScriptableObject
     public GameObject Prefab;
     public Sprite Icon;
 
+    [TextArea(2, 4)]
+    public string Description;
+
     [Header("Grid & Placement (그리드 배치 규칙)")]
     [Tooltip("유닛 footprint 크기. (2, 1)이면 가로 2칸 세로 1칸.")]
     public Vector2Int Size = Vector2Int.one;
