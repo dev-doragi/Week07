@@ -11,6 +11,30 @@ public class BackgroundManager : MonoBehaviour
         RegisterSceneBackgrounds();
     }
 
+    private void OnEnable()
+    {
+        EventBus.Instance?.Subscribe<WaveStartedEvent>(OnWaveStarted);
+        EventBus.Instance?.Subscribe<InGameStateChangedEvent>(OnInGameStateChanged);
+    }
+
+    private void OnDisable()
+    {
+        EventBus.Instance?.Unsubscribe<WaveStartedEvent>(OnWaveStarted);
+        EventBus.Instance?.Unsubscribe<InGameStateChangedEvent>(OnInGameStateChanged);
+    }
+
+    private void OnWaveStarted(WaveStartedEvent evt)
+    {
+        StopAllBackgrounds();
+    }
+
+    private void OnInGameStateChanged(InGameStateChangedEvent evt)
+    {
+        if (evt.NewState == InGameState.Prepare)
+            RestartAllBackgrounds();
+    }
+    
+
     public void RegisterSceneBackgrounds()
     {
         backgrounds.Clear();
