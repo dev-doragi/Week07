@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 // ================================================================
@@ -23,11 +24,23 @@ public class GridManager : Singleton<GridManager>
     [SerializeField] private float _cellSize = 1f;
     [SerializeField] private Vector3 _origin = Vector3.zero; // 그리드 (0,0)의 월드 위치
 
+    [Header("Placement Failure Feedback")]
+    [SerializeField] private TMP_FontAsset _failureTextFont;
+    [SerializeField, Min(0f)] private float _failureFeedbackCooldown = 0.5f;
+    [SerializeField] private Color _capacityFailureTextColor = Color.red;
+    [SerializeField, Min(0.1f)] private float _capacityFailureTextSize = 2f;
+    [SerializeField] private Color _resourceFailureTextColor = Color.red;
+    [SerializeField, Min(0.1f)] private float _resourceFailureTextSize = 2f;
+    [SerializeField, Min(1f)] private float _uiFailureTextSizeMultiplier = 10f;
+    [SerializeField, Min(0.1f)] private float _failureTextDuration = 0.75f;
+    [SerializeField] private float _failureTextRiseDistance = 0.6f;
+
     // ==========================================
     // 내부 상태
     // ==========================================
     private PlacedUnit[,] _cells;
     private Rigidbody2D _rb;
+    private float _lastFailureFeedbackTime = -999f;
 
     private readonly Vector2Int[] _fourDirections =
     {
@@ -196,7 +209,12 @@ public class GridManager : Singleton<GridManager>
             if (CurrentUnitCount >= MaxCapacity)
             {
                 Debug.Log($"[GridManager] 수용량 초과 | {CurrentUnitCount}/{MaxCapacity}");
-                CameraManager.Instance?.ShakeWeak();
+                ShowPlacementFailureFeedback(
+                    "수용량 초과",
+                    data,
+                    origin,
+                    _capacityFailureTextColor,
+                    _capacityFailureTextSize);
                 return false;
             }
         }
@@ -207,7 +225,12 @@ public class GridManager : Singleton<GridManager>
             if (!ResourceManager.Instance.SubtractMouseCount(data.Cost))
             {
                 Debug.Log($"[GridManager] {data.UnitName} 배치 실패 | 보유: {before} / 필요: {data.Cost}");
-                CameraManager.Instance?.ShakeWeak();
+                ShowPlacementFailureFeedback(
+                    "자원 부족",
+                    data,
+                    origin,
+                    _resourceFailureTextColor,
+                    _resourceFailureTextSize);
                 return false;
             }
             Debug.Log($"[GridManager] {data.UnitName} 배치 완료 | 사용: {data.Cost} | {before} → {ResourceManager.Instance.CurrentMouse}");
@@ -282,6 +305,160 @@ public class GridManager : Singleton<GridManager>
             0f);
     }
 
+    private void ShowPlacementFailureFeedback(string message, UnitDataSO data, Vector2Int origin, Color color, float fontSize)
+    {
+        ShowFailureFeedback(message, FootprintCenter(data, origin), color, fontSize);
+    }
+
+    public void ShowResourceFailureFeedback(Vector3 worldPosition)
+    {
+        ShowFailureFeedback("자원 부족", worldPosition, _resourceFailureTextColor, _resourceFailureTextSize);
+    }
+
+    public void ShowResourceFailureFeedback(Vector2 screenPosition)
+    {
+        ShowUiFailureFeedback("자원 부족", screenPosition, _resourceFailureTextColor, _resourceFailureTextSize);
+    }
+
+    private void ShowFailureFeedback(string message, Vector3 worldPosition, Color color, float fontSize)
+    {
+        if (!TryBeginFailureFeedback()) return;
+        StartCoroutine(PlacementFailureTextRoutine(message, worldPosition, color, fontSize));
+    }
+
+    private void ShowUiFailureFeedback(string message, Vector2 screenPosition, Color color, float fontSize)
+    {
+        if (!TryBeginFailureFeedback()) return;
+
+        Canvas canvas = ResolveFeedbackCanvas();
+        if (canvas == null)
+        {
+            StartCoroutine(PlacementFailureTextRoutine(message, Vector3.zero, color, fontSize));
+            return;
+        }
+
+        StartCoroutine(UiFailureTextRoutine(message, screenPosition, color, fontSize, canvas));
+    }
+
+    private bool TryBeginFailureFeedback()
+    {
+        if (Time.unscaledTime - _lastFailureFeedbackTime < _failureFeedbackCooldown) return false;
+
+        _lastFailureFeedbackTime = Time.unscaledTime;
+        CameraManager.Instance?.ShakeWeak();
+        return true;
+    }
+
+    private Canvas ResolveFeedbackCanvas()
+    {
+        Canvas[] canvases = FindObjectsByType<Canvas>(FindObjectsSortMode.None);
+        Canvas best = null;
+
+        for (int i = 0; i < canvases.Length; i++)
+        {
+            Canvas canvas = canvases[i];
+            if (canvas == null || !canvas.isActiveAndEnabled || !canvas.isRootCanvas) continue;
+
+            if (best == null
+                || canvas.renderMode == RenderMode.ScreenSpaceOverlay && best.renderMode != RenderMode.ScreenSpaceOverlay
+                || canvas.sortingOrder > best.sortingOrder)
+            {
+                best = canvas;
+            }
+        }
+
+        return best;
+    }
+
+    private IEnumerator PlacementFailureTextRoutine(string message, Vector3 worldPosition, Color textColor, float fontSize)
+    {
+        var go = new GameObject("PlacementFailureText");
+        go.transform.SetParent(transform, true);
+        go.transform.position = worldPosition;
+
+        var text = go.AddComponent<TextMeshPro>();
+        if (_failureTextFont != null)
+            text.font = _failureTextFont;
+
+        text.text = message;
+        text.color = textColor;
+        text.fontSize = fontSize;
+        text.alignment = TextAlignmentOptions.Center;
+        text.enableWordWrapping = false;
+
+        var renderer = text.GetComponent<MeshRenderer>();
+        if (renderer != null)
+            renderer.sortingOrder = 100;
+
+        Vector3 start = worldPosition;
+        Vector3 end = worldPosition + Vector3.up * _failureTextRiseDistance;
+        float elapsed = 0f;
+
+        while (elapsed < _failureTextDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / _failureTextDuration);
+            go.transform.position = Vector3.Lerp(start, end, t);
+
+            Color fadeColor = textColor;
+            fadeColor.a *= 1f - t;
+            text.color = fadeColor;
+
+            yield return null;
+        }
+
+        Destroy(go);
+    }
+
+    private IEnumerator UiFailureTextRoutine(string message, Vector2 screenPosition, Color textColor, float fontSize, Canvas canvas)
+    {
+        var go = new GameObject("PlacementFailureUIText", typeof(RectTransform));
+        go.transform.SetParent(canvas.transform, false);
+        go.transform.SetAsLastSibling();
+
+        var rect = go.GetComponent<RectTransform>();
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.sizeDelta = new Vector2(360f, 90f);
+
+        RectTransform canvasRect = canvas.transform as RectTransform;
+        Camera eventCamera = canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera;
+        if (canvasRect != null
+            && RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, screenPosition, eventCamera, out Vector2 localPoint))
+        {
+            rect.anchoredPosition = localPoint;
+        }
+
+        var text = go.AddComponent<TextMeshProUGUI>();
+        if (_failureTextFont != null)
+            text.font = _failureTextFont;
+
+        text.text = message;
+        text.color = textColor;
+        text.fontSize = fontSize * _uiFailureTextSizeMultiplier;
+        text.alignment = TextAlignmentOptions.Center;
+        text.enableWordWrapping = false;
+        text.raycastTarget = false;
+
+        Vector2 start = rect.anchoredPosition;
+        Vector2 end = start + Vector2.up * (_failureTextRiseDistance * 80f);
+        float elapsed = 0f;
+
+        while (elapsed < _failureTextDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / _failureTextDuration);
+            rect.anchoredPosition = Vector2.Lerp(start, end, t);
+
+            Color fadeColor = textColor;
+            fadeColor.a *= 1f - t;
+            text.color = fadeColor;
+
+            yield return null;
+        }
+
+        Destroy(go);
+    }
+
     //수용량 헬퍼 메서드
     private int SumWheelCapacities()
     {
@@ -322,11 +499,16 @@ public class GridManager : Singleton<GridManager>
     private void CreateAndRegister(UnitDataSO data, Vector2Int origin)
     {
         var instance = Instantiate(data.Prefab, FootprintCenter(data, origin), Quaternion.identity, transform);
+        var unit = instance.GetComponentInChildren<Unit>();
 
         float targetW = data.Size.x * _cellSize;
         float targetH = data.Size.y * _cellSize;
 
         var sr = instance.GetComponent<SpriteRenderer>();
+        if (sr == null && unit != null)
+        {
+            sr = unit.BaseRenderer;
+        }
         if (sr != null && sr.sprite != null)
         {
             var natural = sr.sprite.bounds.size;
@@ -344,7 +526,6 @@ public class GridManager : Singleton<GridManager>
             for (int y = 0; y < data.Size.y; y++)
                 _cells[origin.x + x, origin.y + y] = placed;
 
-        var unit = instance.GetComponentInChildren<Unit>();
         if (unit != null)
         {
             unit.InitializeRuntime();

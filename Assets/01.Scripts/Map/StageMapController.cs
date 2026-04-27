@@ -1,6 +1,11 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 [DefaultExecutionOrder(-80)]
 public class StageMapController : MonoBehaviour
@@ -14,9 +19,19 @@ public class StageMapController : MonoBehaviour
     [Header("Runtime UI")]
     [SerializeField] private Canvas _targetCanvas;
     [SerializeField] private RectTransform _mapRoot;
+    [SerializeField] private RectTransform _inputBlockerRoot;
+    [SerializeField] private RectTransform _backgroundRoot;
+    [SerializeField] private RectTransform _lineRoot;
+    [SerializeField] private RectTransform _nodeRoot;
+    [SerializeField] private TextMeshProUGUI _titleText;
     [SerializeField] private GameObject _doctrinePanelPrefab;
     [SerializeField] private RectTransform _doctrinePanelRoot;
     [SerializeField] private Vector2 _mapSize = new Vector2(1280f, 600f);
+    [SerializeField] private bool _autoCreateMapHierarchy = true;
+    [SerializeField] private bool _refreshExistingMapVisuals = true;
+    [SerializeField] private bool _useHierarchyNodePositions = true;
+    [SerializeField] private bool _saveHierarchyNodePositions = true;
+    [SerializeField] private List<StageMapNodeLayoutOverride> _nodeLayoutOverrides = new List<StageMapNodeLayoutOverride>();
 
     [Header("Random Route")]
     [SerializeField] private bool _randomizeRewardOnStart = true;
@@ -36,6 +51,9 @@ public class StageMapController : MonoBehaviour
     [SerializeField] private Color _availableNodeColor = new Color(0.92f, 0.92f, 0.92f, 1f);
     [SerializeField] private Color _selectedNodeColor = new Color(0.3f, 0.85f, 0.4f, 1f);
     [SerializeField] private Color _finalNodeColor = new Color(1f, 0.28f, 0.33f, 1f);
+    [SerializeField] private Color _titleTextColor = Color.white;
+    [SerializeField] private int _titleFontSize = 42;
+    [SerializeField] private TMP_FontAsset _titleFontAsset;
 
     private readonly Dictionary<string, Button> _buttons = new Dictionary<string, Button>();
     private readonly Dictionary<string, RuntimeNode> _runtimeNodes = new Dictionary<string, RuntimeNode>();
@@ -46,6 +64,13 @@ public class StageMapController : MonoBehaviour
     private bool _isMapVisible;
     private bool _hasPausedTimeScale;
     private float _timeScaleBeforeMap = 1f;
+
+    [System.Serializable]
+    private class StageMapNodeLayoutOverride
+    {
+        public string NodeId;
+        public Vector2 AnchoredPosition;
+    }
 
     private class RuntimeNode
     {
@@ -67,6 +92,18 @@ public class StageMapController : MonoBehaviour
     private void OnValidate()
     {
         EnsureRandomizeSettingsInitialized();
+
+#if UNITY_EDITOR
+        if (_titleFontAsset == null)
+        {
+            string[] guids = AssetDatabase.FindAssets("Galmuri9 t:TMP_FontAsset");
+            if (guids != null && guids.Length > 0)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guids[0]);
+                _titleFontAsset = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(path);
+            }
+        }
+#endif
     }
 
     private void OnEnable()
@@ -156,6 +193,7 @@ public class StageMapController : MonoBehaviour
         EnsureCanvas();
         EnsureMapRoot();
         EnsureDoctrinePanel();
+        EnsureMapHierarchy();
         BuildRuntimeRoute();
         UnlockManager unlockManager = FindFirstObjectByType<UnlockManager>(FindObjectsInactive.Include);
         if (unlockManager != null)
@@ -184,7 +222,7 @@ public class StageMapController : MonoBehaviour
         return node != null && node.NextNodeIds.Count > 0;
     }
 
-    private void BuildRuntimeRoute()
+    private void BuildRuntimeRoute(bool allowRandomize = true)
     {
         _runtimeNodes.Clear();
         _runtimeNodeList.Clear();
@@ -210,7 +248,11 @@ public class StageMapController : MonoBehaviour
             _runtimeNodeList.Add(node);
         }
 
-        if (_randomizeRewardOnStart)
+        bool appliedSavedLayout = ApplySavedNodeLayoutOverrides();
+        bool appliedHierarchyLayout = ApplyHierarchyNodePositions();
+        bool appliedCustomLayout = appliedSavedLayout || appliedHierarchyLayout;
+
+        if (allowRandomize && _randomizeRewardOnStart)
         {
             if (_routeData.UnlockableRatUnits != null && _routeData.UnlockableRatUnits.Count > 0)
             {
@@ -223,8 +265,120 @@ public class StageMapController : MonoBehaviour
 
         }
 
-        if (_randomizePathOnStart)
+        if (allowRandomize && _randomizePathOnStart && !appliedCustomLayout)
             RandomizePositionsAndConnections();
+    }
+
+    private bool ApplyHierarchyNodePositions()
+    {
+        if (!_useHierarchyNodePositions || _nodeRoot == null)
+            return false;
+
+        bool appliedAny = false;
+        for (int i = 0; i < _runtimeNodeList.Count; i++)
+        {
+            RuntimeNode node = _runtimeNodeList[i];
+            if (node == null)
+                continue;
+
+            Transform existing = _nodeRoot.Find(node.NodeId);
+            RectTransform rect = existing as RectTransform;
+            if (rect == null)
+                continue;
+
+            node.Position = AnchoredToMap(rect.anchoredPosition);
+            appliedAny = true;
+        }
+
+        return appliedAny;
+    }
+
+    private bool ApplySavedNodeLayoutOverrides()
+    {
+        if (_nodeLayoutOverrides == null || _nodeLayoutOverrides.Count == 0)
+            return false;
+
+        bool appliedAny = false;
+        for (int i = 0; i < _runtimeNodeList.Count; i++)
+        {
+            RuntimeNode node = _runtimeNodeList[i];
+            if (node == null)
+                continue;
+
+            if (!TryGetSavedNodeLayout(node.NodeId, out Vector2 anchoredPosition))
+                continue;
+
+            node.Position = AnchoredToMap(anchoredPosition);
+            appliedAny = true;
+        }
+
+        return appliedAny;
+    }
+
+    private bool CaptureHierarchyNodeLayout()
+    {
+        if (!_saveHierarchyNodePositions || _routeData == null || _nodeRoot == null)
+            return false;
+
+        bool capturedAny = false;
+        IReadOnlyList<StageMapNodeData> sourceNodes = _routeData.Nodes;
+        for (int i = 0; i < sourceNodes.Count; i++)
+        {
+            StageMapNodeData source = sourceNodes[i];
+            if (source == null || string.IsNullOrEmpty(source.NodeId))
+                continue;
+
+            Transform existing = _nodeRoot.Find(source.NodeId);
+            RectTransform rect = existing as RectTransform;
+            if (rect == null)
+                continue;
+
+            SetSavedNodeLayout(source.NodeId, rect.anchoredPosition);
+            capturedAny = true;
+        }
+
+        return capturedAny;
+    }
+
+    private bool TryGetSavedNodeLayout(string nodeId, out Vector2 anchoredPosition)
+    {
+        if (_nodeLayoutOverrides != null)
+        {
+            for (int i = 0; i < _nodeLayoutOverrides.Count; i++)
+            {
+                StageMapNodeLayoutOverride nodeLayout = _nodeLayoutOverrides[i];
+                if (nodeLayout == null || nodeLayout.NodeId != nodeId)
+                    continue;
+
+                anchoredPosition = nodeLayout.AnchoredPosition;
+                return true;
+            }
+        }
+
+        anchoredPosition = Vector2.zero;
+        return false;
+    }
+
+    private void SetSavedNodeLayout(string nodeId, Vector2 anchoredPosition)
+    {
+        if (_nodeLayoutOverrides == null)
+            _nodeLayoutOverrides = new List<StageMapNodeLayoutOverride>();
+
+        for (int i = 0; i < _nodeLayoutOverrides.Count; i++)
+        {
+            StageMapNodeLayoutOverride nodeLayout = _nodeLayoutOverrides[i];
+            if (nodeLayout == null || nodeLayout.NodeId != nodeId)
+                continue;
+
+            nodeLayout.AnchoredPosition = anchoredPosition;
+            return;
+        }
+
+        _nodeLayoutOverrides.Add(new StageMapNodeLayoutOverride
+        {
+            NodeId = nodeId,
+            AnchoredPosition = anchoredPosition
+        });
     }
 
     private void RandomizeRewards()
@@ -468,24 +622,35 @@ public class StageMapController : MonoBehaviour
 
     private void BuildMap()
     {
-        ClearChildren(_mapRoot);
+        EnsureMapHierarchy();
+
+        if (_lineRoot == null || _nodeRoot == null || _inputBlockerRoot == null || _backgroundRoot == null)
+        {
+            Debug.LogWarning("[StageMap] Map hierarchy is not assigned.");
+            return;
+        }
+
+        if (CaptureHierarchyNodeLayout())
+        {
+            ApplySavedNodeLayoutOverrides();
+            MarkLayoutDirty();
+        }
+
+        ClearChildren(_lineRoot);
+        ClearChildren(_nodeRoot);
         _buttons.Clear();
 
-        RectTransform inputBlockerRoot = CreateChild("InputBlocker", _mapRoot).GetComponent<RectTransform>();
-        RectTransform backgroundRoot = CreateChild("Background", _mapRoot).GetComponent<RectTransform>();
-        RectTransform lineRoot = CreateChild("Lines", _mapRoot).GetComponent<RectTransform>();
-        RectTransform nodeRoot = CreateChild("Nodes", _mapRoot).GetComponent<RectTransform>();
-        Stretch(inputBlockerRoot);
-        StretchWithPadding(backgroundRoot, 300f);
-        Stretch(lineRoot);
-        Stretch(nodeRoot);
-
-        Image inputBlocker = inputBlockerRoot.gameObject.AddComponent<Image>();
+        Image inputBlocker = GetOrAddComponent<Image>(_inputBlockerRoot.gameObject);
         inputBlocker.color = Color.clear;
         inputBlocker.raycastTarget = true;
 
-        Image background = backgroundRoot.gameObject.AddComponent<Image>();
-        background.color = _backgroundColor;
+        bool hadBackgroundImage = _backgroundRoot.TryGetComponent(out Image background);
+        if (!hadBackgroundImage)
+        {
+            background = _backgroundRoot.gameObject.AddComponent<Image>();
+            background.color = _backgroundColor;
+        }
+
         background.raycastTarget = true;
 
         IReadOnlyList<RuntimeNode> nodes = _runtimeNodeList;
@@ -498,7 +663,7 @@ public class StageMapController : MonoBehaviour
             {
                 RuntimeNode to = GetRuntimeNode(from.NextNodeIds[j]);
                 if (to != null)
-                    CreateLine(lineRoot, MapToAnchored(from.Position), MapToAnchored(to.Position));
+                    CreateLine(_lineRoot, MapToAnchored(from.Position), MapToAnchored(to.Position));
             }
         }
 
@@ -506,10 +671,64 @@ public class StageMapController : MonoBehaviour
         {
             RuntimeNode node = nodes[i];
             if (node != null)
-                CreateNodeButton(nodeRoot, node);
+                CreateNodeButton(_nodeRoot, node);
         }
 
         RefreshNodeStates();
+    }
+
+    [ContextMenu("Build Editable Stage Map Hierarchy")]
+    private void BuildEditableStageMapHierarchy()
+    {
+        EnsureCanvas();
+        EnsureMapRoot();
+        EnsureMapHierarchy();
+
+        if (_routeData != null)
+        {
+            BuildRuntimeRoute(false);
+            BuildMap();
+        }
+    }
+
+    [ContextMenu("Capture Stage Map Node Layout From Hierarchy")]
+    private void CaptureStageMapNodeLayoutFromHierarchy()
+    {
+        EnsureMapHierarchy();
+        if (CaptureHierarchyNodeLayout())
+            MarkLayoutDirty();
+    }
+
+    private void EnsureMapHierarchy()
+    {
+        if (!_autoCreateMapHierarchy)
+            return;
+
+        _inputBlockerRoot = ResolveOrCreateRect(_mapRoot, _inputBlockerRoot, "InputBlocker", out _);
+        _backgroundRoot = ResolveOrCreateRect(_mapRoot, _backgroundRoot, "Background", out bool createdBackground);
+        _lineRoot = ResolveOrCreateRect(_mapRoot, _lineRoot, "Lines", out _);
+        _nodeRoot = ResolveOrCreateRect(_mapRoot, _nodeRoot, "Nodes", out _);
+        _titleText = ResolveOrCreateTitle(_mapRoot, out bool createdTitle);
+
+        if (!_refreshExistingMapVisuals)
+            return;
+
+        Stretch(_inputBlockerRoot);
+        Stretch(_lineRoot);
+        Stretch(_nodeRoot);
+
+        // Scene-authored Background and Title values should survive play mode.
+        if (createdBackground)
+            StretchWithPadding(_backgroundRoot, 300f);
+
+        if (createdTitle)
+            ConfigureTitle(_titleText);
+
+        _inputBlockerRoot.SetAsFirstSibling();
+        _backgroundRoot.SetSiblingIndex(1);
+        _lineRoot.SetSiblingIndex(2);
+        _nodeRoot.SetSiblingIndex(3);
+        _titleText.transform.SetAsLastSibling();
     }
 
     private void CreateNodeButton(RectTransform parent, RuntimeNode node)
@@ -705,6 +924,16 @@ public class StageMapController : MonoBehaviour
             (normalized.y - 0.5f) * _mapSize.y);
     }
 
+    private Vector2 AnchoredToMap(Vector2 anchored)
+    {
+        if (_mapSize.x <= 0.01f || _mapSize.y <= 0.01f)
+            return new Vector2(0.5f, 0.5f);
+
+        return new Vector2(
+            Mathf.Clamp01((anchored.x / _mapSize.x) + 0.5f),
+            Mathf.Clamp01((anchored.y / _mapSize.y) + 0.5f));
+    }
+
     private void CreateLine(RectTransform parent, Vector2 from, Vector2 to)
     {
         GameObject obj = CreateChild("Line", parent);
@@ -730,6 +959,77 @@ public class StageMapController : MonoBehaviour
         return obj;
     }
 
+    private RectTransform ResolveOrCreateRect(RectTransform parent, RectTransform current, string childName, out bool created)
+    {
+        created = false;
+
+        if (current != null)
+            return current;
+
+        Transform existing = parent != null ? parent.Find(childName) : null;
+        if (existing != null)
+            return existing as RectTransform;
+
+        created = true;
+        return CreateChild(childName, parent).GetComponent<RectTransform>();
+    }
+
+    private TextMeshProUGUI ResolveOrCreateTitle(RectTransform parent, out bool created)
+    {
+        created = false;
+
+        if (_titleText != null)
+            return _titleText;
+
+        Transform existing = parent != null ? parent.Find("StageMapTitle") : null;
+        if (existing != null && existing.TryGetComponent(out TextMeshProUGUI existingTitle))
+            return existingTitle;
+
+        GameObject titleObj = CreateChild("StageMapTitle", parent);
+        created = true;
+        return titleObj.AddComponent<TextMeshProUGUI>();
+    }
+
+    private void ConfigureTitle(TextMeshProUGUI title)
+    {
+        if (title == null)
+            return;
+
+        RectTransform rect = title.rectTransform;
+        rect.anchorMin = new Vector2(0.5f, 1f);
+        rect.anchorMax = new Vector2(0.5f, 1f);
+        rect.pivot = new Vector2(0.5f, 1f);
+        rect.anchoredPosition = new Vector2(0f, -36f);
+        rect.sizeDelta = new Vector2(900f, 72f);
+
+        title.text = "지도에서 다음 스테이지 선택";
+        title.alignment = TextAlignmentOptions.Center;
+        title.fontSize = _titleFontSize;
+        title.color = _titleTextColor;
+        title.raycastTarget = false;
+        if (_titleFontAsset != null)
+            title.font = _titleFontAsset;
+    }
+
+    private static T GetOrAddComponent<T>(GameObject target) where T : Component
+    {
+        if (target.TryGetComponent(out T component))
+            return component;
+
+        return target.AddComponent<T>();
+    }
+
+    private void MarkLayoutDirty()
+    {
+#if UNITY_EDITOR
+        if (Application.isPlaying)
+            return;
+
+        EditorUtility.SetDirty(this);
+        UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(gameObject.scene);
+#endif
+    }
+
     private static void Stretch(RectTransform rect)
     {
         rect.anchorMin = Vector2.zero;
@@ -748,8 +1048,17 @@ public class StageMapController : MonoBehaviour
 
     private static void ClearChildren(Transform parent)
     {
+        if (parent == null)
+            return;
+
         for (int i = parent.childCount - 1; i >= 0; i--)
-            Destroy(parent.GetChild(i).gameObject);
+        {
+            GameObject child = parent.GetChild(i).gameObject;
+            if (Application.isPlaying)
+                Destroy(child);
+            else
+                DestroyImmediate(child);
+        }
     }
 
     private void EnsureRandomizeSettingsInitialized()

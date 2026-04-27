@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Ram_Node_4
   m_EditorClassIdentifier: Assembly-CSharp::DoctrineNodeData
   nodeId: 15
-  nodeName: 1
+  nodeName: "\uB9C8\uC9C0\uB9C9 \uAC00\uB974\uCE68"
   description: "\uC2E0\uC758 \uAC00\uB974\uCE68\uC744 \uBC1B\uC544\uB4E4\uC5EC\uB77C!"
   doctrineType: 2
   rowIndex: 4

@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 /// <summary>
@@ -16,6 +17,8 @@ public class StageLayout : MonoBehaviour
 
     private GameObject _currentEnemySiege;
     public GameObject CurrentEnemySiege => _currentEnemySiege;
+
+    private Coroutine _entranceRoutine;
 
     private void Awake()
     {
@@ -48,6 +51,7 @@ public class StageLayout : MonoBehaviour
             Destroy(_currentEnemySiege);
         }
 
+        
         _currentEnemySiege = Instantiate(
             waveData.EnemySiegePrefab,
             _enemySiegePoint.position,
@@ -74,8 +78,34 @@ public class StageLayout : MonoBehaviour
         {
             enemyGrid.RegisterExistingUnitsFromChildren();
         }
+        float offscreenX = Camera.main.orthographicSize * Camera.main.aspect * 1.2f;
+        _currentEnemySiege.transform.position += Vector3.right * offscreenX;
 
+        if(_entranceRoutine != null) StopCoroutine(_entranceRoutine);
+        _entranceRoutine = StartCoroutine(EnemyEntranceRoutine(_currentEnemySiege, _enemySiegePoint.position));
         Debug.Log($"[StageLayout] Enemy spawned: {waveData.EnemySiegePrefab.name} at {_enemySiegePoint.position} / total units: {units.Length}");
+    }
+
+    private IEnumerator EnemyEntranceRoutine(GameObject enemy, Vector3 targetPos)
+    {
+        float duration = 2f;
+        Vector3 startPos = enemy.transform.position;
+        float elapsed = 0f;
+
+        while(elapsed < duration)
+        {
+            if(enemy == null) yield break;
+
+            elapsed += Time.deltaTime;
+            float t = 1f - Mathf.Pow(1f - Mathf.Clamp01(elapsed / duration), 2f);
+            enemy.transform.position = Vector3.Lerp(startPos, targetPos, t);
+            yield return null;
+        }
+
+        if(enemy != null)
+            enemy.transform.position = targetPos;
+
+        _entranceRoutine = null;
     }
 
     /// <summary>
@@ -91,6 +121,7 @@ public class StageLayout : MonoBehaviour
 
     private void OnDestroy()
     {
+        if(_entranceRoutine != null) StopCoroutine(_entranceRoutine);
         if (_currentEnemySiege != null)
         {
             Destroy(_currentEnemySiege);

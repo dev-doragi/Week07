@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Ritual_Node_3
   m_EditorClassIdentifier: Assembly-CSharp::DoctrineNodeData
   nodeId: 9
-  nodeName: 1
+  nodeName: "\uB124 \uBC88\uC9F8 \uAE30\uB3C4"
   description: "\uC950\uC758 \uC2E0\uC774\uC2DC\uC5EC! \uC6B0\uB9AC\uC758 \uBD80\uB984\uC5D0
     \uC751\uB2F5\uD574 \uC8FC\uC2DC\uC635\uC18C\uC11C!"
   doctrineType: 1

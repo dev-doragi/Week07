@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Ritual_Node_0
   m_EditorClassIdentifier: Assembly-CSharp::DoctrineNodeData
   nodeId: 6
-  nodeName: 1
+  nodeName: "\uCCAB \uBC88\uC9F8 \uAE30\uB3C4"
   description: "\uC950\uC758 \uC2E0\uC774\uC2DC\uC5EC! \uC2E0\uB3C4\uB4E4\uC744 \uB354
     \uB0B4\uB824\uC8FC\uC2DC\uC635\uC18C\uC11C!"
   doctrineType: 1
@@ -21,4 +21,5 @@ MonoBehaviour:
   columnIndex: 1
   effectId: Ritual_Node_0
   effectSummary: "\uC0C8\uB85C\uC6B4 \uC758\uC2DD \uAE30\uC220 \uD574\uAE08 : \uC950
-    \uC0DD\uC0B0 \uC2DC\uC124 \uBF51\uAE30\n\uC18C\uBAA8\uB7C9 : 100"
+    \uC0DD\uC0B0 \uC2DC\uC124 \uBF51\uAE30\n\uC18C\uBAA8\uB7C9 : 100 / \uB79C\uB364\uD55C
+    \uC0DD\uC0B0 \uC2DC\uC124\uC744 \uD558\uB098 \uBF51\uC2B5\uB2C8\uB2E4."

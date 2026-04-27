@@ -13,11 +13,14 @@ MonoBehaviour:
   m_Name: Tower_Node_2
   m_EditorClassIdentifier: Assembly-CSharp::DoctrineNodeData
   nodeId: 3
-  nodeName: 1
+  nodeName: "\uC2E0\uB3C4\uC758 \uBCF8\uBCF4\uAE30"
   description: "\uBCF4\uC544\uB77C. \uD5D8\uB09C\uD55C \uACE0\uD589\uC744 \uB118\uC5B4\uC120
     \uC950\uB4E4\uC774\uB2E4."
   doctrineType: 0
   rowIndex: 2
   columnIndex: 0
   effectId: Tower_Node_2
-  effectSummary: "\uC0C1\uC704 \uACF5\uACA9 \uD0C0\uC6CC \uD574\uAE08"
+  effectSummary: "\uC0C1\uC704 \uACF5\uACA9 \uD0C0\uC6CC \uD574\uAE08\n\uD3ED\uBC1C\uD615
+    \uC9C1\uC120 \uD22C\uC0AC\uCCB4\uB97C \uB358\uC9C0\uB294 \uC950 / \uAD00\uD1B5\uD615
+    \uBBF8\uC0AC\uC77C\uC744 \uB358\uC9C0\uB294 \uC950 / \uBE60\uB978 \uACF5\uACA9\uC18D\uB3C4\uB97C
+    \uAC00\uC9C4 \uC950"

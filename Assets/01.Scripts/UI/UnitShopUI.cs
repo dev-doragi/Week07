@@ -24,6 +24,13 @@ public class UnitShopUI : MonoBehaviour
     [SerializeField] private List<UnitDataSO> _allUnits;
     [SerializeField] private TextMeshProUGUI _capacityText;     //수용량 텍스트 UI
 
+    [Header("Capacity Text")]
+    [SerializeField] private Color _capacityNormalColor = Color.white;
+    [SerializeField] private Color _capacityFullColor = Color.red;
+
+    [Header("Tooltip")]
+    [SerializeField] private UnitTooltipUI _tooltip;
+
     [Header("Slide Settings")]
     [SerializeField] private float _slideDuration = 0.25f;
     [SerializeField] private float _panelOpenX = 80f;
@@ -79,12 +86,18 @@ public class UnitShopUI : MonoBehaviour
         _attackBtn.onClick.AddListener(() => OnCategoryClicked(UnitCategory.Attack));
         _defenseBtn.onClick.AddListener(() => OnCategoryClicked(UnitCategory.Defense));
         _supportBtn.onClick.AddListener(() => OnCategoryClicked(UnitCategory.Support));
+
+        UpdateCapacityText();
     }
 
     private void UpdateCapacityText()
     {
-        if(_capacityText != null && GridManager.Instance != null)
-            _capacityText.text = $"{GridManager.Instance.CurrentUnitCount} / {GridManager.Instance.MaxCapacity}";
+        if(_capacityText == null || GridManager.Instance == null) return;
+
+        int current = GridManager.Instance.CurrentUnitCount;
+        int max = GridManager.Instance.MaxCapacity;
+        _capacityText.text = $"{current} / {max}";
+        _capacityText.color = current >= max ? _capacityFullColor : _capacityNormalColor;
     }
 
     private void OnCategoryClicked(UnitCategory category)
@@ -115,7 +128,7 @@ public class UnitShopUI : MonoBehaviour
                 if(data.Category != UnitCategory.Wheel) continue;
                 if(data.PlacementRule == PlacementRule.InitialOnly) continue;
                 var card = Instantiate(_cardPrefab, _cardContainer);
-                card.Setup(data, OnUnitSelected, IsUnlocked(data));
+                card.Setup(data, OnUnitSelected, _tooltip);
             }
         }
 
@@ -123,7 +136,7 @@ public class UnitShopUI : MonoBehaviour
         {
             if (data.Category != category) continue;
             var card = Instantiate(_cardPrefab, _cardContainer);
-            card.Setup(data, OnUnitSelected, IsUnlocked(data));
+            card.Setup(data, OnUnitSelected, _tooltip, IsUnlocked(data));
         }
     }
 

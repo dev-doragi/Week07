@@ -25,6 +25,7 @@ public class SiegeChargeHandler : MonoBehaviour
 
     [Header("Damage")]
     [SerializeField, Range(0f, 1f)] private float _penetration = 0f;
+    [SerializeField, Range(0f, 1f)] private float _attackCategoryDamageMultiplier = 0.3f;
 
     [Header("Doctrine - Ram")]
     [SerializeField, Range(0f, 1f)] private float _doctrineEnemyCollisionPowerReductionPercent = 0f;
@@ -200,18 +201,25 @@ public class SiegeChargeHandler : MonoBehaviour
             return;
         }
 
-        var hitData = new DamageData
-        {
-            Damage       = totalDamage * 1.5f,
-            AttackerTeam = attackerTeam,
-            HitPoint     = Vector2.zero,
-            IsPiercing   = _penetration >= 1f
-        };
+        float baseDamagePerUnit = totalDamage * 1.5f;
 
         int damageCount = 0;
         foreach (Unit unit in targets)
         {
             if (unit == null || unit.IsDead) continue;
+
+            float finalDamage = baseDamagePerUnit;
+            if (unit.Data != null && unit.Data.Category == UnitCategory.Attack)
+                finalDamage *= _attackCategoryDamageMultiplier;
+
+            var hitData = new DamageData
+            {
+                Damage       = finalDamage,
+                AttackerTeam = attackerTeam,
+                HitPoint     = Vector2.zero,
+                IsPiercing   = _penetration >= 1f
+            };
+
             unit.TakeDamage(hitData);
             damageCount++;
         }
