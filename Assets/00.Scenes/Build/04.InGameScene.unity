@@ -2236,7 +2236,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2e5a822822c9c0449efc43bcb74a2fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SiegeSaveLoader
-  _isDontDestroyOnLoad: 1
 --- !u!4 &443572060
 Transform:
   m_ObjectHideFlags: 0
@@ -4326,6 +4325,10 @@ PrefabInstance:
       propertyPath: _mapSize.y
       value: 600
       objectReference: {fileID: 0}
+    - target: {fileID: 5701285067502101643, guid: 7c499f19c34edce40a8a4f4fdbd124e9, type: 3}
+      propertyPath: _routeData
+      value: 
+      objectReference: {fileID: 11400000, guid: 4f89bb7d10ee72649aabbc9a5ac6d0de, type: 2}
     - target: {fileID: 5701285067502101643, guid: 7c499f19c34edce40a8a4f4fdbd124e9, type: 3}
       propertyPath: _titleText
       value: 
