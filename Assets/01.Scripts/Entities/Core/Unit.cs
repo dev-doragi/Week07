@@ -137,7 +137,7 @@ public class Unit : MonoBehaviour, IDamageable
                 _animator?.PlayIdle();
                 break;
             case UnitState.Attack:
-                _animator?.PlayAttack();
+                //_animator?.PlayAttack();
                 // 공격 상태 진입 시의 로직은 EntityAttacker의 루프에서 처리됨
                 break;
             case UnitState.Stun:
