@@ -21,6 +21,7 @@ public class GaugeController : MonoBehaviour
     private float _currentGauge = 0f;
     private bool _isGaugeFull = false;
     private bool _isPaused = false;
+    private bool _isWaveActive = false; // 웨이브 진행 중 플래그
     private float _maxGaugeWidth;
     private float _gaugeGainMultiplier = 1f;
 
@@ -36,6 +37,8 @@ public class GaugeController : MonoBehaviour
         UpdateGaugeUI();
 
         EventBus.Instance?.Subscribe<EnemyHitEvent>(OnEnemyHit);
+        EventBus.Instance?.Subscribe<WaveStartedEvent>(OnWaveStarted);
+        EventBus.Instance?.Subscribe<WaveEndedEvent>(OnWaveEnded);
     }
 
     private void OnDisable()
@@ -44,6 +47,8 @@ public class GaugeController : MonoBehaviour
             _button.onClick.RemoveListener(HandleButtonClick);
 
         EventBus.Instance?.Unsubscribe<EnemyHitEvent>(OnEnemyHit);
+        EventBus.Instance?.Unsubscribe<WaveStartedEvent>(OnWaveStarted);
+        EventBus.Instance?.Unsubscribe<WaveEndedEvent>(OnWaveEnded);
     }
 
     private void Awake()
@@ -53,6 +58,7 @@ public class GaugeController : MonoBehaviour
 
         _currentGauge = 0f;
         _isGaugeFull = false;
+        _isWaveActive = false;
         if (_button != null)
             _button.interactable = false;
 
@@ -84,9 +90,35 @@ public class GaugeController : MonoBehaviour
         OnHit();
     }
 
+    /// <summary>
+    /// 웨이브 시작 - 차지 허용 시작
+    /// </summary>
+    private void OnWaveStarted(WaveStartedEvent evt)
+    {
+        _isWaveActive = true;
+        // 게이지가 찼으면 버튼 활성화
+        if (_isGaugeFull && _button != null)
+            _button.interactable = true;
+    }
+
+    /// <summary>
+    /// 웨이브 종료 - 차지 불가능하게 리셋
+    /// </summary>
+    private void OnWaveEnded(WaveEndedEvent evt)
+    {
+        _isWaveActive = false;
+        _currentGauge = 0f;
+        _isGaugeFull = false;
+        _isPaused = false;
+        if (_button != null)
+            _button.interactable = false;
+        UpdateGaugeUI();
+    }
+
     public void OnHit()
     {
-        if (_isPaused || _isGaugeFull) return;
+        // 웨이브 중에만 차지 가능
+        if (_isPaused || _isGaugeFull || !_isWaveActive) return;
 
         float gain = _gaugePerHit * _gaugeGainMultiplier;
         _currentGauge = Mathf.Min(_currentGauge + gain, _maxGauge);
@@ -107,7 +139,7 @@ public class GaugeController : MonoBehaviour
 
     private void HandleButtonClick()
     {
-        if (!_isGaugeFull || _isPaused) return;
+        if (!_isGaugeFull || _isPaused || !_isWaveActive) return;
 
         _currentGauge = 0f;
         _isGaugeFull = false;

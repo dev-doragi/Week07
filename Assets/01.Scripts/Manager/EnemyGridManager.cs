@@ -258,6 +258,9 @@ public class EnemyGridManager : MonoBehaviour
         }
 
         _runtimeUnitsRegistered = true;
+
+        // 적 유닛 등록 완료 후 공성력 UI 갱신 이벤트 발행
+        EventBus.Instance?.Publish(new EnemyGridChangedEvent());
     }
 
     private void CreateAndRegister(UnitDataSO data, Vector2Int origin)

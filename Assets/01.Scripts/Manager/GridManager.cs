@@ -349,7 +349,6 @@ public class GridManager : Singleton<GridManager>
         if (compositeCollider != null)
         {
             compositeCollider.GenerateGeometry();
-            Debug.Log($"[GridManager] CompositeCollider2D 갱신 완료 - {data.UnitName} 추가됨");
         }
 
         OnCapacityChanged?.Invoke();
