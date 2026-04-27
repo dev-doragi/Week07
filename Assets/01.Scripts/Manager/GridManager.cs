@@ -540,6 +540,38 @@ public class GridManager : Singleton<GridManager>
         }
 
         OnCapacityChanged?.Invoke();
+        EventBus.Instance?.Publish(new PartPlacedEvent
+        {
+            PartKey = data.Key,
+            GridPos = origin,
+            costUp = data.Cost > 0
+        });
+
+        switch (data.Category)
+        {
+            case UnitCategory.Support:
+                EventBus.Instance?.Publish(new TutorialProductionFacilityPlacedEvent
+                {
+                    PartKey = data.Key,
+                    GridPos = origin
+                });
+                break;
+            case UnitCategory.Defense:
+                EventBus.Instance?.Publish(new TutorialDefenseUnitPlacedEvent
+                {
+                    PartKey = data.Key,
+                    GridPos = origin
+                });
+                break;
+            case UnitCategory.Attack:
+                EventBus.Instance?.Publish(new TutorialAttackUnitPlacedEvent
+                {
+                    PartKey = data.Key,
+                    GridPos = origin
+                });
+                break;
+        }
+
         EventBus.Instance?.Publish(new PlayerGridChangedEvent());
     }
 

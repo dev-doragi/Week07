@@ -225,6 +225,12 @@ public class Unit : MonoBehaviour, IDamageable
 
     private void HandleDeath()
     {
+        if (_team == TeamType.Enemy && _data.Category != UnitCategory.Core)
+        {
+            EventBus.Instance?.Publish(new EnemyDefeatedEvent());
+            EventBus.Instance?.Publish(new TutorialEnemyDefeatedEvent());
+        }
+
         // 코어 파괴 이벤트 발행
         if (_data.Category == UnitCategory.Core && _team == TeamType.Enemy)
         {

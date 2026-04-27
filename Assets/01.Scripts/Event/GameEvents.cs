@@ -51,6 +51,22 @@ public struct PartPlacedEvent { public int PartKey; public UnityEngine.Vector2In
 public struct AttackPlacementTutorialRequestedEvent { public int PartKey; }
 public struct AttackPlacementTutorialEndedEvent { }
 public struct TutorialCompletedEvent { public int RewardStageIndex; }
+public struct TutorialCameraManipulatedEvent { }
+public struct TutorialProductionFacilityPlacedEvent { public int PartKey; public UnityEngine.Vector2Int GridPos; }
+public struct TutorialAccelerationButtonUsedEvent { }
+public struct TutorialDefenseUnitPlacedEvent { public int PartKey; public UnityEngine.Vector2Int GridPos; }
+public struct TutorialSkillUsedEvent { public int SkillIndex; }
+public struct TutorialAttackUnitPlacedEvent { public int PartKey; public UnityEngine.Vector2Int GridPos; }
+public struct TutorialStepStartedEvent
+{
+    public int StepIndex;
+    public int TotalStepCount;
+}
+public struct TutorialStepCompletedEvent
+{
+    public int StepIndex;
+    public int TotalStepCount;
+}
 
 // ============================================================================
 // [충돌 관련 이벤트]
