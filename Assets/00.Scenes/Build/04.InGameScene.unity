@@ -6467,7 +6467,7 @@ MonoBehaviour:
   _skill1Duration: 5
   _meteorPoolKey: MeteorProjectile
   _meteorCount: 10
-  _meteorDamage: 80
+  _meteorDamage: 120
   _splashRadius: 3
   _spawnHeight: 15
   _targetRadius: 3

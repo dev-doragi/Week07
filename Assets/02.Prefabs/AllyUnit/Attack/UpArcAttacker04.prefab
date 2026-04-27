@@ -82,7 +82,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e4de64ca7530924bb5aff23eeb0726d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ArcAttacker
-  _arcHeight: 3
+  _arcHeight: 7
   _travelTime: 0.7
   _spawnPoint: {fileID: 587656166232336827}
 --- !u!61 &1383089633994324034
