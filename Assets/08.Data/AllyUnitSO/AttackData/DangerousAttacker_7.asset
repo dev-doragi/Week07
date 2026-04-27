@@ -29,10 +29,10 @@ MonoBehaviour:
   DeathSpawnKey: 
   BaseDeathSpawnCount: 0
   Attack:
-    Damage: 50
-    Speed: 2
+    Damage: 25
+    Speed: 1
     Distance: 30
-    AttackCost: 8
+    AttackCost: 3
     Trajectory: 2
     Targeting: 0
     Area: 1

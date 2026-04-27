@@ -641,7 +641,7 @@ PrefabInstance:
       objectReference: {fileID: 2086683681}
     - target: {fileID: 6819421978890148908, guid: a3107d3e4dee9804f9dff29c2f348b09, type: 3}
       propertyPath: _currentMouseCount
-      value: 4000
+      value: 300
       objectReference: {fileID: 0}
     - target: {fileID: 6819421978890148908, guid: a3107d3e4dee9804f9dff29c2f348b09, type: 3}
       propertyPath: _waveWaitDisplayText
@@ -6483,7 +6483,7 @@ MonoBehaviour:
   _skill1Duration: 5
   _meteorPoolKey: MeteorProjectile
   _meteorCount: 10
-  _meteorDamage: 80
+  _meteorDamage: 120
   _splashRadius: 3
   _spawnHeight: 15
   _targetRadius: 3
@@ -9084,6 +9084,10 @@ PrefabInstance:
       propertyPath: _ritualSystem
       value: 
       objectReference: {fileID: 1815692530}
+    - target: {fileID: 4952500354599622204, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5254301697450586130, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -9092,6 +9096,10 @@ PrefabInstance:
       propertyPath: _resourceManager
       value: 
       objectReference: {fileID: 113788105}
+    - target: {fileID: 5726641389671934492, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -552
+      objectReference: {fileID: 0}
     - target: {fileID: 6129702662900236002, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
