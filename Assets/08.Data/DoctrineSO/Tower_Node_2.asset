@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Tower_Node_2
   m_EditorClassIdentifier: Assembly-CSharp::DoctrineNodeData
   nodeId: 3
-  nodeName: 1
+  nodeName: "\uC2E0\uB3C4\uC758 \uBCF8\uBCF4\uAE30"
   description: "\uBCF4\uC544\uB77C. \uD5D8\uB09C\uD55C \uACE0\uD589\uC744 \uB118\uC5B4\uC120
     \uC950\uB4E4\uC774\uB2E4."
   doctrineType: 0

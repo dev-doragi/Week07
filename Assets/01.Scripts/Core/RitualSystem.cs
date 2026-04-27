@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 /// <summary>
@@ -245,10 +246,27 @@ public class RitualSystem : MonoBehaviour
         if (!ResourceManager.Instance.SubtractMouseCount(cost))
         {
             Debug.Log($"[RitualSystem] 자원 부족 | 필요: {cost} / 보유: {ResourceManager.Instance.CurrentMouse}");
+            ShowResourceFailureFeedback();
             return false;
         }
 
         return true;
+    }
+
+    private void ShowResourceFailureFeedback()
+    {
+        if (GridManager.Instance == null) return;
+
+        GridManager.Instance.ShowResourceFailureFeedback(GetFeedbackScreenPosition());
+    }
+
+    private Vector2 GetFeedbackScreenPosition()
+    {
+        return InputReader.Instance != null
+            ? InputReader.Instance.GetMousePosition()
+            : Mouse.current != null
+                ? Mouse.current.position.ReadValue()
+                : new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
     }
 
     private bool IsDoctrineUnlocked(int skillIndex, string unlockId)

@@ -520,7 +520,7 @@ PrefabInstance:
       objectReference: {fileID: 2086683681}
     - target: {fileID: 6819421978890148908, guid: a3107d3e4dee9804f9dff29c2f348b09, type: 3}
       propertyPath: _currentMouseCount
-      value: 300
+      value: 4000
       objectReference: {fileID: 0}
     - target: {fileID: 6819421978890148908, guid: a3107d3e4dee9804f9dff29c2f348b09, type: 3}
       propertyPath: _waveWaitDisplayText
@@ -3614,6 +3614,15 @@ MonoBehaviour:
   _height: 12
   _cellSize: 1
   _origin: {x: -7, y: -1, z: 0}
+  _failureTextFont: {fileID: 11400000, guid: e4dba54daa22213498a58638f5792dcd, type: 2}
+  _failureFeedbackCooldown: 0.5
+  _capacityFailureTextColor: {r: 1, g: 0, b: 0, a: 1}
+  _capacityFailureTextSize: 7
+  _resourceFailureTextColor: {r: 1, g: 0, b: 0, a: 1}
+  _resourceFailureTextSize: 7
+  _uiFailureTextSizeMultiplier: 7
+  _failureTextDuration: 0.75
+  _failureTextRiseDistance: 0.6
 --- !u!4 &1950871295
 Transform:
   m_ObjectHideFlags: 0
