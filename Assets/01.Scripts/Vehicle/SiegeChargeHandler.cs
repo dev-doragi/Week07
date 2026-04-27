@@ -81,6 +81,7 @@ public class SiegeChargeHandler : MonoBehaviour
         }
 
         _enemyGrid.RegisterExistingUnitsFromChildren();
+        GameLogger.Instance?.RecordRamUsed(nameof(SiegeChargeHandler));
         PlayCrashSequence();
     }
 

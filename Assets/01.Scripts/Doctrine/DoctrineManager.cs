@@ -201,6 +201,7 @@ public class DoctrineManager : MonoBehaviour
 
         doctrinePoint -= 1;
         Debug.Log($"[DoctrineManager] Confirmed | NodeId: {data.nodeId}, RemainingPoint: {doctrinePoint}");
+        GameLogger.Instance?.RecordDoctrineSelected(data);
 
         ApplyDoctrineEffect(data);
         if (tooltipUI != null)

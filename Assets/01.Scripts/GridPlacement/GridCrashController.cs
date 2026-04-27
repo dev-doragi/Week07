@@ -113,6 +113,7 @@ public class GridCrashController : MonoBehaviour
         if (_chargeSystem == null || !_chargeSystem.IsFull) return;
 
         _chargeSystem.Consume();
+        GameLogger.Instance?.RecordRamUsed(nameof(GridCrashController));
         PlayCrashSequence();
     }
 
