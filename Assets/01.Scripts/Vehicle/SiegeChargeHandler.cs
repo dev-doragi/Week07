@@ -25,7 +25,7 @@ public class SiegeChargeHandler : MonoBehaviour
 
     [Header("Damage")]
     [SerializeField, Range(0f, 1f)] private float _penetration = 0f;
-    [SerializeField, Range(0f, 1f)] private float _attackCategoryDamageMultiplier = 0.5f;
+    [SerializeField, Range(0f, 1f)] private float _attackCategoryDamageMultiplier = 0.3f;
 
     [Header("Doctrine - Ram")]
     [SerializeField, Range(0f, 1f)] private float _doctrineEnemyCollisionPowerReductionPercent = 0f;
