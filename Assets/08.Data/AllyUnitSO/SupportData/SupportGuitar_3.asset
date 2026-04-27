@@ -16,9 +16,9 @@ MonoBehaviour:
   UnitName: "\uAE30\uD0C0\uC950"
   Team: 1
   Category: 5
-  Prefab: {fileID: 2279276099341820887, guid: 6f6a2dca3ef7f824b968514ac6d873fe, type: 3}
-  Icon: {fileID: -2132995636211010893, guid: e8d5b49934a0c5e488b624dec09914f4, type: 3}
-  Description: "\"\uBCC4\uC790\uB9AC\uAC00 \uB420 \uC218 \uC788\uB2E4\uBA74\""
+  Prefab: {fileID: 2279276099341820887, guid: 37923862e13fb784294a9332cce349d0, type: 3}
+  Icon: {fileID: 21300000, guid: 1f5f2c76357333a40b09bd02a7bdcd3c, type: 3}
+  Description: "\uBCF4\uBCF4\uBCF4 \uBD07\uCE58\uB370\uC2A4..!"
   Size: {x: 1, y: 1}
   PlacementRule: 1
   ActsAsFoundation: 0

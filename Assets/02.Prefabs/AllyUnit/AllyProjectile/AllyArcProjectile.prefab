@@ -185,6 +185,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RatArcProjectile
   _lifeTime: 5
+  _impactSFX: {fileID: 8300000, guid: cd06bc7a1a3259e4c9598579a29dd741, type: 3}
   _fragmentPoolKey: 
   _fragmentCount: 3
 --- !u!50 &7425670535368512564

@@ -32,7 +32,7 @@ MonoBehaviour:
     Damage: 8
     Speed: 2
     Distance: 30
-    AttackCost: 5
+    AttackCost: 4
     Trajectory: 2
     Targeting: 0
     Area: 1
