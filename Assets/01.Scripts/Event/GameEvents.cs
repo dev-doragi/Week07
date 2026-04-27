@@ -35,6 +35,10 @@ public struct TutorialEnemyDefeatedEvent { }
 public struct PlaySFXEvent { public AudioClip Clip; public float Volume; }
 
 // ============================================================================
+// [스킬 조작 이벤트]
+// ============================================================================
+public struct RitualCostChangedEvnet { }
+// ============================================================================
 // [입력 및 조작 관련 이벤트]
 // ============================================================================
 public struct ClickEvent { public bool IsStarted; }

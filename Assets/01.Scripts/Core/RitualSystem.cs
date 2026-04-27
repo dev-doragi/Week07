@@ -225,6 +225,17 @@ public class RitualSystem : MonoBehaviour
     // 공통 유틸
     // ──────────────────────────────────────────────
 
+    public int GetSkillCost(int skillIndex)
+    {
+        return skillIndex switch
+        {
+            1 => _skill1Cost,
+            2 => _skill2Cost,
+            3 => _skill3Cost,
+            _ => 0
+        };
+    }
+
     private bool IsReady(int skillIndex, float timer)
     {
         if (timer > 0f)

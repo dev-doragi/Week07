@@ -4066,6 +4066,7 @@ MonoBehaviour:
   wallMonitorInterval: 0.1
   ramGaugeGainMultiplier: 2
   unlockEventBindings: []
+  _ritualButtonUIs: []
 --- !u!1 &5877459970759565191
 GameObject:
   m_ObjectHideFlags: 0

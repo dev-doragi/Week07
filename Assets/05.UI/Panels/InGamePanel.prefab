@@ -2776,6 +2776,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ca5e7165cf009e947a73684efca92348, type: 2}
   - {fileID: 11400000, guid: 2e5c66f10c6378f4f8808be2c71a07c1, type: 2}
   _capacityText: {fileID: 8256107909042647259}
+  _capacityNormalColor: {r: 1, g: 1, b: 1, a: 1}
+  _capacityFullColor: {r: 1, g: 0, b: 0, a: 1}
+  _tooltip: {fileID: 0}
   _slideDuration: 0.25
   _panelOpenX: 130
   _panelClosedX: -220
@@ -3605,10 +3608,12 @@ MonoBehaviour:
   _inventoryRoot: {fileID: 2399470231926758433}
   _layoutWidthReference: {fileID: 476043398381499172}
   _dragRoot: {fileID: 0}
+  _scrollRect: {fileID: 0}
   _spawnInitialOnStart: 1
   _initialBlockType: 5
   _startPosition: {x: 20, y: 20}
   _spacing: 20
+  _autoScrollToNewBlock: 1
   _fallbackBlockPrefab: {fileID: 0}
   _blockPrefabs:
   - Type: 0
@@ -4751,8 +4756,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 170903674753867013}
   - {fileID: 5157420479567864539}
+  - {fileID: 170903674753867013}
   m_Father: {fileID: 642260051713880498}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -5839,8 +5844,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 330980052280364721}
   - {fileID: 5401773841000463091}
+  - {fileID: 330980052280364721}
   m_Father: {fileID: 642260051713880498}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
