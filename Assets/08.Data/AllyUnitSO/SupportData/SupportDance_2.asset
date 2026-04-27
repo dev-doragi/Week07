@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 550f97df3c4ad9d44a36190b24e47c3b, type: 3}
   m_Name: SupportDance_2
   m_EditorClassIdentifier: Assembly-CSharp::UnitDataSO
-  Key: 54
+  Key: 55
   UnitName: "\uCDA4\uCD94\uC950"
   Team: 1
   Category: 5
@@ -46,7 +46,7 @@ MonoBehaviour:
     Radius: 15
     Effects:
     - _targetRoleType: 2
-      _targetStatType: 1
+      _targetStatType: 2
       _modifierType: 2
       _value: 0.5
       _description: 

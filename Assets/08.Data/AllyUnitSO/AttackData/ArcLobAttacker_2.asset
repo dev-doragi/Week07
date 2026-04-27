@@ -16,13 +16,13 @@ MonoBehaviour:
   UnitName: "\uB192\uAC8C\uB358\uC960"
   Team: 1
   Category: 3
-  Prefab: {fileID: 939399878548102891, guid: bae8b531697a16047969f9ca26157242, type: 3}
+  Prefab: {fileID: 939399878548102891, guid: d7ac7fa58339ea24cb3ef618060f453d, type: 3}
   Icon: {fileID: 7084957924513991936, guid: 34f3abc17a75b0d4d81fe69030e8201c, type: 3}
   Size: {x: 1, y: 2}
   PlacementRule: 1
   ActsAsFoundation: 0
   WheelCapacity: 5
-  MaxHp: 100
+  MaxHp: 50
   BaseDefenseRate: 0
   Cost: 80
   DeathSpawnKey: 
@@ -46,6 +46,6 @@ MonoBehaviour:
     Radius: 0
     Effects: []
   Heal:
-    HealRange: 10
+    HealRange: 0
     HealAmount: 0
-    HealCooldown: 2
+    HealCooldown: 0.1

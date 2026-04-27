@@ -22,7 +22,7 @@ MonoBehaviour:
   PlacementRule: 1
   ActsAsFoundation: 0
   WheelCapacity: 5
-  MaxHp: 100
+  MaxHp: 40
   BaseDefenseRate: 0
   Cost: 50
   DeathSpawnKey: 
@@ -35,7 +35,7 @@ MonoBehaviour:
     Trajectory: 2
     Targeting: 0
     Area: 1
-    RangeRadius: 2
+    RangeRadius: 1.5
     PiercingCount: 0
     Penetration: 0
     PiercingDecay: 0
@@ -46,6 +46,6 @@ MonoBehaviour:
     Radius: 0
     Effects: []
   Heal:
-    HealRange: 10
+    HealRange: 0
     HealAmount: 0
-    HealCooldown: 2
+    HealCooldown: 0.1

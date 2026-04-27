@@ -13,6 +13,7 @@ public class DoctrineManager : MonoBehaviour
     [SerializeField] private DoctrineTooltipUI tooltipUI;
     [SerializeField] private DoctrineEffectApplier effectApplier;
     [SerializeField] private Button confirmButton;
+    [SerializeField] private GameObject doctrinePanelToHide;
 
     [Header("Options")]
     [SerializeField] private bool autoCollectNodesFromChildren = true;
@@ -30,6 +31,11 @@ public class DoctrineManager : MonoBehaviour
 
     private void Awake()
     {
+        if (doctrinePanelToHide == null)
+        {
+            doctrinePanelToHide = gameObject;
+        }
+
         InitializeTree();
     }
 
@@ -207,6 +213,11 @@ public class DoctrineManager : MonoBehaviour
 
         UnlockCurrentRow();
         RefreshConfirmButtonState();
+
+        if (doctrinePanelToHide != null)
+        {
+            doctrinePanelToHide.SetActive(false);
+        }
     }
 
     public void AddDoctrinePoint(int amount)

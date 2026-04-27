@@ -21,11 +21,12 @@ MonoBehaviour:
   Size: {x: 2, y: 1}
   PlacementRule: 0
   ActsAsFoundation: 0
+  WheelCapacity: 5
   MaxHp: 200
   BaseDefenseRate: 0
   Cost: 0
   DeathSpawnKey: DropRat
-  BaseDeathSpawnCount: 20
+  BaseDeathSpawnCount: 60
   Attack:
     Damage: 0
     Speed: 0
@@ -44,3 +45,7 @@ MonoBehaviour:
   Support:
     Radius: 0
     Effects: []
+  Heal:
+    HealRange: 10
+    HealAmount: 0
+    HealCooldown: 2

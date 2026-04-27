@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 550f97df3c4ad9d44a36190b24e47c3b, type: 3}
+  m_Name: DangerousAttacker_7
+  m_EditorClassIdentifier: Assembly-CSharp::UnitDataSO
+  Key: 17
+  UnitName: "\uD749\uC545\uD55C\uC950"
+  Team: 1
+  Category: 3
+  Prefab: {fileID: 939399878548102891, guid: d67270963c17b5a4d848ff451f7b85b9, type: 3}
+  Icon: {fileID: 7084957924513991936, guid: 34f3abc17a75b0d4d81fe69030e8201c, type: 3}
+  Size: {x: 2, y: 2}
+  PlacementRule: 1
+  ActsAsFoundation: 0
+  WheelCapacity: 5
+  MaxHp: 300
+  BaseDefenseRate: 0
+  Cost: 150
+  DeathSpawnKey: 
+  BaseDeathSpawnCount: 0
+  Attack:
+    Damage: 50
+    Speed: 2
+    Distance: 30
+    AttackCost: 8
+    Trajectory: 2
+    Targeting: 0
+    Area: 1
+    RangeRadius: 2
+    PiercingCount: 0
+    Penetration: 0
+    PiercingDecay: 0
+    ProjectilePrefab: {fileID: 6579287745903239311, guid: cd8931b0d41a86f4ebcc986ffd7c04e5, type: 3}
+  Defense:
+    CollisionPower: 0
+  Support:
+    Radius: 0
+    Effects: []
+  Heal:
+    HealRange: 0
+    HealAmount: 0
+    HealCooldown: 0.1
