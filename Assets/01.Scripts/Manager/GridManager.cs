@@ -322,11 +322,16 @@ public class GridManager : Singleton<GridManager>
     private void CreateAndRegister(UnitDataSO data, Vector2Int origin)
     {
         var instance = Instantiate(data.Prefab, FootprintCenter(data, origin), Quaternion.identity, transform);
+        var unit = instance.GetComponentInChildren<Unit>();
 
         float targetW = data.Size.x * _cellSize;
         float targetH = data.Size.y * _cellSize;
 
         var sr = instance.GetComponent<SpriteRenderer>();
+        if (sr == null && unit != null)
+        {
+            sr = unit.BaseRenderer;
+        }
         if (sr != null && sr.sprite != null)
         {
             var natural = sr.sprite.bounds.size;
@@ -344,7 +349,6 @@ public class GridManager : Singleton<GridManager>
             for (int y = 0; y < data.Size.y; y++)
                 _cells[origin.x + x, origin.y + y] = placed;
 
-        var unit = instance.GetComponentInChildren<Unit>();
         if (unit != null)
         {
             unit.InitializeRuntime();
