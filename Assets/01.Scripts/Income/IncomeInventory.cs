@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -37,6 +38,7 @@ public class IncomeInventory : MonoBehaviour
     [SerializeField] private RectTransform _inventoryRoot;
     [SerializeField] private RectTransform _layoutWidthReference;
     [SerializeField] private RectTransform _dragRoot;
+    [SerializeField] private ScrollRect _scrollRect;
 
     [Header("Start Reward")]
     [SerializeField] private bool _spawnInitialOnStart = true;
@@ -45,6 +47,7 @@ public class IncomeInventory : MonoBehaviour
     [Header("Layout")]
     [SerializeField] private Vector2 _startPosition = new Vector2(20f, 20f);
     [SerializeField] private float _spacing = 20f;
+    [SerializeField] private bool _autoScrollToNewBlock = true;
 
     [Header("Prefabs")]
     [SerializeField] private IncomeBlockPiece _fallbackBlockPrefab;
@@ -128,6 +131,7 @@ public class IncomeInventory : MonoBehaviour
 
         AdvanceLayout(pieceSize);
         EnsureContentHeight();
+        ScrollToBlock(spawnPosition, pieceSize);
 
         return piece;
     }
@@ -161,6 +165,11 @@ public class IncomeInventory : MonoBehaviour
     {
         _layoutWidthReference = layoutWidthReference;
         ResetLayoutCursor();
+    }
+
+    public void SetScrollRect(ScrollRect scrollRect)
+    {
+        _scrollRect = scrollRect;
     }
 
     private IncomeBlockPiece CreateBlock(IncomeBlockType type, Vector2 homePosition, Color color)
@@ -270,6 +279,39 @@ public class IncomeInventory : MonoBehaviour
         size.y = Mathf.Max(currentHeight, requiredHeight);
 
         _inventoryRoot.sizeDelta = size;
+    }
+
+    private void ScrollToBlock(Vector2 blockPosition, Vector2 blockSize)
+    {
+        if (!_autoScrollToNewBlock)
+            return;
+
+        var scrollRect = ResolveScrollRect();
+        if (scrollRect == null || scrollRect.viewport == null || scrollRect.content == null)
+            return;
+
+        Canvas.ForceUpdateCanvases();
+
+        float contentHeight = scrollRect.content.rect.height;
+        float viewportHeight = scrollRect.viewport.rect.height;
+        float scrollableHeight = contentHeight - viewportHeight;
+        if (scrollableHeight <= 0.01f)
+            return;
+
+        float blockCenterY = blockPosition.y + (blockSize.y * 0.5f);
+        float targetFromBottom = blockCenterY - (viewportHeight * 0.5f);
+        scrollRect.verticalNormalizedPosition = Mathf.Clamp01(targetFromBottom / scrollableHeight);
+    }
+
+    private ScrollRect ResolveScrollRect()
+    {
+        if (_scrollRect != null)
+            return _scrollRect;
+
+        if (_inventoryRoot != null)
+            _scrollRect = _inventoryRoot.GetComponentInParent<ScrollRect>();
+
+        return _scrollRect;
     }
 
     private float GetLayoutWidth()

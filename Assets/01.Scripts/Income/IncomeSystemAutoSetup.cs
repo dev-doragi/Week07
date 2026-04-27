@@ -146,6 +146,7 @@ public class IncomeSystemAutoSetup : MonoBehaviour
         _inventory.SetDragRoot(canvasRect);
         _inventory.SetInventoryRoot(content);
         _inventory.SetLayoutWidthReference(viewport);
+        _inventory.SetScrollRect(scrollRect);
 
         if (button != null)
         {
