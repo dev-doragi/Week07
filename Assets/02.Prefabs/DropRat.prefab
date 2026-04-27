@@ -183,7 +183,7 @@ MonoBehaviour:
   _rigid: {fileID: 9182062985705541509}
   _spriteRenderer: {fileID: 241855627396151380}
   _animator: {fileID: 7988060331462721215}
-  _aliveSprite: {fileID: 21300000, guid: 9e09145af0cf4c04da2ad33486f9a382, type: 3}
+  _aliveSprite: {fileID: 21300000, guid: 1777331ea34352e4ba1a6f8db8a22758, type: 3}
   _runningSprite: {fileID: 21300000, guid: 81241f41f8ef9c64b921d9239dbf59f7, type: 3}
   _knockBackPower: 4
   _moveSpeed: 3

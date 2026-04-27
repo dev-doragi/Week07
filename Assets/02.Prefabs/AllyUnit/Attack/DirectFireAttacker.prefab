@@ -200,7 +200,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b46d4611361a094b9518dbe0054303c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DirectAttacker
-  _projectileSpeed: 15
+  _projectileSpeed: 45
   _spawnPoint: {fileID: 4203783604318682595}
 --- !u!61 &4473418106632027411
 BoxCollider2D:
@@ -265,7 +265,6 @@ MonoBehaviour:
   - {fileID: 9025168656825881069, guid: 13b7e4b947e00f447b299fafe1069214, type: 3}
   - {fileID: 6243999680266724381, guid: 13b7e4b947e00f447b299fafe1069214, type: 3}
   - {fileID: -3959012985690031052, guid: 13b7e4b947e00f447b299fafe1069214, type: 3}
-  _idleDuration: 1
   _attackFrames:
   - {fileID: 3924230511630168413, guid: 13b7e4b947e00f447b299fafe1069214, type: 3}
   - {fileID: 6019928784311573117, guid: 13b7e4b947e00f447b299fafe1069214, type: 3}
@@ -273,4 +272,3 @@ MonoBehaviour:
   - {fileID: -2209446963912461935, guid: 13b7e4b947e00f447b299fafe1069214, type: 3}
   - {fileID: -6440990356280995724, guid: 13b7e4b947e00f447b299fafe1069214, type: 3}
   - {fileID: -6672272948183174452, guid: 13b7e4b947e00f447b299fafe1069214, type: 3}
-  _attackDuration: 0

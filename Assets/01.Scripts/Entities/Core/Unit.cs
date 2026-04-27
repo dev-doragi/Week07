@@ -170,7 +170,6 @@ public class Unit : MonoBehaviour, IDamageable
 
     public void Heal(float amount)
     {
-        Debug.Log("Heal됨");
         if (!_isInitialized || IsDead) return;
         float maxHp = _data.MaxHp;
         float prevHp = _currentHp;
@@ -228,10 +227,12 @@ public class Unit : MonoBehaviour, IDamageable
         // 코어 파괴 이벤트 발행
         if (_data.Category == UnitCategory.Core && _team == TeamType.Enemy)
         {
+            CameraManager.Instance?.ShakeWeak();
             EventBus.Instance?.Publish(new CoreDestroyedEvent { IsPlayerBase = false });
         }
         else if (_data.Category == UnitCategory.Core && _team == TeamType.Player)
         {
+            CameraManager.Instance?.ShakeWeak();
             EventBus.Instance?.Publish(new CoreDestroyedEvent { IsPlayerBase = true });
         }
         SpawnDeathEffect(_data.DeathSpawnKey, _data.BaseDeathSpawnCount);
