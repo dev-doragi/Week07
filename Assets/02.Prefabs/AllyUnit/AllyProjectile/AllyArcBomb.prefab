@@ -79,7 +79,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 2
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: b580a43b7d9e9834ea4f029a153c3944, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -185,7 +185,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RatBombProjectile
   _lifeTime: 5
-  _fragmentPoolKey: 
+  _fragmentPoolKey: Explosion
   _fragmentCount: 1
 --- !u!50 &7425670535368512564
 Rigidbody2D:

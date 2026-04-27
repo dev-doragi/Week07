@@ -18,6 +18,7 @@ MonoBehaviour:
   Category: 5
   Prefab: {fileID: 0}
   Icon: {fileID: 21300000, guid: 9e09145af0cf4c04da2ad33486f9a382, type: 3}
+  Description: 
   Size: {x: 1, y: 1}
   PlacementRule: 0
   ActsAsFoundation: 0

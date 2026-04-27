@@ -2099,6 +2099,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2e5a822822c9c0449efc43bcb74a2fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SiegeSaveLoader
+  _isDontDestroyOnLoad: 1
 --- !u!4 &443572060
 Transform:
   m_ObjectHideFlags: 0

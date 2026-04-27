@@ -384,7 +384,7 @@ public class GridManager : Singleton<GridManager>
         text.color = textColor;
         text.fontSize = fontSize;
         text.alignment = TextAlignmentOptions.Center;
-        text.enableWordWrapping = false;
+        text.textWrappingMode = TextWrappingModes.NoWrap;
 
         var renderer = text.GetComponent<MeshRenderer>();
         if (renderer != null)
@@ -436,7 +436,7 @@ public class GridManager : Singleton<GridManager>
         text.color = textColor;
         text.fontSize = fontSize * _uiFailureTextSizeMultiplier;
         text.alignment = TextAlignmentOptions.Center;
-        text.enableWordWrapping = false;
+        text.textWrappingMode = TextWrappingModes.NoWrap;
         text.raycastTarget = false;
 
         Vector2 start = rect.anchoredPosition;
@@ -500,26 +500,6 @@ public class GridManager : Singleton<GridManager>
     {
         var instance = Instantiate(data.Prefab, FootprintCenter(data, origin), Quaternion.identity, transform);
         var unit = instance.GetComponentInChildren<Unit>();
-
-        float targetW = data.Size.x * _cellSize;
-        float targetH = data.Size.y * _cellSize;
-
-        var sr = instance.GetComponent<SpriteRenderer>();
-        if (sr == null && unit != null)
-        {
-            sr = unit.BaseRenderer;
-        }
-        if (sr != null && sr.sprite != null)
-        {
-            var natural = sr.sprite.bounds.size;
-            instance.transform.localScale = new Vector3(
-                targetW / natural.x,
-                targetH / natural.y, 1f);
-        }
-        else
-        {
-            instance.transform.localScale = new Vector3(targetW, targetH, 1f);
-        }
 
         var placed = new PlacedUnit(data, origin, instance);
         for (int x = 0; x < data.Size.x; x++)
