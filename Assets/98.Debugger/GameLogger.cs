@@ -39,6 +39,27 @@ public class GameLogger : Singleton<GameLogger>
         }
     }
 
+    private readonly struct RatTileAnalyticsCount
+    {
+        public readonly int UnitKey;
+        public readonly string UnitName;
+        public readonly string UnitCategory;
+        public readonly int Count;
+
+        public RatTileAnalyticsCount(int unitKey, string unitName, string unitCategory, int count)
+        {
+            UnitKey = unitKey;
+            UnitName = unitName;
+            UnitCategory = unitCategory;
+            Count = count;
+        }
+
+        public RatTileAnalyticsCount WithIncrement()
+        {
+            return new RatTileAnalyticsCount(UnitKey, UnitName, UnitCategory, Count + 1);
+        }
+    }
+
     private string _logFilePath;
     public string LogFilePath => _logFilePath;
 
@@ -56,7 +77,7 @@ public class GameLogger : Singleton<GameLogger>
     private readonly Dictionary<string, int> _doctrineTypeCounts = new Dictionary<string, int>();
     private readonly Dictionary<int, string> _doctrinePathByRow = new Dictionary<int, string>();
     private readonly Dictionary<int, int> _ritualSkillUseCounts = new Dictionary<int, int>();
-    private readonly Dictionary<string, int> _ratTileStageTotalCounts = new Dictionary<string, int>();
+    private readonly Dictionary<int, Dictionary<string, int>> _ratTileFinalCountsByStage = new Dictionary<int, Dictionary<string, int>>();
     private readonly Dictionary<string, int> _rewardCounts = new Dictionary<string, int>();
     private int _ramUseCount;
 
@@ -358,12 +379,9 @@ public class GameLogger : Singleton<GameLogger>
     private void OnStageCleared(StageClearedEvent evt)
     {
         RecordStageResult(evt.StageIndex, true, evt.IsFinalStage);
-        LogStageTileSnapshot(evt.StageIndex, true);
+        LogStageTileSnapshot(evt.StageIndex, true, evt.IsFinalStage);
 
-        if (evt.IsFinalStage)
-        {
-            LogSessionSummary("final_stage_cleared");
-        }
+        LogSessionSummary(evt.IsFinalStage ? "final_stage_cleared" : $"stage_{evt.StageIndex}_cleared");
     }
 
     private void OnStageFailed(StageFailedEvent evt)
@@ -428,7 +446,7 @@ public class GameLogger : Singleton<GameLogger>
         });
     }
 
-    private void LogStageTileSnapshot(int stageIndex, bool isStageClear)
+    private void LogStageTileSnapshot(int stageIndex, bool isStageClear, bool isFinalStage = false)
     {
         GridManager grid = GridManager.Instance;
         if (grid == null)
@@ -439,6 +457,7 @@ public class GameLogger : Singleton<GameLogger>
 
         List<PlacedUnit> placedUnits = grid.GetPlacedUnitsSnapshot(includeInitialUnits: false);
         Dictionary<string, int> tileCounts = new Dictionary<string, int>();
+        Dictionary<string, RatTileAnalyticsCount> ratTileAnalyticsCounts = new Dictionary<string, RatTileAnalyticsCount>();
         int attackCount = 0;
         int defenseCount = 0;
         int supportCount = 0;
@@ -462,7 +481,7 @@ public class GameLogger : Singleton<GameLogger>
             UnitDataSO data = placed.Data;
             string tileId = BuildTileId(data);
             Increment(tileCounts, tileId, 1);
-            Increment(_ratTileStageTotalCounts, tileId, 1);
+            IncrementRatTileAnalyticsCount(ratTileAnalyticsCounts, tileId, data);
 
             if (data.Category == UnitCategory.Attack) attackCount++;
             if (data.Category == UnitCategory.Defense) defenseCount++;
@@ -495,6 +514,13 @@ public class GameLogger : Singleton<GameLogger>
         Log($"[TILE_SNAPSHOT] Stage: {stageIndex}, Result: {(isStageClear ? "CLEAR" : "FAILED")}, UnitCount: {placedUnits.Count}, Counts: {tileCountString}");
         Log($"[TILE_LAYOUT] Stage: {stageIndex}, Signature: {layoutSignature}, Bounds: {layoutWidth}x{layoutHeight}, Layout: {layoutString}");
 
+        if (isStageClear)
+        {
+            _ratTileFinalCountsByStage[stageIndex] = new Dictionary<string, int>(tileCounts);
+            Log($"[RAT_TILE_FINAL] Stage: {stageIndex}, Counts: {tileCountString}");
+            TrackRatTileFinalCountEvents(stageIndex, isFinalStage, layoutSignature, placedUnits.Count, ratTileAnalyticsCounts);
+        }
+
         TrackAnalyticsEvent("stage_tile_snapshot", new Dictionary<string, object>
         {
             { "stage_index", stageIndex },
@@ -510,6 +536,24 @@ public class GameLogger : Singleton<GameLogger>
         });
     }
 
+    private void TrackRatTileFinalCountEvents(int stageIndex, bool isFinalStage, string layoutSignature, int finalUnitTotal, Dictionary<string, RatTileAnalyticsCount> counts)
+    {
+        foreach (RatTileAnalyticsCount count in counts.Values)
+        {
+            TrackAnalyticsEvent("rat_tile_final_count", new Dictionary<string, object>
+            {
+                { "stage_index", stageIndex },
+                { "is_final_stage", isFinalStage },
+                { "unit_key", count.UnitKey },
+                { "unit_name", count.UnitName },
+                { "unit_category", count.UnitCategory },
+                { "unit_count", count.Count },
+                { "final_unit_total", finalUnitTotal },
+                { "layout_signature", layoutSignature }
+            });
+        }
+    }
+
     private void LogSessionSummary(string reason)
     {
         Log($"=== Game Statistics Summary ({reason}) ===");
@@ -517,7 +561,7 @@ public class GameLogger : Singleton<GameLogger>
         Log($"[SUMMARY] DoctrineTypeCounts: {FormatCounts(_doctrineTypeCounts)}");
         Log($"[SUMMARY] DoctrinePath: {BuildDoctrinePath()}");
         Log($"[SUMMARY] RitualSkillUses: {FormatCounts(_ritualSkillUseCounts)}, Total: {SumValues(_ritualSkillUseCounts)}");
-        Log($"[SUMMARY] RatTileStageTotals: {FormatCounts(_ratTileStageTotalCounts)}");
+        Log($"[SUMMARY] RatTileStageFinals: {FormatStageTileFinalCounts()}");
         Log($"[SUMMARY] RewardSelections: {FormatCounts(_rewardCounts)}");
         Log($"[SUMMARY] RamUses: {_ramUseCount}");
 
@@ -528,7 +572,7 @@ public class GameLogger : Singleton<GameLogger>
             { "ritual_total_uses", SumValues(_ritualSkillUseCounts) },
             { "ram_total_uses", _ramUseCount },
             { "reward_counts", FormatCounts(_rewardCounts) },
-            { "rat_tile_stage_totals", FormatCounts(_ratTileStageTotalCounts) }
+            { "rat_tile_stage_finals", FormatStageTileFinalCounts() }
         });
     }
 
@@ -582,11 +626,44 @@ public class GameLogger : Singleton<GameLogger>
         return builder.ToString();
     }
 
+    private string FormatStageTileFinalCounts()
+    {
+        if (_ratTileFinalCountsByStage.Count == 0) return "none";
+
+        List<int> stages = new List<int>(_ratTileFinalCountsByStage.Keys);
+        stages.Sort();
+
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < stages.Count; i++)
+        {
+            if (builder.Length > 0) builder.AppendLine();
+            int stage = stages[i];
+            builder.Append("Stage")
+                .Append(stage)
+                .Append("=")
+                .Append(FormatCounts(_ratTileFinalCountsByStage[stage]));
+        }
+
+        return builder.ToString();
+    }
+
     private static string BuildTileId(UnitDataSO data)
     {
         if (data == null) return "Unknown";
         string name = string.IsNullOrWhiteSpace(data.UnitName) ? data.name : data.UnitName;
         return $"{data.Key}:{name}:{data.Category}";
+    }
+
+    private static void IncrementRatTileAnalyticsCount(Dictionary<string, RatTileAnalyticsCount> counts, string tileId, UnitDataSO data)
+    {
+        if (counts.TryGetValue(tileId, out RatTileAnalyticsCount current))
+        {
+            counts[tileId] = current.WithIncrement();
+            return;
+        }
+
+        string name = string.IsNullOrWhiteSpace(data.UnitName) ? data.name : data.UnitName;
+        counts.Add(tileId, new RatTileAnalyticsCount(data.Key, name, data.Category.ToString(), 1));
     }
 
     private static string FormatCounts<TKey>(Dictionary<TKey, int> counts)

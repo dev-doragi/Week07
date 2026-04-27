@@ -67,5 +67,5 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "Week07_Fork_su.slnx"
+    "dotnet.defaultSolution": "Week07.slnx"
 }
