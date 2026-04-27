@@ -1,7 +1,13 @@
 using UnityEngine;
 
+/// <summary>
+/// 메테오 투사체 - 낙하 후 폭발 이펙트 스폰 및 데미지 처리
+/// </summary>
 public class MeteorProjectile : MonoBehaviour
 {
+    [Header("Explosion")]
+    [SerializeField] private string _explosionEffectPoolKey;
+
     private float _damage;
     private float _splashRadius;
     private Vector3 _from;
@@ -30,7 +36,7 @@ public class MeteorProjectile : MonoBehaviour
 
     private void Update()
     {
-        if(!_launched) return;
+        if (!_launched) return;
 
         _elapsed += Time.deltaTime;
         float t = Mathf.Clamp01(_elapsed / _duration);
@@ -40,43 +46,64 @@ public class MeteorProjectile : MonoBehaviour
         float wobble = Mathf.Sin(t * Mathf.PI * 2f) * 0.3f;
         transform.position = linear + new Vector3(wobble, 0f, 0f);
 
-        if(t >= 1f) Explode();
+        if (t >= 1f) OnImpact();
     }
 
-    private void Explode()
+    private void OnImpact()
     {
         _launched = false;
-        Vector3 explodePos = transform.position;    // _to 대신 현재 위치
+        Vector3 explodePos = transform.position;
 
-        var hits = Physics2D.OverlapCircleAll(explodePos, _splashRadius);
-        foreach(var col in hits)
+        // 폭발 이펙트 스폰 (풀링)
+        if (!string.IsNullOrEmpty(_explosionEffectPoolKey) && PoolManager.Instance != null)
         {
-            IDamageable target = col.GetComponentInParent<IDamageable>();
-            if(target == null) continue;
-            if(target.Team != TeamType.Enemy || target.IsDead) continue;
-
-            target.TakeDamage(new DamageData
+            GameObject fx = PoolManager.Instance.Spawn(_explosionEffectPoolKey, explodePos, Quaternion.identity);
+            if (fx != null)
             {
-                Damage = _damage,
-                AttackerTeam = TeamType.Player,
-                HitPoint = _to
-            });
+                var ps = fx.GetComponent<ParticleSystem>();
+                if (ps != null && fx.GetComponent<DespawnController>() == null)
+                    fx.AddComponent<DespawnController>().Setup(ps);
+            }
         }
 
-        if(PoolManager.Instance != null)
+        // 카메라 쉐이크 (작게)
+        CameraManager.Instance?.ShakeWeak();
+
+        // 데미지 처리
+        ApplyDamage(explodePos);
+
+        // 디스폰
+        if (PoolManager.Instance != null)
             PoolManager.Instance.Despawn(gameObject);
         else
             Destroy(gameObject);
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void ApplyDamage(Vector3 explodePos)
     {
-        if(!_launched) return;
-        IDamageable target = other.GetComponentInParent<IDamageable>();
-        if(target == null) return;
-        if(target.Team != TeamType.Enemy || target.IsDead) return;
+        var hits = Physics2D.OverlapCircleAll(explodePos, _splashRadius);
+        foreach (var col in hits)
+        {
+            IDamageable target = col.GetComponentInParent<IDamageable>();
+            if (target == null) continue;
+            if (target.Team != TeamType.Enemy || target.IsDead) continue;
 
-        Explode();
+            target.TakeDamage(new DamageData
+            {
+                Damage = _damage,
+                AttackerTeam = TeamType.Player,
+                HitPoint = explodePos
+            });
+        }
     }
 
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (!_launched) return;
+        IDamageable target = other.GetComponentInParent<IDamageable>();
+        if (target == null) return;
+        if (target.Team != TeamType.Enemy || target.IsDead) return;
+
+        OnImpact();
+    }
 }
