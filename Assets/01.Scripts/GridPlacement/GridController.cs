@@ -20,6 +20,7 @@ public class GridController : MonoBehaviour
     [Header("References")]
     [SerializeField] private GridManager _grid;
     [SerializeField] private Camera _camera;
+    [SerializeField] private SiegeChargeHandler _siegeHandler;
 
     // ==========================================
     // 초기 배치 (바퀴 3개 + 코어 1개)
@@ -65,6 +66,8 @@ public class GridController : MonoBehaviour
     private Transform _ghostRoot;              // 고스트 셀들의 부모 오브젝트
     private readonly List<SpriteRenderer> _ghostCells = new(); // 풀링된 고스트 셀들
     private SpriteRenderer _spritePreview;  // 유닛 미리보기 스프라이트
+    private Vector3 _gridStartPosition;
+    private bool _wasGridAtStart = true;
 
     // ==========================================
     // Unity 생명주기
@@ -78,6 +81,11 @@ public class GridController : MonoBehaviour
             _grid.PlaceInitial(_wheelData, pos);
         _grid.PlaceInitial(_coreData, _coreCell);
         _grid.OnCapacityChanged += OnGridChanged;
+
+        if(_siegeHandler == null)
+            _siegeHandler = GetComponentInParent<SiegeChargeHandler>();
+
+        _gridStartPosition = _grid.transform.position;
     }
 
     // 매 프레임: 선택 → 프리뷰 → 클릭 순
@@ -85,11 +93,30 @@ public class GridController : MonoBehaviour
     private void Update()
     {
         HandleSelection();
-
         var cell = GetCellUnderMouse();
-        UpdateGhost(cell);
-        HandleClicks(cell);
+
+        bool isCrashing = _siegeHandler != null && _siegeHandler.IsCrashing;
+        bool gridAtStart = Vector3.Distance(_grid.transform.position, _gridStartPosition) < 0.05f;
+        bool shouldHide = isCrashing || !gridAtStart;
+
+        if(shouldHide)
+        {
+            foreach(var h in _hintCells)
+                h.gameObject.SetActive(false);
+            _ghostRoot.gameObject.SetActive(false);
+        }
+        else
+        {
+            if(!_wasGridAtStart && _selected != null)
+                ShowValidCells(_selected);
+
+            
+            UpdateGhost(cell);
+            HandleClicks(cell);
+        }
+        _wasGridAtStart = gridAtStart;
     }
+
 
     private void OnDestroy()
     {
@@ -97,8 +124,10 @@ public class GridController : MonoBehaviour
             _grid.OnCapacityChanged -= OnGridChanged;
     }
 
+
     private void OnGridChanged()
     {
+        if(_siegeHandler != null && _siegeHandler.IsCrashing) return;
         if(_selected != null)
             ShowValidCells(_selected);
     }
@@ -124,6 +153,8 @@ public class GridController : MonoBehaviour
     //힌트 표시/숨김 메서드
     private void ShowValidCells(UnitDataSO data)
     {
+        if(_siegeHandler != null && _siegeHandler.IsCrashing) return;
+
         HideValidCells();
         _hintRoot.gameObject.SetActive(true);
 
@@ -131,7 +162,7 @@ public class GridController : MonoBehaviour
         {
             for(int y = 0; y < _grid.Height; y++)
             {
-                var cell = new Vector2Int(x, y);
+                var cell = new Vector2Int(x, y); 
                 if(!_grid.CanPlace(data, cell)) continue;
 
                 // 힌트 셀 재활용 또는 생성
