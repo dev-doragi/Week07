@@ -56,9 +56,6 @@ public class SoundPlayer : MonoBehaviour
         }
         else
         {
-
-        }
-        {
             Debug.LogError("[SoundPlayer] PoolManager ¾øÀ½!");
             Destroy(gameObject);
         }
