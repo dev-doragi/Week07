@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -23,20 +24,20 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     [SerializeField] private IncomeGridBoard _gridBoard;
     [SerializeField] private RectTransform _dragRoot;
 
-    [Header("Visual")]
-    // 인벤토리에서 블록 타입을 구분하기 위한 외곽선 기본 색.
+    [Header("Visual & Animation")]
     [SerializeField] private Color _blockColor = new Color(0.72f, 0.88f, 1f, 0.95f);
-    // 드래그 중 상태 강조용 외곽선 색.
     [SerializeField] private Color _draggingColor = new Color(1f, 0.95f, 0.55f, 0.95f);
-    // 셀 내부는 항상 동일 색으로 유지한다.
     [SerializeField] private Color _cellFillColor = Color.white;
-    // 모양 아웃라인 두께.
     [SerializeField] private float _outlineWidth = 4f;
     [SerializeField] private float _cellPadding = 4f;
     [SerializeField] private Sprite _cellSprite;
+    [SerializeField] private float _rotationTweenDuration = 0.15f; // 부드러운 회전 지속 시간
 
     private RectTransform _rectTransform;
     private CanvasGroup _canvasGroup;
+
+    private RectTransform _visualRoot; // 시각적 회전을 담당하는 컨테이너
+    private Image _hitboxImage; // 후한 클릭 판정을 위한 투명 히트박스
 
     private IReadOnlyList<Vector2Int> _baseCells;
     private readonly List<Vector2Int> _rotatedCells = new List<Vector2Int>();
@@ -44,12 +45,9 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     private readonly List<RectTransform> _cellRoots = new List<RectTransform>();
     private readonly List<Image> _cellFillImages = new List<Image>();
 
-    // 모양 외곽선 전용 UI.
     private RectTransform _outlineRoot;
     private readonly List<Image> _outlineSegments = new List<Image>();
     private readonly HashSet<Vector2Int> _cellLookup = new HashSet<Vector2Int>();
-
-    private readonly Vector3[] _worldCorners = new Vector3[4];
 
     private RectTransform _homeParent;
     private Vector2 _homePosition;
@@ -60,6 +58,7 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     private Vector2 _lastPointerScreenPosition;
 
     private DragSnapshot _dragSnapshot;
+    private Coroutine _rotationRoutine;
 
     public IncomeBlockType BlockType => _blockType;
     public Vector2 Size => _rectTransform != null ? _rectTransform.sizeDelta : Vector2.zero;
@@ -80,8 +79,7 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
     private void Update()
     {
-        if (!_isDragging)
-            return;
+        if (!_isDragging) return;
 
         if (StageMapController.IsMapVisible())
         {
@@ -89,13 +87,10 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
             return;
         }
 
-        var keyboard = Keyboard.current;
-        if (keyboard != null && keyboard.rKey.wasPressedThisFrame)
+        // v1.9 규정: Unity Input System (New) 사용
+        if (Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame)
         {
-            _rotationStep = (_rotationStep + 1) & 3;
-            RefreshShapeVisual();
-            StickCenterToPointer(_lastPointerScreenPosition, _dragEventCamera);
-            UpdatePlacementPreview();
+            TriggerRotation();
         }
     }
 
@@ -105,7 +100,6 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         RectTransform dragRoot,
         RectTransform homeParent,
         Vector2 homePosition,
-        // blockColor 파라미터는 내부 채움색이 아닌 외곽선 색상으로 사용한다.
         Color blockColor,
         Sprite cellSprite = null)
     {
@@ -134,14 +128,10 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if (StageMapController.IsMapVisible())
-            return;
-
-        if (eventData.button != PointerEventData.InputButton.Left)
-            return;
+        if (StageMapController.IsMapVisible()) return;
+        if (eventData.button != PointerEventData.InputButton.Left) return;
 
         EnsureComponents();
-
         _dragSnapshot = CaptureSnapshot();
 
         if (_dragSnapshot.HadPlacement && _gridBoard != null)
@@ -157,36 +147,29 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         if (_dragRoot != null)
             _rectTransform.SetParent(_dragRoot, true);
 
-        // 드래그 중 블록 중심이 마우스 중심을 정확히 따라가도록 중앙 피벗 사용.
+        // 드래그 중에는 항상 중심 피벗으로 고정
         _rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
         _rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
         _rectTransform.pivot = new Vector2(0.5f, 0.5f);
 
         ApplyVisualState(_draggingColor);
         StickCenterToPointer(eventData.position, eventData.pressEventCamera);
-
         UpdatePlacementPreview();
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (!_isDragging)
-            return;
-
-        if (StageMapController.IsMapVisible())
-            return;
+        if (!_isDragging || StageMapController.IsMapVisible()) return;
 
         _dragEventCamera = eventData.pressEventCamera;
         _lastPointerScreenPosition = eventData.position;
         StickCenterToPointer(eventData.position, eventData.pressEventCamera);
-
         UpdatePlacementPreview();
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (!_isDragging)
-            return;
+        if (!_isDragging) return;
 
         if (StageMapController.IsMapVisible())
         {
@@ -209,18 +192,12 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (StageMapController.IsMapVisible())
-            return;
-
-        if (eventData.button != PointerEventData.InputButton.Right)
-            return;
-
-        if (_isDragging)
-            return;
+        if (StageMapController.IsMapVisible()) return;
+        if (eventData.button != PointerEventData.InputButton.Right) return;
+        if (_isDragging) return;
 
         if (_gridBoard != null && _gridBoard.TryGetPlacementOrigin(this, out _))
         {
-            // 그리드에서 회전된 상태로 돌아와도 인벤토리에서는 원본 모양으로 복귀.
             ResetToDefaultRotation();
             ReturnToHome();
         }
@@ -228,8 +205,7 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
     private void CancelDrag()
     {
-        if (!_isDragging)
-            return;
+        if (!_isDragging) return;
 
         _isDragging = false;
         _canvasGroup.blocksRaycasts = true;
@@ -238,16 +214,48 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         ApplyVisualState(_blockColor);
     }
 
+    private void TriggerRotation()
+    {
+        if (_rotationRoutine != null) StopCoroutine(_rotationRoutine);
+
+        _rotationStep = (_rotationStep + 1) & 3;
+
+        // 내부 셀 레이아웃은 즉시 재계산 (논리적 충돌 처리용)
+        RefreshShapeVisual();
+        StickCenterToPointer(_lastPointerScreenPosition, _dragEventCamera);
+        UpdatePlacementPreview();
+
+        // 껍데기(VisualRoot)만 역방향으로 틀어 부드럽게 돌아오는 트윈 실행
+        _rotationRoutine = StartCoroutine(RotateVisualRoutine());
+    }
+
+    private IEnumerator RotateVisualRoutine()
+    {
+        float elapsed = 0f;
+        Vector3 startRot = new Vector3(0f, 0f, 90f);
+        Vector3 endRot = Vector3.zero;
+
+        while (elapsed < _rotationTweenDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / _rotationTweenDuration;
+            t = 1f - Mathf.Pow(1f - t, 3f); // Ease Out Cubic
+
+            _visualRoot.localEulerAngles = Vector3.Lerp(startRot, endRot, t);
+            yield return null;
+        }
+
+        _visualRoot.localEulerAngles = endRot;
+        _rotationRoutine = null;
+    }
+
     private bool TryPlaceAtCurrentTransform(Camera eventCamera)
     {
-        if (_gridBoard == null || _gridBoard.GridRoot == null)
-            return false;
+        if (_gridBoard == null || _gridBoard.GridRoot == null) return false;
 
-        if (!TryGetDropOriginCell(eventCamera, out var origin))
-            return false;
+        if (!TryGetDropOriginCell(eventCamera, out var origin)) return false;
 
-        if (!_gridBoard.TryPlace(this, origin, _rotatedCells))
-            return false;
+        if (!_gridBoard.TryPlace(this, origin, _rotatedCells)) return false;
 
         SnapToGrid(origin);
         return true;
@@ -255,8 +263,7 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
     private void SnapToGrid(Vector2Int origin)
     {
-        if (_gridBoard == null || _gridBoard.GridRoot == null)
-            return;
+        if (_gridBoard == null || _gridBoard.GridRoot == null) return;
 
         _rectTransform.SetParent(_gridBoard.GridRoot, false);
         _rectTransform.anchorMin = Vector2.zero;
@@ -286,11 +293,8 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
     private void ReturnToHome()
     {
-        if (_gridBoard != null)
-            _gridBoard.RemovePlacement(this);
-
-        if (_homeParent == null)
-            return;
+        if (_gridBoard != null) _gridBoard.RemovePlacement(this);
+        if (_homeParent == null) return;
 
         _rectTransform.SetParent(_homeParent, false);
         _rectTransform.anchorMin = Vector2.zero;
@@ -302,12 +306,7 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
     private DragSnapshot CaptureSnapshot()
     {
-        var snapshot = new DragSnapshot
-        {
-            HadPlacement = false,
-            PlacementOrigin = default,
-            RotationStep = _rotationStep
-        };
+        var snapshot = new DragSnapshot { HadPlacement = false, PlacementOrigin = default, RotationStep = _rotationStep };
 
         if (_gridBoard != null && _gridBoard.TryGetPlacementOrigin(this, out var origin))
         {
@@ -318,7 +317,6 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         return snapshot;
     }
 
-    // 회전 상태를 기준으로 현재 블록의 셀 UI와 모양 외곽선을 다시 생성/배치한다.
     private void RefreshShapeVisual()
     {
         BuildRotatedCells(_rotationStep, _rotatedCells);
@@ -358,7 +356,6 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
             fillImage.sprite = _cellSprite;
             fillImage.type = Image.Type.Simple;
             fillImage.preserveAspect = false;
-            fillImage.raycastTarget = true;
         }
 
         for (int i = _rotatedCells.Count; i < _cellRoots.Count; i++)
@@ -394,37 +391,10 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
             float x = cell.x * cellSize + _cellPadding;
             float y = cell.y * cellSize + _cellPadding;
 
-            if (!HasCell(cell + Left))
-            {
-                ConfigureOutlineSegment(
-                    segmentIndex++,
-                    new Vector2(x - thickness, y - thickness),
-                    new Vector2(thickness, fillSize + thickness * 2f));
-            }
-
-            if (!HasCell(cell + Right))
-            {
-                ConfigureOutlineSegment(
-                    segmentIndex++,
-                    new Vector2(x + fillSize, y - thickness),
-                    new Vector2(thickness, fillSize + thickness * 2f));
-            }
-
-            if (!HasCell(cell + Down))
-            {
-                ConfigureOutlineSegment(
-                    segmentIndex++,
-                    new Vector2(x - thickness, y - thickness),
-                    new Vector2(fillSize + thickness * 2f, thickness));
-            }
-
-            if (!HasCell(cell + Up))
-            {
-                ConfigureOutlineSegment(
-                    segmentIndex++,
-                    new Vector2(x - thickness, y + fillSize),
-                    new Vector2(fillSize + thickness * 2f, thickness));
-            }
+            if (!HasCell(cell + Left)) ConfigureOutlineSegment(segmentIndex++, new Vector2(x - thickness, y - thickness), new Vector2(thickness, fillSize + thickness * 2f));
+            if (!HasCell(cell + Right)) ConfigureOutlineSegment(segmentIndex++, new Vector2(x + fillSize, y - thickness), new Vector2(thickness, fillSize + thickness * 2f));
+            if (!HasCell(cell + Down)) ConfigureOutlineSegment(segmentIndex++, new Vector2(x - thickness, y - thickness), new Vector2(fillSize + thickness * 2f, thickness));
+            if (!HasCell(cell + Up)) ConfigureOutlineSegment(segmentIndex++, new Vector2(x - thickness, y + fillSize), new Vector2(fillSize + thickness * 2f, thickness));
         }
 
         for (int i = segmentIndex; i < _outlineSegments.Count; i++)
@@ -436,7 +406,6 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     private int CountRequiredOutlineSegments()
     {
         int count = 0;
-
         for (int i = 0; i < _rotatedCells.Count; i++)
         {
             var cell = _rotatedCells[i];
@@ -445,14 +414,10 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
             if (!HasCell(cell + Down)) count++;
             if (!HasCell(cell + Up)) count++;
         }
-
         return count;
     }
 
-    private bool HasCell(Vector2Int cell)
-    {
-        return _cellLookup.Contains(cell);
-    }
+    private bool HasCell(Vector2Int cell) => _cellLookup.Contains(cell);
 
     private void ConfigureOutlineSegment(int index, Vector2 anchoredPosition, Vector2 size)
     {
@@ -465,7 +430,6 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         rect.anchoredPosition = anchoredPosition;
         rect.sizeDelta = size;
 
-        // 외곽선은 텍스처를 쓰지 않고 단색 라인으로 그려서 모양 구분을 선명하게 한다.
         image.sprite = null;
         image.type = Image.Type.Simple;
         image.preserveAspect = false;
@@ -486,23 +450,13 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         for (int i = 0; i < _baseCells.Count; i++)
         {
             Vector2Int cell = _baseCells[i];
-            Vector2Int rotated;
-
-            switch (rotationStep & 3)
+            Vector2Int rotated = (rotationStep & 3) switch
             {
-                case 1:
-                    rotated = new Vector2Int(cell.y, -cell.x);
-                    break;
-                case 2:
-                    rotated = new Vector2Int(-cell.x, -cell.y);
-                    break;
-                case 3:
-                    rotated = new Vector2Int(-cell.y, cell.x);
-                    break;
-                default:
-                    rotated = cell;
-                    break;
-            }
+                1 => new Vector2Int(cell.y, -cell.x),
+                2 => new Vector2Int(-cell.x, -cell.y),
+                3 => new Vector2Int(-cell.y, cell.x),
+                _ => cell
+            };
 
             if (rotated.x < minX) minX = rotated.x;
             if (rotated.y < minY) minY = rotated.y;
@@ -523,13 +477,15 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         {
             var cellRootGo = new GameObject("Cell", typeof(RectTransform));
             var cellRoot = cellRootGo.GetComponent<RectTransform>();
-            cellRoot.SetParent(transform, false);
+            cellRoot.SetParent(_visualRoot, false); // 시각적 컨테이너 하위로 이동
 
             var fillGo = new GameObject("Fill", typeof(RectTransform), typeof(Image));
             var fillRect = fillGo.GetComponent<RectTransform>();
             var fillImage = fillGo.GetComponent<Image>();
             fillRect.SetParent(cellRoot, false);
-            fillImage.raycastTarget = true;
+
+            // 개별 셀의 레이캐스트를 끄고 투명 히트박스가 전체 판정을 받도록 함
+            fillImage.raycastTarget = false;
 
             _cellRoots.Add(cellRoot);
             _cellFillImages.Add(fillImage);
@@ -538,17 +494,14 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
     private void EnsureOutlineRoot()
     {
-        if (_outlineRoot != null)
-            return;
+        if (_outlineRoot != null) return;
 
         var outlineGo = new GameObject("__ShapeOutline", typeof(RectTransform));
         _outlineRoot = outlineGo.GetComponent<RectTransform>();
-        _outlineRoot.SetParent(transform, false);
+        _outlineRoot.SetParent(_visualRoot, false);
         _outlineRoot.anchorMin = Vector2.zero;
         _outlineRoot.anchorMax = Vector2.zero;
         _outlineRoot.pivot = Vector2.zero;
-        _outlineRoot.anchoredPosition = Vector2.zero;
-        _outlineRoot.sizeDelta = Vector2.zero;
         _outlineRoot.SetAsFirstSibling();
     }
 
@@ -569,7 +522,6 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         }
     }
 
-    // 현재 상태(기본/드래그)에 맞춰 외곽선 색만 변경한다.
     private void ApplyVisualState(Color outlineColor)
     {
         var visibleOutline = outlineColor;
@@ -577,11 +529,7 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
         for (int i = 0; i < _outlineSegments.Count; i++)
         {
-            var segment = _outlineSegments[i];
-            if (segment != null)
-            {
-                segment.color = visibleOutline;
-            }
+            if (_outlineSegments[i] != null) _outlineSegments[i].color = visibleOutline;
         }
 
         for (int i = 0; i < _cellFillImages.Count; i++)
@@ -597,11 +545,44 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
     private void EnsureComponents()
     {
-        if (_rectTransform == null)
-            _rectTransform = GetComponent<RectTransform>();
+        if (_rectTransform == null) _rectTransform = GetComponent<RectTransform>();
+        if (_canvasGroup == null) _canvasGroup = GetComponent<CanvasGroup>();
 
-        if (_canvasGroup == null)
-            _canvasGroup = GetComponent<CanvasGroup>();
+        if (_rectTransform == null || _canvasGroup == null)
+        {
+            Debug.LogError("[IncomeBlockPiece] 필수 컴포넌트가 누락되었습니다.");
+            return;
+        }
+
+        // 트윈 연출을 위한 시각적 래퍼
+        if (_visualRoot == null)
+        {
+            var visualGo = new GameObject("__VisualRoot", typeof(RectTransform));
+            _visualRoot = visualGo.GetComponent<RectTransform>();
+            _visualRoot.SetParent(_rectTransform, false);
+            _visualRoot.anchorMin = Vector2.zero;
+            _visualRoot.anchorMax = Vector2.one;
+            _visualRoot.offsetMin = Vector2.zero;
+            _visualRoot.offsetMax = Vector2.zero;
+            _visualRoot.pivot = new Vector2(0.5f, 0.5f); // 중심축 회전을 위함
+        }
+
+        // 후한 클릭 판정을 위한 전체 덮개
+        if (_hitboxImage == null)
+        {
+            var hitboxGo = new GameObject("__Hitbox", typeof(RectTransform), typeof(Image));
+            var hitboxRect = hitboxGo.GetComponent<RectTransform>();
+            hitboxRect.SetParent(_rectTransform, false);
+            hitboxRect.SetAsFirstSibling();
+            hitboxRect.anchorMin = Vector2.zero;
+            hitboxRect.anchorMax = Vector2.one;
+            hitboxRect.offsetMin = Vector2.zero;
+            hitboxRect.offsetMax = Vector2.zero;
+
+            _hitboxImage = hitboxGo.GetComponent<Image>();
+            _hitboxImage.color = Color.clear;
+            _hitboxImage.raycastTarget = true;
+        }
 
         _rectTransform.anchorMin = Vector2.zero;
         _rectTransform.anchorMax = Vector2.zero;
@@ -618,23 +599,41 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         return false;
     }
 
+    // ★ 핵심 수정: 스내핑을 마우스 중심 + RoundToInt 방식으로 매우 후하게 변경
     private bool TryGetDropOriginCell(Camera eventCamera, out Vector2Int origin)
     {
         origin = default;
 
-        if (_gridBoard == null || _gridBoard.GridRoot == null)
-            return false;
+        if (_gridBoard == null || _gridBoard.GridRoot == null) return false;
 
-        // 드롭 시점에는 블록 좌하단 월드 코너를 기준으로 그리드 셀을 계산한다.
-        _rectTransform.GetWorldCorners(_worldCorners);
-        Vector2 rootScreenPoint = RectTransformUtility.WorldToScreenPoint(eventCamera, _worldCorners[0]);
-        return _gridBoard.TryGetCellFromScreenPoint(rootScreenPoint, eventCamera, out origin);
+        if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            _gridBoard.GridRoot, _lastPointerScreenPosition, eventCamera, out Vector2 localPointer))
+        {
+            return false;
+        }
+
+        // 보드 좌하단(0,0)을 기준으로 한 마우스 좌표
+        Vector2 localFromLowerLeft = localPointer + new Vector2(
+            _gridBoard.GridRoot.rect.width * _gridBoard.GridRoot.pivot.x,
+            _gridBoard.GridRoot.rect.height * _gridBoard.GridRoot.pivot.y);
+
+        float blockWidth = _rectTransform.rect.width;
+        float blockHeight = _rectTransform.rect.height;
+
+        // 마우스가 항상 블록의 중앙을 잡고 있으므로 역산하여 좌하단을 유추
+        Vector2 blockLowerLeft = localFromLowerLeft - new Vector2(blockWidth * 0.5f, blockHeight * 0.5f);
+
+        // FloorToInt(픽셀 단위의 엄격함) 대신 RoundToInt(절반만 겹쳐도 스냅) 사용
+        int originX = Mathf.RoundToInt(blockLowerLeft.x / _gridBoard.CellSize);
+        int originY = Mathf.RoundToInt(blockLowerLeft.y / _gridBoard.CellSize);
+
+        origin = new Vector2Int(originX, originY);
+        return true;
     }
 
     private void UpdatePlacementPreview()
     {
-        if (!_isDragging || _gridBoard == null)
-            return;
+        if (!_isDragging || _gridBoard == null) return;
 
         if (!TryGetDropOriginCell(_dragEventCamera, out var origin))
         {
@@ -657,7 +656,6 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         RefreshShapeVisual();
     }
 
-    // 드래그 중 블록 중심이 항상 포인터 중심에 오도록 고정한다.
     private void StickCenterToPointer(Vector2 screenPoint, Camera eventCamera)
     {
         if (TryGetPointerWorldPosition(screenPoint, eventCamera, out var pointerWorld))
@@ -666,7 +664,9 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
     private void ResetToDefaultRotation()
     {
+        if (_rotationRoutine != null) StopCoroutine(_rotationRoutine);
         _rotationStep = 0;
         RefreshShapeVisual();
+        _visualRoot.localEulerAngles = Vector3.zero;
     }
 }
