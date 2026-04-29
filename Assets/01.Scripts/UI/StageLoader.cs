@@ -17,6 +17,12 @@ public class StageLoader : MonoBehaviour
         SceneLoader.Instance.GoToStageSelect();
     }
 
+    // 버튼에 직접 할당해서 튜토리얼 씬으로 이동
+    public void LoadTutorial()
+    {
+        SceneLoader.Instance.EnterTutorial();
+    }
+
     public void QuitGame()
     {
         SceneLoader.Instance.Quit();
