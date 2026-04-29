@@ -99,6 +99,12 @@ public struct TutorialStepCompletedEvent
     public int StepIndex;
 }
 
+/// <summary>
+/// 플레이어가 튜토리얼 화면을 클릭/스페이스바를 눌렀을 때 Presenter → Manager 방향으로 발행
+/// (순환 참조 제거 및 단방향 이벤트 구조 확립)
+/// </summary>
+public struct TutorialNextRequestedEvent { }
+
 // (기존 이벤트들 유지)
 public struct TutorialEnemyDefeatedEvent { }
 public struct UnitDeployRequestedEvent { public int PartKey; }

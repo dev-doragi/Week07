@@ -28,6 +28,7 @@ public class TutorialDialoguePresenter : MonoBehaviour
     // State Flags & Cache
     private bool _isTyping = false;
     private bool _cancelTyping = false;
+    private bool _moveNextClicked = false;
     private string _fullTargetText = "";
     private TutorialStep _currentStepData;
 
@@ -107,10 +108,8 @@ public class TutorialDialoguePresenter : MonoBehaviour
         }
         else
         {
-            if (TutorialManager.Instance != null)
-            {
-                TutorialManager.Instance.OnNextButtonClicked();
-            }
+            // ✅ 순환 참조 제거 — 이벤트로 단방향 전달
+            EventBus.Instance?.Publish(new TutorialNextRequestedEvent());
         }
     }
 
@@ -119,7 +118,6 @@ public class TutorialDialoguePresenter : MonoBehaviour
         _currentStepData = evt.StepData;
 
         if (_dialogPanel != null) _dialogPanel.SetActive(true);
-        if (_nameText != null) _nameText.text = _currentStepData.SpeakerName;
 
         // 카메라 고정
         if (_currentStepData.Condition != TutorialCondition.CameraMove)
@@ -128,58 +126,16 @@ public class TutorialDialoguePresenter : MonoBehaviour
             _dialogCameraCoroutine = StartCoroutine(DialogCameraLockRoutine(0.25f));
         }
 
-        // 다이얼로그 이동 처리
-        if (_currentStepData.MoveDialogUp && _dialogPanel != null)
-        {
-            if (_dialogMoveCoroutine != null) StopCoroutine(_dialogMoveCoroutine);
-            _dialogMoveCoroutine = StartCoroutine(MoveDialogUpRoutine(_currentStepData.MoveOffset, _currentStepData.MoveDuration));
-        }
-
-        // 포트레이트 처리
-        if (_portraitImage != null)
-        {
-            bool hasPortrait = _currentStepData.PortraitSprite != null;
-            _portraitImage.gameObject.SetActive(hasPortrait);
-
-            if (hasPortrait)
-            {
-                _portraitImage.sprite = _currentStepData.PortraitSprite;
-                var portraitRt = _portraitImage.GetComponent<RectTransform>();
-
-                if (portraitRt != null)
-                {
-                    if (!_portraitOriginalCached)
-                    {
-                        _portraitOriginalAnchoredPos = portraitRt.anchoredPosition;
-                        _portraitOriginalCached = true;
-                    }
-
-                    if (_portraitMoveCoroutine != null) StopCoroutine(_portraitMoveCoroutine);
-
-                    if (_currentStepData.MovePortraitLeft || _currentStepData.PortraitTarget != null)
-                    {
-                        Vector2 target = _currentStepData.PortraitTarget != null
-                            ? _currentStepData.PortraitTarget.anchoredPosition
-                            : _portraitOriginalAnchoredPos + new Vector2(-Mathf.Abs(_currentStepData.PortraitMoveOffset), 0f);
-                        _portraitMoveCoroutine = StartCoroutine(MovePortraitToRoutine(portraitRt, target, _currentStepData.PortraitMoveDuration));
-                    }
-                    else
-                    {
-                        _portraitMoveCoroutine = StartCoroutine(MovePortraitToRoutine(portraitRt, _portraitOriginalAnchoredPos, _currentStepData.PortraitMoveDuration));
-                    }
-                }
-            }
-        }
-
         // 하이라이터 처리
+        var questConfig = _currentStepData?.QuestConfig;
         if (_pulseCoroutine != null) StopCoroutine(_pulseCoroutine);
         if (_highlighter != null)
         {
-            if (_currentStepData.TargetUI != null)
+            if (questConfig?.TargetUI != null)
             {
                 _highlighter.gameObject.SetActive(true);
-                _highlighter.position = _currentStepData.TargetUI.position;
-                _highlighterBaseSize = _currentStepData.TargetUI.sizeDelta;
+                _highlighter.position = questConfig.TargetUI.position;
+                _highlighterBaseSize = questConfig.TargetUI.sizeDelta;
                 _highlighter.sizeDelta = _highlighterBaseSize;
                 _pulseCoroutine = StartCoroutine(HighlighterPulseRoutine());
             }
@@ -194,11 +150,6 @@ public class TutorialDialoguePresenter : MonoBehaviour
                          || _currentStepData.Condition == TutorialCondition.CameraMove
                          || _currentStepData.Condition == TutorialCondition.EnemyDefeated;
         if (_placementProgressPanel != null) _placementProgressPanel.SetActive(showProgress);
-
-        // 텍스트 타이핑 시작
-        if (_typingCoroutine != null) StopCoroutine(_typingCoroutine);
-        _fullTargetText = _currentStepData.Message ?? "";
-        _typingCoroutine = StartCoroutine(TypingRoutine());
     }
 
     private void OnProgressUpdated(TutorialProgressUpdatedEvent evt)
@@ -225,10 +176,11 @@ public class TutorialDialoguePresenter : MonoBehaviour
         if (_pulseCoroutine != null) StopCoroutine(_pulseCoroutine);
         if (_dialogCameraCoroutine != null) StopCoroutine(_dialogCameraCoroutine);
 
-        if (_currentStepData != null && _currentStepData.MoveDialogUp && _dialogPanel != null)
+        var dialogueConfig = _currentStepData?.DialogueConfig;
+        if (dialogueConfig != null && dialogueConfig.MoveDialogUp && _dialogPanel != null)
         {
             if (_dialogMoveCoroutine != null) StopCoroutine(_dialogMoveCoroutine);
-            _dialogMoveCoroutine = StartCoroutine(MoveDialogDownRoutine(_currentStepData.MoveDuration));
+            _dialogMoveCoroutine = StartCoroutine(MoveDialogDownRoutine(dialogueConfig.DialogMoveDuration));
         }
 
         if (_placementProgressPanel != null) _placementProgressPanel.SetActive(false);
@@ -364,5 +316,130 @@ public class TutorialDialoguePresenter : MonoBehaviour
         mainCam.orthographicSize = 10f;
         mainCam.transform.position = targetPos;
         while (true) yield return null;
+    }
+
+    // --- 모듈용 공개 메서드 ---
+
+    /// <summary>
+    /// 대사를 타이핑 애니메이션과 함께 표시
+    /// </summary>
+    public IEnumerator ShowDialogueWithTyping(string speakerName, string message, Sprite portraitSprite)
+    {
+        if (_dialogPanel != null) _dialogPanel.SetActive(true);
+        if (_nameText != null) _nameText.text = speakerName;
+
+        // 초상화 표시
+        if (_portraitImage != null)
+        {
+            bool hasPortrait = portraitSprite != null;
+            _portraitImage.gameObject.SetActive(hasPortrait);
+            if (hasPortrait)
+            {
+                _portraitImage.sprite = portraitSprite;
+            }
+        }
+
+        // 대사 타이핑
+        _fullTargetText = message ?? "";
+        if (_typingCoroutine != null) StopCoroutine(_typingCoroutine);
+        _typingCoroutine = StartCoroutine(TypingRoutine());
+
+        // 타이핑 완료 대기
+        yield return new WaitUntil(() => !_isTyping);
+    }
+
+    /// <summary>
+    /// 초상화 위치 이동
+    /// </summary>
+    public IEnumerator MovePortrait(RectTransform targetRect, float offset, float duration)
+    {
+        if (_portraitImage == null) yield break;
+        var portraitRt = _portraitImage.GetComponent<RectTransform>();
+        if (portraitRt == null) yield break;
+
+        Vector2 target = targetRect.anchoredPosition;
+        if (_portraitMoveCoroutine != null) StopCoroutine(_portraitMoveCoroutine);
+        _portraitMoveCoroutine = StartCoroutine(MovePortraitToRoutine(portraitRt, target, duration));
+
+        yield return _portraitMoveCoroutine;
+    }
+
+    /// <summary>
+    /// 대사판 위로 이동
+    /// </summary>
+    public IEnumerator MoveDialogPanel(float offset, float duration)
+    {
+        if (_dialogMoveCoroutine != null) StopCoroutine(_dialogMoveCoroutine);
+        _dialogMoveCoroutine = StartCoroutine(MoveDialogUpRoutine(offset, duration));
+
+        yield return _dialogMoveCoroutine;
+    }
+
+    /// <summary>
+    /// 화면 클릭 대기
+    /// </summary>
+    public IEnumerator WaitForScreenClick()
+    {
+        _moveNextClicked = false;
+        yield return new WaitUntil(() => _moveNextClicked);
+    }
+
+    /// <summary>
+    /// 배치 진행도 패널 표시
+    /// </summary>
+    public void ShowPlacementProgress(string label)
+    {
+        if (_placementProgressPanel != null) _placementProgressPanel.SetActive(true);
+        if (_placementProgressText != null) _placementProgressText.text = label;
+    }
+
+    /// <summary>
+    /// 배치 진행도 패널 숨김
+    /// </summary>
+    public void HidePlacementProgress()
+    {
+        if (_placementProgressPanel != null) _placementProgressPanel.SetActive(false);
+    }
+
+    /// <summary>
+    /// UI 요소 강조 시작 (비블로킹 — 즉시 반환)
+    /// ✅ QuestModule의 Initialize에서 호출됨
+    /// </summary>
+    public void StartUIHighlight(RectTransform targetUI)
+    {
+        if (_highlighter == null || targetUI == null) return;
+
+        _highlighter.gameObject.SetActive(true);
+        _highlighter.position = targetUI.position;
+        _highlighterBaseSize = targetUI.sizeDelta;
+        _highlighter.sizeDelta = _highlighterBaseSize;
+
+        if (_pulseCoroutine != null) StopCoroutine(_pulseCoroutine);
+        _pulseCoroutine = StartCoroutine(HighlighterPulseRoutine());
+    }
+
+    /// <summary>
+    /// UI 강조 제거
+    /// </summary>
+    public void RemoveUIHighlight()
+    {
+        if (_pulseCoroutine != null) StopCoroutine(_pulseCoroutine);
+        if (_highlighter != null) _highlighter.gameObject.SetActive(false);
+    }
+
+    /// <summary>
+    /// 대사 숨김
+    /// </summary>
+    public void HideDialogue()
+    {
+        if (_dialogPanel != null) _dialogPanel.SetActive(false);
+        if (_highlighter != null) _highlighter.gameObject.SetActive(false);
+        if (_placementProgressPanel != null) _placementProgressPanel.SetActive(false);
+
+        if (_typingCoroutine != null) StopCoroutine(_typingCoroutine);
+        if (_dialogMoveCoroutine != null) StopCoroutine(_dialogMoveCoroutine);
+        if (_pulseCoroutine != null) StopCoroutine(_pulseCoroutine);
+        if (_portraitMoveCoroutine != null) StopCoroutine(_portraitMoveCoroutine);
+        if (_dialogCameraCoroutine != null) StopCoroutine(_dialogCameraCoroutine);
     }
 }
