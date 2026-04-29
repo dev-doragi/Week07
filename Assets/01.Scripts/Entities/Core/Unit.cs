@@ -237,16 +237,37 @@ public class Unit : MonoBehaviour, IDamageable
     {
         if (_team == TeamType.Enemy && _data.Category != UnitCategory.Core)
         {
-            EventBus.Instance?.Publish(new EnemyDefeatedEvent());
             if (_isTutorialEnemy)
-                EventBus.Instance?.Publish(new TutorialEnemyDefeatedEvent());
+            {
+                EventBus.Instance?.Publish(new TutorialEnemyDefeatedEvent
+                {
+                    DeadUnit = this,
+                    Category = _data.Category
+                });
+            }
+            else
+            {
+                EventBus.Instance?.Publish(new EnemyDefeatedEvent());
+            }
         }
 
         // 코어 파괴 이벤트 발행
         if (_data.Category == UnitCategory.Core && _team == TeamType.Enemy)
         {
             CameraManager.Instance?.ShakeWeak();
-            EventBus.Instance?.Publish(new CoreDestroyedEvent { IsPlayerBase = false });
+
+            if (_isTutorialEnemy)
+            {
+                EventBus.Instance?.Publish(new TutorialEnemyDefeatedEvent
+                {
+                    DeadUnit = this,
+                    Category = _data.Category
+                });
+            }
+            else
+            {
+                EventBus.Instance?.Publish(new CoreDestroyedEvent { IsPlayerBase = false });
+            }
         }
         else if (_data.Category == UnitCategory.Core && _team == TeamType.Player)
         {
@@ -273,14 +294,36 @@ public class Unit : MonoBehaviour, IDamageable
         if (string.IsNullOrEmpty(key) || count <= 0) return;
         if (PoolManager.Instance == null) return;
 
+        bool shouldApplyDropRatClearReward = false;
+        int totalDropRatReward = 0;
+
         if (_data.Category == UnitCategory.Core && StageManager.Instance != null)
         {
             count += (StageManager.Instance.CurrentWaveIndex * 15)
                    + (StageManager.Instance.CurrentStageIndex * 20);
+
+            shouldApplyDropRatClearReward = _team == TeamType.Enemy;
+            if (shouldApplyDropRatClearReward)
+            {
+                totalDropRatReward = StageManager.Instance.CalculateDropRatClearReward();
+            }
         }
 
         for (int i = 0; i < count; i++)
-            PoolManager.Instance.Spawn(key, transform.position, Quaternion.identity);
+        {
+            GameObject spawnedObject = PoolManager.Instance.Spawn(key, transform.position, Quaternion.identity);
+            if (!shouldApplyDropRatClearReward || spawnedObject == null)
+                continue;
+
+            if (spawnedObject.TryGetComponent(out DropRat dropRat))
+            {
+                int rewardAmount = totalDropRatReward / count;
+                if (i < totalDropRatReward % count)
+                    rewardAmount++;
+
+                dropRat.SetRewardAmount(rewardAmount);
+            }
+        }
     }
 
     private void OnDestroy()

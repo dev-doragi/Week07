@@ -64,6 +64,8 @@ public class StageLayout : MonoBehaviour
         {
             foreach (Unit unit in units)
             {
+                if (StageLoadContext.IsTutorial)
+                    unit.SetAsTutorialEnemy();
                 unit.InitializeRuntime();
                 Debug.Log($"[StageLayout] Unit initialized: {unit.name} / Team: {unit.Team} / Category: {unit.Category}");
             }

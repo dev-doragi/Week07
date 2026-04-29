@@ -52,6 +52,12 @@ public class AntiStallSystem : MonoBehaviour
 
     private void OnCoreDestroyed(CoreDestroyedEvent evt)
     {
+        if (StageLoadContext.IsTutorial)
+        {
+            Debug.Log("[StageManager] 튜토리얼 중이므로 코어 파괴 시 스테이지 클리어를 무시합니다.");
+            return;
+        }
+
         // 어느 코어든 파괴되면 전투 종료 -> 루틴 중단
         StopRoutine();
     }
