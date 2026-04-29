@@ -248,21 +248,14 @@ public class StageMapController : MonoBehaviour
             _runtimeNodeList.Add(node);
         }
 
-        bool appliedSavedLayout = ApplySavedNodeLayoutOverrides();
-        bool appliedHierarchyLayout = ApplyHierarchyNodePositions();
-        bool appliedCustomLayout = appliedSavedLayout || appliedHierarchyLayout;
+        bool appliedCustomLayout = false;
 
-        if (allowRandomize && _randomizeRewardOnStart)
+        if (!(allowRandomize && _randomizePathOnStart))
         {
-            if (_routeData.UnlockableRatUnits != null && _routeData.UnlockableRatUnits.Count > 0)
-            {
-                AssignRouteRewardPool();
-            }
-            else
-            {
-                RandomizeRewards();
-            }
-
+            //랜덤화가 꺼져 있을 때만 저장된 레이아웃 적용
+            bool appliedSavedLayout = ApplySavedNodeLayoutOverrides();
+            bool appliedHierarchyLayout = ApplyHierarchyNodePositions();
+            appliedCustomLayout = appliedSavedLayout || appliedHierarchyLayout;
         }
 
         if (allowRandomize && _randomizePathOnStart && !appliedCustomLayout)
