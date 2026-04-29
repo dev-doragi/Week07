@@ -17,7 +17,6 @@ using UnityEngine;
 /// </remarks>
 public class StageManager : Singleton<StageManager>
 {
-    // TODO(CSV-Log): Add explicit MapNodeSelected/RewardSelected linkage from map flow entry points.
     [Header("Stage Settings")]
     [SerializeField] private StageDataSO[] _stageDatas;
     [SerializeField] private Transform _stageContainer;

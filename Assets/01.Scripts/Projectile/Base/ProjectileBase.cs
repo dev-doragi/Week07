@@ -12,6 +12,7 @@ public abstract class ProjectileBase : MonoBehaviour
 
     protected AttackModule _attackData;
     protected TeamType _attackerTeam;
+    protected GameObject _owner;
     protected float _currentDamage;
     protected int _remainingPiercing;
     private Coroutine _lifeTimeCoroutine;
@@ -28,21 +29,24 @@ public abstract class ProjectileBase : MonoBehaviour
         if (_lifeTimeCoroutine != null) StopCoroutine(_lifeTimeCoroutine);
     }
 
-    public virtual void Launch(AttackModule data, TeamType team)
+    public virtual void Launch(AttackModule data, TeamType team, GameObject owner = null)
     {
         _attackData = data;
         _attackerTeam = team;
+        _owner = owner;
         _currentDamage = data.Damage;
         _remainingPiercing = data.PiercingCount;
 
         GameCsvLogger.Instance.LogEvent(
             eventType: GameLogEventType.ProjectileSpawned,
-            actor: gameObject,
+            actor: _owner != null ? _owner : gameObject,
             value: _currentDamage,
             metadata: new Dictionary<string, object>
             {
                 { "attackerTeam", _attackerTeam.ToString() },
-                { "area", _attackData != null ? _attackData.Area.ToString() : "Unknown" }
+                { "area", _attackData != null ? _attackData.Area.ToString() : "Unknown" },
+                { "projectileId", gameObject.GetInstanceID() },
+                { "projectileName", gameObject.name }
             });
     }
 
@@ -72,12 +76,13 @@ public abstract class ProjectileBase : MonoBehaviour
                 GameObject targetGoSingle = (target as Component) != null ? (target as Component).gameObject : null;
                 GameCsvLogger.Instance.LogEvent(
                     eventType: GameLogEventType.DamageDealt,
-                    actor: gameObject,
+                    actor: _owner != null ? _owner : gameObject,
                     target: targetGoSingle,
                     value: _currentDamage,
                     metadata: new Dictionary<string, object>
                     {
-                        { "areaType", "Single" }
+                        { "areaType", "Single" },
+                        { "projectileId", gameObject.GetInstanceID() }
                     });
                 target.TakeDamage(data);
                 if (_attackerTeam == TeamType.Player)
@@ -89,11 +94,12 @@ public abstract class ProjectileBase : MonoBehaviour
             case AreaType.Splash:
                 GameCsvLogger.Instance.LogEvent(
                     eventType: GameLogEventType.ProjectileHit,
-                    actor: gameObject,
+                    actor: _owner != null ? _owner : gameObject,
                     value: _currentDamage,
                     metadata: new Dictionary<string, object>
                     {
-                        { "areaType", "Splash" }
+                        { "areaType", "Splash" },
+                        { "projectileId", gameObject.GetInstanceID() }
                     });
                 Explode(hitPoint);
                 OnImpact(hitPoint);
@@ -105,13 +111,14 @@ public abstract class ProjectileBase : MonoBehaviour
                 GameObject targetGoPiercing = (target as Component) != null ? (target as Component).gameObject : null;
                 GameCsvLogger.Instance.LogEvent(
                     eventType: GameLogEventType.DamageDealt,
-                    actor: gameObject,
+                    actor: _owner != null ? _owner : gameObject,
                     target: targetGoPiercing,
                     value: _currentDamage,
                     metadata: new Dictionary<string, object>
                     {
                         { "areaType", "Piercing" },
-                        { "remainingPierce", _remainingPiercing }
+                        { "remainingPierce", _remainingPiercing },
+                        { "projectileId", gameObject.GetInstanceID() }
                     });
                 target.TakeDamage(data);
                 if (_attackerTeam == TeamType.Player)
@@ -139,13 +146,14 @@ public abstract class ProjectileBase : MonoBehaviour
             {
                 GameCsvLogger.Instance.LogEvent(
                     eventType: GameLogEventType.DamageDealt,
-                    actor: gameObject,
+                    actor: _owner != null ? _owner : gameObject,
                     target: col.gameObject,
                     value: _currentDamage,
                     metadata: new Dictionary<string, object>
                     {
                         { "areaType", "Splash" },
-                        { "radius", _attackData.RangeRadius }
+                        { "radius", _attackData.RangeRadius },
+                        { "projectileId", gameObject.GetInstanceID() }
                     });
                 target.TakeDamage(new DamageData { Damage = _currentDamage, HitPoint = center });
                 hitCount++;

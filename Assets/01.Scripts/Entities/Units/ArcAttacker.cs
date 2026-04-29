@@ -15,13 +15,13 @@ public class ArcAttacker : MonoBehaviour, IAttacker
 
         if (obj.TryGetComponent(out RatArcProjectile ratBomb))
         {
-            ratBomb.Initialize(attackData, attacker.Team, startPos, target.transform.position, _travelTime, _arcHeight);
+            ratBomb.Initialize(attackData, attacker.Team, startPos, target.transform.position, _travelTime, _arcHeight, attacker.gameObject);
             return true;
         }
 
         if (obj.TryGetComponent(out ArcProjectile projectile))
         {
-            projectile.Initialize(attackData, attacker.Team, startPos, target.transform.position, _travelTime, _arcHeight);
+            projectile.Initialize(attackData, attacker.Team, startPos, target.transform.position, _travelTime, _arcHeight, attacker.gameObject);
             return true;
         }
         return false;

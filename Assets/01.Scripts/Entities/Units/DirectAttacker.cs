@@ -14,13 +14,13 @@ public class DirectAttacker : MonoBehaviour, IAttacker
 
         if (obj.TryGetComponent(out RatProjectile ratProjectile))
         {
-            ratProjectile.Initialize(attackData, attacker.Team, startPos, target.transform.position, _projectileSpeed);
+            ratProjectile.Initialize(attackData, attacker.Team, startPos, target.transform.position, _projectileSpeed, attacker.gameObject);
             return true;
         }
 
         if (obj.TryGetComponent(out DirectProjectile projectile))
         {
-            projectile.Initialize(attackData, attacker.Team, startPos, target.transform.position, _projectileSpeed);
+            projectile.Initialize(attackData, attacker.Team, startPos, target.transform.position, _projectileSpeed, attacker.gameObject);
             return true;
         }
         return false;

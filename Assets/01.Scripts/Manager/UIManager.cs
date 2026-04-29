@@ -117,31 +117,35 @@ public class UIManager : Singleton<UIManager>
     }
 
     // Button handlers (connect from Inspector)
-    // TODO(CSV-Log): Add ButtonClicked/ShopOpened/ShopClosed logs per button and panel visibility transition.
 
     public void OnPauseClicked()
     {
+        GameCsvLogger.Instance.LogEvent(GameLogEventType.ButtonClicked, actor: gameObject, metadata: new System.Collections.Generic.Dictionary<string, object> { { "button", "Pause" } });
         PauseManager.Instance.TogglePause(true);
     }
 
     public void OnResumeClicked()
     {
+        GameCsvLogger.Instance.LogEvent(GameLogEventType.ButtonClicked, actor: gameObject, metadata: new System.Collections.Generic.Dictionary<string, object> { { "button", "Resume" } });
         PauseManager.Instance.TogglePause(false);
     }
 
     public void OnGoToLobbyClicked()
     {
+        GameCsvLogger.Instance.LogEvent(GameLogEventType.ButtonClicked, actor: gameObject, metadata: new System.Collections.Generic.Dictionary<string, object> { { "button", "GoToLobby" } });
         SceneLoader.Instance.GoToLobby();
     }
 
     public void OnRetryClicked()
     {
+        GameCsvLogger.Instance.LogEvent(GameLogEventType.ButtonClicked, actor: gameObject, metadata: new System.Collections.Generic.Dictionary<string, object> { { "button", "Retry" } });
         SiegeCache.Clear();
         SceneLoader.Instance.ReloadCurrentScene();
     }
 
     public void OnNextStageClicked()
     {
+        GameCsvLogger.Instance.LogEvent(GameLogEventType.ButtonClicked, actor: gameObject, metadata: new System.Collections.Generic.Dictionary<string, object> { { "button", "NextStage" } });
         // 차량 데이터 저장 로직은 제거
 
         HideAllPanels();
@@ -151,6 +155,7 @@ public class UIManager : Singleton<UIManager>
 
     public void OnGoToStageSelectClicked()
     {
+        GameCsvLogger.Instance.LogEvent(GameLogEventType.ButtonClicked, actor: gameObject, metadata: new System.Collections.Generic.Dictionary<string, object> { { "button", "GoToStageSelect" } });
         HideAllPanels();
         SceneLoader.Instance.GoToStageSelect();
     }

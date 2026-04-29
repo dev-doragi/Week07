@@ -9,9 +9,9 @@ public class DirectProjectile : ProjectileBase
     private float _duration;
     private bool _isInitialized;
 
-    public void Initialize(AttackModule data, TeamType team, Vector3 start, Vector3 target, float speed)
+    public void Initialize(AttackModule data, TeamType team, Vector3 start, Vector3 target, float speed, GameObject owner = null)
     {
-        base.Launch(data, team);
+        base.Launch(data, team, owner);
         _startPos = start;
         _targetPos = target;
         _speed = speed;

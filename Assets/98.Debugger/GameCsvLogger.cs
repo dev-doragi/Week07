@@ -62,6 +62,7 @@ public class GameCsvLogger : MonoBehaviour
 
     private readonly List<string> _buffer = new List<string>(256);
     private readonly object _sync = new object();
+    private static readonly Encoding Utf8BomEncoding = new UTF8Encoding(true);
 
     private string _sessionId;
     private string _filePath;
@@ -89,6 +90,7 @@ public class GameCsvLogger : MonoBehaviour
 
     private void OnDisable()
     {
+        Flush();
         SceneManager.sceneUnloaded -= HandleSceneUnloaded;
         UnsubscribeEvents();
     }
@@ -203,7 +205,19 @@ public class GameCsvLogger : MonoBehaviour
 
         if (writeHeader)
         {
-            File.AppendAllText(_filePath, CsvHeader + Environment.NewLine, Encoding.UTF8);
+            File.WriteAllText(_filePath, CsvHeader + Environment.NewLine, Utf8BomEncoding);
+        }
+        else
+        {
+            // Create the file with UTF-8 BOM so spreadsheet tools detect encoding reliably.
+            using (var stream = new FileStream(_filePath, FileMode.Append, FileAccess.Write, FileShare.Read))
+            {
+                if (stream.Length == 0)
+                {
+                    byte[] bom = Utf8BomEncoding.GetPreamble();
+                    stream.Write(bom, 0, bom.Length);
+                }
+            }
         }
 
         _initialized = true;
@@ -220,7 +234,7 @@ public class GameCsvLogger : MonoBehaviour
 
         try
         {
-            File.AppendAllLines(_filePath, _buffer, Encoding.UTF8);
+            File.AppendAllLines(_filePath, _buffer, Utf8BomEncoding);
             _buffer.Clear();
         }
         catch (Exception ex)
@@ -245,6 +259,8 @@ public class GameCsvLogger : MonoBehaviour
         EventBus.Instance.Subscribe<StageClearedEvent>(OnStageCleared);
         EventBus.Instance.Subscribe<StageFailedEvent>(OnStageFailed);
         EventBus.Instance.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
+        EventBus.Instance.Subscribe<StageMapNodeSelectedEvent>(OnStageMapNodeSelected);
+        EventBus.Instance.Subscribe<StageMapRewardAppliedEvent>(OnStageMapRewardApplied);
         _eventsSubscribed = true;
     }
 
@@ -259,6 +275,8 @@ public class GameCsvLogger : MonoBehaviour
         EventBus.Instance.Unsubscribe<StageClearedEvent>(OnStageCleared);
         EventBus.Instance.Unsubscribe<StageFailedEvent>(OnStageFailed);
         EventBus.Instance.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
+        EventBus.Instance.Unsubscribe<StageMapNodeSelectedEvent>(OnStageMapNodeSelected);
+        EventBus.Instance.Unsubscribe<StageMapRewardAppliedEvent>(OnStageMapRewardApplied);
         _eventsSubscribed = false;
     }
 
@@ -295,6 +313,26 @@ public class GameCsvLogger : MonoBehaviour
             LogEvent(GameLogEventType.Resume);
         else if (evt.NewState == GameState.GameOver || evt.NewState == GameState.GameClear || evt.NewState == GameState.Ready)
             LogEvent(GameLogEventType.GameEnd, metadata: new Dictionary<string, object> { { "state", evt.NewState.ToString() } });
+    }
+
+    private void OnStageMapNodeSelected(StageMapNodeSelectedEvent evt)
+    {
+        LogEvent(GameLogEventType.MapNodeSelected, metadata: new Dictionary<string, object>
+        {
+            { "nodeId", evt.NodeId },
+            { "stageIndex", evt.StageIndex }
+        });
+    }
+
+    private void OnStageMapRewardApplied(StageMapRewardAppliedEvent evt)
+    {
+        LogEvent(GameLogEventType.RewardSelected, value: evt.Amount, metadata: new Dictionary<string, object>
+        {
+            { "nodeId", evt.NodeId },
+            { "rewardType", evt.RewardType.ToString() },
+            { "rewardId", evt.RewardId },
+            { "displayName", evt.DisplayName }
+        });
     }
 
     private bool IsEventEnabled(GameLogEventType eventType)
@@ -380,12 +418,26 @@ public class GameCsvLogger : MonoBehaviour
             if (!first) sb.Append(';');
             first = false;
 
-            string key = pair.Key ?? string.Empty;
-            string value = pair.Value != null ? pair.Value.ToString() : string.Empty;
+            string key = EscapeMetadataToken(pair.Key ?? string.Empty);
+            string value = EscapeMetadataToken(pair.Value != null ? pair.Value.ToString() : string.Empty);
             sb.Append(key).Append('=').Append(value);
         }
 
         return sb.ToString();
+    }
+
+    private static string EscapeMetadataToken(string input)
+    {
+        if (string.IsNullOrEmpty(input))
+            return string.Empty;
+
+        return input
+            .Replace("\\", "\\\\")
+            .Replace("\r", "\\r")
+            .Replace("\n", "\\n")
+            .Replace(";", "\\;")
+            .Replace("=", "\\=")
+            .Replace("\"", "\\\"");
     }
 
     private static EntitySnapshot BuildEntitySnapshot(GameObject go)

@@ -10,6 +10,9 @@ public class WaveStartButtonController : MonoBehaviour
     {
         if (_button == null)
             _button = GetComponent<Button>();
+
+        if (_button != null)
+            _button.onClick.AddListener(LogWaveStartButtonClicked);
     }
 
     private void OnEnable()
@@ -22,6 +25,12 @@ public class WaveStartButtonController : MonoBehaviour
         Refresh();
     }
 
+    private void OnDestroy()
+    {
+        if (_button != null)
+            _button.onClick.RemoveListener(LogWaveStartButtonClicked);
+    }
+
     private void Refresh()
     {
         if (_button == null)
@@ -32,5 +41,13 @@ public class WaveStartButtonController : MonoBehaviour
         bool canStart = (stageManager != null && stageManager.IsWaitingForWaveStart)
             || (gameFlowManager != null && gameFlowManager.IsWaitingForNextWave);
         _button.interactable = canStart;
+    }
+
+    private void LogWaveStartButtonClicked()
+    {
+        GameCsvLogger.Instance.LogEvent(
+            GameLogEventType.ButtonClicked,
+            actor: gameObject,
+            metadata: new System.Collections.Generic.Dictionary<string, object> { { "button", "WaveStart" } });
     }
 }

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
@@ -26,6 +27,7 @@ public class SceneLoader : Singleton<SceneLoader>
             GameManager.Instance.ChangeState(GameState.Ready);
         }
 
+        GameLogContext.RunId = string.Empty;
         SceneManager.LoadScene(_lobbySceneName);
     }
 
@@ -43,6 +45,8 @@ public class SceneLoader : Singleton<SceneLoader>
 
     public void EnterInGameFromTutorial(int stageIndex)
     {
+        BeginNewRun();
+
         // 튜토리얼에서 게임 진행
         StageLoadContext.SetStageIndex(stageIndex);
         SceneManager.LoadScene(_inGameSceneName);
@@ -50,9 +54,10 @@ public class SceneLoader : Singleton<SceneLoader>
 
     public void EnterInGame(int stageIndex)
     {
+        BeginNewRun();
+
         // 스테이지 정보 설정
         StageLoadContext.SetStageIndex(stageIndex);
-
         SceneManager.LoadScene(_inGameSceneName);
     }
 
@@ -62,6 +67,8 @@ public class SceneLoader : Singleton<SceneLoader>
 
         if (currentSceneName == _inGameSceneName)
         {
+            BeginNewRun();
+
             //int currentStageIndex = StageManager.Instance.CurrentStageIndex;
             StageLoadContext.SetStageIndex(0);
         }
@@ -72,5 +79,10 @@ public class SceneLoader : Singleton<SceneLoader>
     public void Quit()
     {
         Application.Quit();
+    }
+
+    private static void BeginNewRun()
+    {
+        GameLogContext.RunId = Guid.NewGuid().ToString("N");
     }
 }

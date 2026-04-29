@@ -11,15 +11,15 @@ public class RatArcProjectile : ArcProjectile
     [SerializeField] private string _fragmentPoolKey;
     [SerializeField] private int _fragmentCount = 3;
 
-    public void Initialize(Unit attacker, Vector3 startPosition, Vector3 targetPosition, float travelTime, float arcHeight)
+    public void Initialize(AttackModule data, TeamType team, Vector3 startPosition, Vector3 targetPosition, float travelTime, float arcHeight, GameObject owner = null)
     {
-        if (attacker == null || attacker.Data?.Attack == null)
+        if (data == null)
         {
-            Debug.LogError($"{name}: Initialize 실패 - attacker 또는 AttackModule이 Null입니다.");
+            Debug.LogError($"{name}: Initialize failed - AttackModule is null.");
             return;
         }
 
-        base.Initialize(attacker.Data.Attack, attacker.Team, startPosition, targetPosition, travelTime, arcHeight);
+        base.Initialize(data, team, startPosition, targetPosition, travelTime, arcHeight, owner);
     }
 
     protected override void OnImpact(Vector2 hitPoint)

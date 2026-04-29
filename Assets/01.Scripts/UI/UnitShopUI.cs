@@ -102,6 +102,11 @@ public class UnitShopUI : MonoBehaviour
 
     private void OnCategoryClicked(UnitCategory category)
     {
+        GameCsvLogger.Instance.LogEvent(
+            GameLogEventType.ButtonClicked,
+            actor: gameObject,
+            metadata: new Dictionary<string, object> { { "button", category + "Tab" } });
+
         if (_isOpen && _currentCategory == category)
         {
             ClosePanel();
@@ -154,12 +159,24 @@ public class UnitShopUI : MonoBehaviour
 
     private void OnUnitSelected(UnitDataSO data)
     {
+        GameCsvLogger.Instance.LogEvent(
+            GameLogEventType.ButtonClicked,
+            actor: gameObject,
+            value: data != null ? data.Cost : 0f,
+            metadata: new Dictionary<string, object>
+            {
+                { "button", "UnitCard" },
+                { "unitKey", data != null ? data.Key : -1 },
+                { "unitName", data != null ? data.UnitName : string.Empty },
+                { "category", data != null ? data.Category.ToString() : string.Empty }
+            });
         _gridController.SelectByData(data);
     }
 
     private void OpenPanel()
     {
         _isOpen = true;
+        GameCsvLogger.Instance.LogEvent(GameLogEventType.ShopOpened, actor: gameObject, metadata: new Dictionary<string, object> { { "shop", "UnitShop" } });
         SlideToX(_panelOpenX);
     }
 
@@ -167,6 +184,7 @@ public class UnitShopUI : MonoBehaviour
     {
         _isOpen = false;
         _currentCategory = UnitCategory.None;
+        GameCsvLogger.Instance.LogEvent(GameLogEventType.ShopClosed, actor: gameObject, metadata: new Dictionary<string, object> { { "shop", "UnitShop" } });
         SlideToX(_panelClosedX);
     }
 

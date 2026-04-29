@@ -9,9 +9,9 @@ public class ArcProjectile : ProjectileBase
     private float _elapsedTime;
     private bool _isInitialized;
 
-    public void Initialize(AttackModule data, TeamType team, Vector3 start, Vector3 target, float duration, float arcHeight)
+    public void Initialize(AttackModule data, TeamType team, Vector3 start, Vector3 target, float duration, float arcHeight, GameObject owner = null)
     {
-        base.Launch(data, team);
+        base.Launch(data, team, owner);
         _startPos = start;
         _targetPos = target;
         _duration = Mathf.Max(0.01f, duration);

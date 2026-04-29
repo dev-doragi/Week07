@@ -109,10 +109,10 @@ public class RitualSystem : MonoBehaviour
 
     public void UseSkill1()
     {
-        // TODO(CSV-Log): Distinguish SkillUsed vs RitualUsed when design finalizes skill taxonomy.
         if (!IsReady(1, _skill1CooldownTimer)) return;
         if (!TryConsumeResource(_skill1Cost)) return;
         _skill1CooldownTimer = _skill1Cooldown;
+        GameCsvLogger.Instance.LogEvent(GameLogEventType.SkillUsed, actor: gameObject, value: _skill1Cost, metadata: new System.Collections.Generic.Dictionary<string, object> { { "skillIndex", 1 }, { "skillName", "Wall" }, { "kind", "Ritual" } });
         GameCsvLogger.Instance.LogEvent(GameLogEventType.RitualUsed, actor: gameObject, value: _skill1Cost, metadata: new System.Collections.Generic.Dictionary<string, object> { { "skillIndex", 1 }, { "skillName", "Wall" } });
         ActivateWall();
         EventBus.Instance?.Publish(new TutorialSkillUsedEvent { SkillIndex = 1 });
@@ -125,6 +125,7 @@ public class RitualSystem : MonoBehaviour
         if (!IsReady(2, _skill2CooldownTimer)) return;
         if (!TryConsumeResource(_skill2Cost)) return;
         _skill2CooldownTimer = _skill2Cooldown;
+        GameCsvLogger.Instance.LogEvent(GameLogEventType.SkillUsed, actor: gameObject, value: _skill2Cost, metadata: new System.Collections.Generic.Dictionary<string, object> { { "skillIndex", 2 }, { "skillName", "IncomeBlock" }, { "kind", "Ritual" } });
         GameCsvLogger.Instance.LogEvent(GameLogEventType.RitualUsed, actor: gameObject, value: _skill2Cost, metadata: new System.Collections.Generic.Dictionary<string, object> { { "skillIndex", 2 }, { "skillName", "IncomeBlock" } });
         OnSkill2();
         EventBus.Instance?.Publish(new TutorialSkillUsedEvent { SkillIndex = 2 });
@@ -137,6 +138,7 @@ public class RitualSystem : MonoBehaviour
         if (!IsReady(3, _skill3CooldownTimer)) return;
         if (!TryConsumeResource(_skill3Cost)) return;
         _skill3CooldownTimer = _skill3Cooldown;
+        GameCsvLogger.Instance.LogEvent(GameLogEventType.SkillUsed, actor: gameObject, value: _skill3Cost, metadata: new System.Collections.Generic.Dictionary<string, object> { { "skillIndex", 3 }, { "skillName", "Meteor" }, { "kind", "Ritual" } });
         GameCsvLogger.Instance.LogEvent(GameLogEventType.RitualUsed, actor: gameObject, value: _skill3Cost, metadata: new System.Collections.Generic.Dictionary<string, object> { { "skillIndex", 3 }, { "skillName", "Meteor" } });
         OnSkill3();
         EventBus.Instance?.Publish(new TutorialSkillUsedEvent { SkillIndex = 3 });
