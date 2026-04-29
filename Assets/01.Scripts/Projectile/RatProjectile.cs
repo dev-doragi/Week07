@@ -25,11 +25,14 @@ public class RatProjectile : DirectProjectile
 
     protected override void OnImpact(Vector2 hitPoint)
     {
-        if (string.IsNullOrEmpty(_fragmentPoolKey)) return;
-
-        for (int i = 0; i < _fragmentCount; i++)
+        if (!string.IsNullOrEmpty(_fragmentPoolKey))
         {
-            PoolManager.Instance.Spawn(_fragmentPoolKey, transform.position, Quaternion.identity);
+            for (int i = 0; i < _fragmentCount; i++)
+            {
+                PoolManager.Instance.Spawn(_fragmentPoolKey, transform.position, Quaternion.identity);
+            }
         }
+
+        base.OnImpact(hitPoint);
     }
 }

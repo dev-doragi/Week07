@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9094877782963980532}
   - component: {fileID: 2057267012228590501}
+  - component: {fileID: 8361291322522931595}
   m_Layer: 0
   m_Name: SoundPlayer
   m_TagString: Untagged
@@ -129,3 +130,16 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &8361291322522931595
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 123432135945263676}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 142f24d2fef92c3438f2bcc21eee1975, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SoundPlayer
+  _masterSfxVolume: 0.3

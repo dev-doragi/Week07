@@ -79,7 +79,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 2
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 6df4da6685f142346a60fcb6543863c0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -185,6 +185,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RatArcProjectile
   _lifeTime: 5
+  _impactSFX: {fileID: 8300000, guid: cd06bc7a1a3259e4c9598579a29dd741, type: 3}
   _fragmentPoolKey: 
   _fragmentCount: 3
 --- !u!50 &7425670535368512564

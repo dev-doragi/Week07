@@ -6,6 +6,9 @@ public abstract class ProjectileBase : MonoBehaviour
     [Header("Lifecycle Settings")]
     [SerializeField] protected float _lifeTime = 5f;
 
+    [Header("Audio")]
+    [SerializeField] protected AudioClip _impactSFX;
+
     protected AttackModule _attackData;
     protected TeamType _attackerTeam;
     protected float _currentDamage;
@@ -16,12 +19,6 @@ public abstract class ProjectileBase : MonoBehaviour
     {
         EventBus.Instance.Subscribe<StageCleanedUpEvent>(HandleStageCleanedUp);
         _lifeTimeCoroutine = StartCoroutine(LifeTimeRoutine());
-
-        var rb = GetComponent<Rigidbody2D>();
-        var col = GetComponent<Collider2D>();
-        //Debug.Log($"[ProjectileBase.OnEnable] Rigidbody2D: {(rb != null ? $"✓ {rb.bodyType}" : "✗ NULL")}, " +
-        //          $"Collider2D: {(col != null ? $"✓ IsTrigger={col.isTrigger}" : "✗ NULL")}, " +
-        //          $"GameObject: {gameObject.name}", gameObject);
     }
 
     protected virtual void OnDisable()
@@ -38,7 +35,12 @@ public abstract class ProjectileBase : MonoBehaviour
         _remainingPiercing = data.PiercingCount;
     }
 
-    protected virtual void OnImpact(Vector2 hitPoint) { }
+    protected virtual void OnImpact(Vector2 hitPoint)
+    {
+        // ✅ 베이스에서 기본 SFX 재생 로직
+        if (_impactSFX != null)
+            SoundManager.Instance.PlaySFX(_impactSFX, (Vector3)hitPoint, 1f);
+    }
 
     protected virtual void ProcessHit(IDamageable target, Vector2 hitPoint)
     {

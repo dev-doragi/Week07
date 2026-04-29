@@ -45,9 +45,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SoundManager
   _isDontDestroyOnLoad: 1
-  _soundPlayerPrefab: {fileID: 0}
+  _soundPlayerPrefab: {fileID: 123432135945263676, guid: e35825151b3160243a68e910be4128e4, type: 3}
   _bgmSource: {fileID: 0}
   _lobbyBGM: {fileID: 0}
   _prepareBGM: {fileID: 0}
-  _waveBGM: {fileID: 0}
+  _waveBGM: {fileID: 8300000, guid: 44e9cb4695d9e5b4fa9c2baa5bab0f6c, type: 3}
   _winBGM: {fileID: 0}

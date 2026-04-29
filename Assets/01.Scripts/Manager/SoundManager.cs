@@ -107,12 +107,20 @@ public class SoundManager : Singleton<SoundManager>
     public void PlaySFX(AudioClip clip, Vector3 position, float volume = 1f)
     {
         if (clip == null) return;
+        if (PoolManager.Instance == null || _soundPlayerPrefab == null) return;
 
         // PoolManager에서 사운드 플레이어 객체 생성
         GameObject obj = PoolManager.Instance.Spawn(_soundPlayerPrefab.name, position, Quaternion.identity);
-        if (obj.TryGetComponent(out SoundPlayer player))
+        if (obj == null) return;
+
+        SoundPlayer player = obj.GetComponentInChildren<SoundPlayer>(true);
+        if (player != null)
         {
             player.Play(clip, volume);
+        }
+        else
+        {
+            Debug.LogError($"[SoundManager] SoundPlayer 컴포넌트를 찾을 수 없음: {obj.name}", obj);
         }
     }
 }

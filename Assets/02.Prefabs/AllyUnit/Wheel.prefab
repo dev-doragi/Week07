@@ -80,7 +80,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_MaskInteraction: 0
   m_Sprite: {fileID: -4422140865799512813, guid: 8e696400559cad541864e54b5206fdaa, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -109,9 +109,7 @@ MonoBehaviour:
   - {fileID: 577773453, guid: 8e696400559cad541864e54b5206fdaa, type: 3}
   - {fileID: 657148931, guid: 8e696400559cad541864e54b5206fdaa, type: 3}
   - {fileID: 283714011, guid: 8e696400559cad541864e54b5206fdaa, type: 3}
-  _idleDuration: 0.5
   _attackFrames: []
-  _attackDuration: 0
 --- !u!1 &8185261341758472092
 GameObject:
   m_ObjectHideFlags: 0
@@ -174,6 +172,7 @@ MonoBehaviour:
   _data: {fileID: 11400000, guid: 111364d3ed48f464aba10b441e66bf1a, type: 2}
   _baseRenderer: {fileID: 0}
   _damageOverlays: []
+  _healEffectPrefab: {fileID: 0}
 --- !u!61 &5735277843329139824
 BoxCollider2D:
   m_ObjectHideFlags: 0

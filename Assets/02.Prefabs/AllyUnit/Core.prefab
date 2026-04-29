@@ -83,7 +83,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_MaskInteraction: 0
   m_Sprite: {fileID: -72023901011608304, guid: 6bfbef71832540d45aa0b86bf6e5f403, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -110,6 +110,7 @@ MonoBehaviour:
   _data: {fileID: 11400000, guid: a20b726f5ee6fae40861df8b4ad0d6d3, type: 2}
   _baseRenderer: {fileID: 4340935886268698186}
   _damageOverlays: []
+  _healEffectPrefab: {fileID: 0}
 --- !u!114 &8646237645568497134
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -160,7 +161,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 2.1333334, y: 1.0666667}
+    oldSize: {x: 2, y: 1}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -183,6 +184,4 @@ MonoBehaviour:
   _idleFrames:
   - {fileID: -72023901011608304, guid: 6bfbef71832540d45aa0b86bf6e5f403, type: 3}
   - {fileID: -1558541349, guid: 6bfbef71832540d45aa0b86bf6e5f403, type: 3}
-  _idleFrameRate: 12
   _attackFrames: []
-  _attackFrameRate: 12
