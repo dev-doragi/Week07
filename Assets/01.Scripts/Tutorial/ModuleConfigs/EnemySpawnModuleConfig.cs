@@ -6,13 +6,12 @@ using UnityEngine;
 [System.Serializable]
 public class EnemySpawnModuleConfig
 {
-    [Header("Enemy Spawn")]
-    public int EnemySpawnCycles = 1;
+    [Header("Tutorial Stage")]
+    [Tooltip("튜토리얼에서 사용할 스테이지 데이터. StageManager의 기존 로직으로 로드됩니다.")]
+    public StageDataSO TutorialStageData;
 
     [SerializeField]
-    public GameObject EnemySiegePrefab;
-
-    [SerializeField]
-    [Min(1f)]
-    public float NextWaveInterval = 1f;
+    [Min(0)]
+    [Tooltip("튜토리얼 스테이지 내에서 시작할 웨이브 인덱스")]
+    public int TutorialWaveIndex = 0;
 }

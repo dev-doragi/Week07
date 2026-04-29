@@ -27,6 +27,13 @@ public class WaveStartButtonController : MonoBehaviour
         if (_button == null)
             return;
 
+        // 튜토리얼에서는 무조건 활성화
+        if (StageLoadContext.IsTutorial)
+        {
+            _button.interactable = true;        
+            return;
+        }
+
         StageManager stageManager = StageManager.Instance;
         GameFlowManager gameFlowManager = GameFlowManager.Instance;
         bool canStart = (stageManager != null && stageManager.IsWaitingForWaveStart)

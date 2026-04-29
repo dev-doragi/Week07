@@ -105,8 +105,24 @@ public struct TutorialStepCompletedEvent
 /// </summary>
 public struct TutorialNextRequestedEvent { }
 
-// (기존 이벤트들 유지)
-public struct TutorialEnemyDefeatedEvent { }
+public enum TutorialEnemyDefeatTarget
+{
+    Any = 0,
+    CoreOnly = 1,
+    NonCoreOnly = 2
+}
+
+public struct TutorialEnemyDefeatedEvent
+{
+    public Unit DeadUnit;
+    public UnitCategory Category;
+}
+
+public struct TutorialInteractionTriggeredEvent
+{
+    public string InteractionId;
+}
+
 public struct UnitDeployRequestedEvent { public int PartKey; }
 public struct UnitDeployEndedEvent { }
 public struct TutorialCompletedEvent { public int RewardStageIndex; }

@@ -64,6 +64,7 @@ public class StageMapController : MonoBehaviour
     private bool _isMapVisible;
     private bool _hasPausedTimeScale;
     private float _timeScaleBeforeMap = 1f;
+    private bool _suppressDoctrinePanel = false;
 
     [System.Serializable]
     private class StageMapNodeLayoutOverride
@@ -852,11 +853,14 @@ public class StageMapController : MonoBehaviour
         RefreshNodeStates();
         SetMapVisible(true);
         _mapRoot.gameObject.SetActive(true);
-        EnsureDoctrinePanel();
-        if (_doctrinePanelRoot != null)
+        if (!_suppressDoctrinePanel)
         {
-            _doctrinePanelRoot.gameObject.SetActive(true);
-            _doctrinePanelRoot.SetAsLastSibling();
+            EnsureDoctrinePanel();
+            if (_doctrinePanelRoot != null)
+            {
+                _doctrinePanelRoot.gameObject.SetActive(true);
+                _doctrinePanelRoot.SetAsLastSibling();
+            }
         }
     }
 
@@ -869,6 +873,27 @@ public class StageMapController : MonoBehaviour
             _doctrinePanelRoot.gameObject.SetActive(false);
 
         SetMapVisible(false);
+    }
+
+    public void SetMapVisibleForTutorial(bool isVisible)
+    {
+        if (isVisible)
+        {
+            ShowMap();
+            return;
+        }
+
+        HideMap();
+    }
+
+    public void SetDoctrinePanelSuppressed(bool suppressed)
+    {
+        _suppressDoctrinePanel = suppressed;
+
+        if (_doctrinePanelRoot != null)
+        {
+            _doctrinePanelRoot.gameObject.SetActive(!suppressed && _isMapVisible);
+        }
     }
 
     private void SetMapVisible(bool isVisible)

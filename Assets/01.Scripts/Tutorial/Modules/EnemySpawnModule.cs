@@ -1,75 +1,66 @@
 using System.Collections;
-using System.Linq;
 using UnityEngine;
 
 /// <summary>
 /// 튜토리얼 적 소환 모듈
-/// - 튜토리얼 웨이브 데이터를 기반으로 적 소환
-/// - 모든 적이 죽을 때까지 대기
-/// - 여러 사이클 반복 가능
+/// - StageManager의 기존 스테이지/웨이브 시작 로직을 사용
+/// - 튜토리얼 스테이지 데이터만 주입
+/// - 완료 조건은 별도 completion module이 담당
 /// </summary>
 public class EnemySpawnModule : ITutorialModule
 {
     private EnemySpawnModuleConfig _config;
-    private int _cyclesCompleted = 0;
+    private StageManager _stageManager;
 
     public void Initialize(TutorialStep step)
     {
         _config = step.EnemySpawnConfig;
-        _cyclesCompleted = 0;
+        _stageManager = StageManager.Instance;
     }
 
     public IEnumerator Execute()
     {
-        if (_config == null || !(_config.EnemySpawnCycles > 0))
+        if (_config == null || _config.TutorialStageData == null)
         {
             yield break;
         }
 
-        StageLayout layout = StageManager.Instance?.CurrentLayout;
-        if (layout == null)
+        if (_stageManager == null)
         {
-            Debug.LogError("[EnemySpawnModule] CurrentLayout이 없습니다. StageLayout이 필요합니다.");
+            Debug.LogError("[EnemySpawnModule] StageManager.Instance가 없습니다.");
             yield break;
         }
 
-        if (_config.EnemySiegePrefab == null)
+        if (_stageManager == null)
         {
-            Debug.LogError("[EnemySpawnModule] EnemySiegePrefab이 할당되지 않았습니다.");
+            Debug.LogError("[EnemySpawnModule] StageManager.Instance가 없습니다.");
             yield break;
         }
 
-        int cycles = Mathf.Max(1, _config.EnemySpawnCycles);
-
-        for (int i = 0; i < cycles; i++)
+        if (_config.TutorialStageData.StageLayoutPrefab == null)
         {
-            // 웨이브 시작 이벤트
-            EventBus.Instance?.Publish(new WaveStartedEvent());
-
-            // 적 소환 - StageLayout의 SpawnEnemy 메서드 직접 사용
-            // 이 경우 EnemySiegePrefab을 직접 전달할 수 있는 메서드가 필요함
-            // 임시로 GameObject를 생성
-            GameObject enemyGO = Object.Instantiate(_config.EnemySiegePrefab, layout.transform);
-
-            // 스폰된 적 유닛에 튜토리얼 플래그 설정
-            Unit[] units = enemyGO.GetComponentsInChildren<Unit>(true);
-            foreach (Unit unit in units)
-            {
-                unit.SetAsTutorialEnemy();
-            }
-
-            // 적이 파괴될 때까지 대기
-            while (enemyGO != null)
-            {
-                yield return null;
-            }
-
-            // 웨이브 종료 이벤트
-            EventBus.Instance?.Publish(new WaveEndedEvent());
-
-            yield return new WaitForSecondsRealtime(0.2f);
-            _cyclesCompleted++;
+            Debug.LogError("[EnemySpawnModule] TutorialStageData에 StageLayoutPrefab이 없습니다.");
+            yield break;
         }
+
+        int stageIndex = _config.TutorialStageData.StageIndex;
+        int waveIndex = Mathf.Max(0, _config.TutorialWaveIndex);
+
+        if (_stageManager.CurrentStageIndex != stageIndex || _stageManager.CurrentLayout == null)
+        {
+            _stageManager.LoadStage(stageIndex);
+            yield return null;
+        }
+
+        if (_stageManager.CurrentLayout == null)
+        {
+            Debug.LogError("[EnemySpawnModule] StageManager.CurrentLayout이 없습니다.");
+            yield break;
+        }
+
+        _stageManager.StartWave(waveIndex);
+
+        yield break;
     }
 
     public void Cleanup()

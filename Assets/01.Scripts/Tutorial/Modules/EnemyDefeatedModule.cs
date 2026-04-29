@@ -38,6 +38,11 @@ public class EnemyDefeatedModule : ITutorialModule
     {
         if (_config == null) return;
 
+        if (!IsCountable(evt))
+        {
+            return;
+        }
+
         _enemiesDefeated++;
 
         // 진행도 브로드캐스트
@@ -53,5 +58,25 @@ public class EnemyDefeatedModule : ITutorialModule
         {
             _conditionMet = true;
         }
+    }
+
+    private bool IsCountable(TutorialEnemyDefeatedEvent evt)
+    {
+        switch (_config.Target)
+        {
+            case TutorialEnemyDefeatTarget.CoreOnly:
+                return evt.Category == UnitCategory.Core;
+
+            case TutorialEnemyDefeatTarget.NonCoreOnly:
+                return evt.Category != UnitCategory.Core;
+
+            default:
+                return true;
+        }
+    }
+
+    public bool IsConditionMet()
+    {
+        return _conditionMet;
     }
 }

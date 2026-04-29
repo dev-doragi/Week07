@@ -28,7 +28,6 @@ public class TutorialDialoguePresenter : MonoBehaviour
     // State Flags & Cache
     private bool _isTyping = false;
     private bool _cancelTyping = false;
-    private bool _moveNextClicked = false;
     private string _fullTargetText = "";
     private TutorialStep _currentStepData;
 
@@ -38,11 +37,17 @@ public class TutorialDialoguePresenter : MonoBehaviour
     private Coroutine _portraitMoveCoroutine = null;
     private Coroutine _dialogCameraCoroutine = null;
 
+    // Original Position Cache
     private Vector2 _dialogOriginalAnchoredPos = Vector2.zero;
     private Vector2 _highlighterBaseSize = Vector2.zero;
     private Vector2 _clickButtonOriginalAnchoredPos = Vector2.zero;
     private Vector2 _portraitOriginalAnchoredPos = Vector2.zero;
     private bool _portraitOriginalCached = false;
+
+    // Move State Cache (중복 이동 방지용)
+    private float _currentDialogOffset = 0f;
+    private Vector2 _currentPortraitTargetPos = Vector2.zero;
+    private bool _isPortraitMoved = false;
 
     private void Awake()
     {
@@ -56,6 +61,17 @@ public class TutorialDialoguePresenter : MonoBehaviour
         if (_highlighter != null) _highlighter.gameObject.SetActive(false);
         if (_placementProgressPanel != null) _placementProgressPanel.SetActive(false);
         if (_postPanel != null) _postPanel.SetActive(false);
+
+        if (_portraitImage != null)
+        {
+            var portraitRt = _portraitImage.GetComponent<RectTransform>();
+            if (portraitRt != null)
+            {
+                _portraitOriginalAnchoredPos = portraitRt.anchoredPosition;
+                _currentPortraitTargetPos = _portraitOriginalAnchoredPos;
+                _portraitOriginalCached = true;
+            }
+        }
 
         if (_clickButton != null)
         {
@@ -92,7 +108,6 @@ public class TutorialDialoguePresenter : MonoBehaviour
 
     private void Update()
     {
-        // 스페이스바 입력도 클릭과 동일하게 처리
         var keyboard = Keyboard.current;
         if (keyboard != null && keyboard.spaceKey.wasPressedThisFrame && _dialogPanel != null && _dialogPanel.activeSelf)
         {
@@ -108,7 +123,6 @@ public class TutorialDialoguePresenter : MonoBehaviour
         }
         else
         {
-            // ✅ 순환 참조 제거 — 이벤트로 단방향 전달
             EventBus.Instance?.Publish(new TutorialNextRequestedEvent());
         }
     }
@@ -116,8 +130,24 @@ public class TutorialDialoguePresenter : MonoBehaviour
     private void OnStepStarted(TutorialStepStartedEvent evt)
     {
         _currentStepData = evt.StepData;
+        var dialogueConfig = _currentStepData?.DialogueConfig;
 
-        if (_dialogPanel != null) _dialogPanel.SetActive(true);
+        bool hasDialogue = dialogueConfig != null && dialogueConfig.HasDialogue;
+
+        if (_dialogPanel != null) _dialogPanel.SetActive(hasDialogue);
+
+        // 초기화 (대사 없음)
+        if (!hasDialogue)
+        {
+            if (_typingCoroutine != null) StopCoroutine(_typingCoroutine);
+            _typingCoroutine = null;
+            _isTyping = false;
+            _cancelTyping = false;
+            _fullTargetText = string.Empty;
+
+            if (_nameText != null) _nameText.text = string.Empty;
+            if (_dialogText != null) _dialogText.text = string.Empty;
+        }
 
         // 카메라 고정
         if (_currentStepData.Condition != TutorialCondition.CameraMove)
@@ -175,14 +205,6 @@ public class TutorialDialoguePresenter : MonoBehaviour
     {
         if (_pulseCoroutine != null) StopCoroutine(_pulseCoroutine);
         if (_dialogCameraCoroutine != null) StopCoroutine(_dialogCameraCoroutine);
-
-        var dialogueConfig = _currentStepData?.DialogueConfig;
-        if (dialogueConfig != null && dialogueConfig.MoveDialogUp && _dialogPanel != null)
-        {
-            if (_dialogMoveCoroutine != null) StopCoroutine(_dialogMoveCoroutine);
-            _dialogMoveCoroutine = StartCoroutine(MoveDialogDownRoutine(dialogueConfig.DialogMoveDuration));
-        }
-
         if (_placementProgressPanel != null) _placementProgressPanel.SetActive(false);
     }
 
@@ -248,50 +270,40 @@ public class TutorialDialoguePresenter : MonoBehaviour
         portraitRt.anchoredPosition = target;
     }
 
-    private IEnumerator MoveDialogUpRoutine(float offset, float duration)
+    private IEnumerator MoveDialogRoutine(Vector2 targetPos, float duration)
     {
         if (_dialogPanel == null) yield break;
         var rt = _dialogPanel.GetComponent<RectTransform>();
         Vector2 start = rt.anchoredPosition;
-        Vector2 target = start + new Vector2(0f, offset);
+
+        Vector2 buttonStart = Vector2.zero;
+        Vector2 buttonTarget = Vector2.zero;
+        RectTransform cbRt = null;
+
+        if (_clickButton != null)
+        {
+            cbRt = _clickButton.GetComponent<RectTransform>();
+            if (cbRt != null)
+            {
+                buttonStart = cbRt.anchoredPosition;
+                // Click Button도 원본 위치 대비 Y축 오프셋만큼만 이동
+                float yOffset = targetPos.y - _dialogOriginalAnchoredPos.y;
+                buttonTarget = _clickButtonOriginalAnchoredPos + new Vector2(0f, yOffset);
+            }
+        }
 
         float elapsed = 0f;
         while (elapsed < duration)
         {
             elapsed += Time.unscaledDeltaTime;
             float t = Mathf.Clamp01(elapsed / duration);
-            rt.anchoredPosition = Vector2.Lerp(start, target, t);
-
-            if (_clickButton != null)
-            {
-                var cbRt = _clickButton.GetComponent<RectTransform>();
-                if (cbRt != null) cbRt.anchoredPosition = Vector2.Lerp(_clickButtonOriginalAnchoredPos, _clickButtonOriginalAnchoredPos + new Vector2(0f, offset), t);
-            }
+            rt.anchoredPosition = Vector2.Lerp(start, targetPos, t);
+            if (cbRt != null) cbRt.anchoredPosition = Vector2.Lerp(buttonStart, buttonTarget, t);
             yield return null;
         }
-        rt.anchoredPosition = target;
-    }
 
-    private IEnumerator MoveDialogDownRoutine(float duration)
-    {
-        if (_dialogPanel == null) yield break;
-        var rt = _dialogPanel.GetComponent<RectTransform>();
-        Vector2 start = rt.anchoredPosition;
-        Vector2 target = _dialogOriginalAnchoredPos;
-        float elapsed = 0f;
-        while (elapsed < duration)
-        {
-            elapsed += Time.unscaledDeltaTime;
-            float t = Mathf.Clamp01(elapsed / duration);
-            rt.anchoredPosition = Vector2.Lerp(start, target, t);
-            if (_clickButton != null)
-            {
-                var cbRt = _clickButton.GetComponent<RectTransform>();
-                if (cbRt != null) cbRt.anchoredPosition = Vector2.Lerp(_clickButtonOriginalAnchoredPos + new Vector2(0f, start.y - target.y), _clickButtonOriginalAnchoredPos, t);
-            }
-            yield return null;
-        }
-        rt.anchoredPosition = target;
+        rt.anchoredPosition = targetPos;
+        if (cbRt != null) cbRt.anchoredPosition = buttonTarget;
     }
 
     private IEnumerator DialogCameraLockRoutine(float duration)
@@ -308,7 +320,7 @@ public class TutorialDialoguePresenter : MonoBehaviour
         {
             elapsed += Time.unscaledDeltaTime;
             float t = Mathf.Clamp01(elapsed / duration);
-            mainCam.orthographicSize = Mathf.Lerp(startSize, 10f, t); // default size
+            mainCam.orthographicSize = Mathf.Lerp(startSize, 10f, t);
             mainCam.transform.position = Vector3.Lerp(startPos, targetPos, t);
             yield return null;
         }
@@ -320,91 +332,111 @@ public class TutorialDialoguePresenter : MonoBehaviour
 
     // --- 모듈용 공개 메서드 ---
 
-    /// <summary>
-    /// 대사를 타이핑 애니메이션과 함께 표시
-    /// </summary>
     public IEnumerator ShowDialogueWithTyping(string speakerName, string message, Sprite portraitSprite)
     {
         if (_dialogPanel != null) _dialogPanel.SetActive(true);
         if (_nameText != null) _nameText.text = speakerName;
 
-        // 초상화 표시
         if (_portraitImage != null)
         {
             bool hasPortrait = portraitSprite != null;
             _portraitImage.gameObject.SetActive(hasPortrait);
-            if (hasPortrait)
-            {
-                _portraitImage.sprite = portraitSprite;
-            }
+            if (hasPortrait) _portraitImage.sprite = portraitSprite;
         }
 
-        // 대사 타이핑
         _fullTargetText = message ?? "";
         if (_typingCoroutine != null) StopCoroutine(_typingCoroutine);
         _typingCoroutine = StartCoroutine(TypingRoutine());
 
-        // 타이핑 완료 대기
         yield return new WaitUntil(() => !_isTyping);
     }
 
     /// <summary>
-    /// 초상화 위치 이동
+    /// 초상화 위치 이동 시작 (초기 위치 기준 절대 이동)
     /// </summary>
-    public IEnumerator MovePortrait(RectTransform targetRect, float offset, float duration)
+    public void StartPortraitMove(RectTransform targetRect, float offset, float duration, float yOffset = 0f)
     {
-        if (_portraitImage == null) yield break;
+        if (_portraitImage == null || !_portraitOriginalCached) return;
+
+        Vector2 baseTarget = targetRect != null
+            ? targetRect.anchoredPosition
+            : _portraitOriginalAnchoredPos + Vector2.left * Mathf.Abs(offset);
+
+        Vector2 finalTarget = baseTarget + Vector2.down * yOffset;
+
+        // 이미 목표 위치라면 애니메이션 스킵
+        if (_isPortraitMoved && Vector2.Distance(_currentPortraitTargetPos, finalTarget) < 1f) return;
+
+        _currentPortraitTargetPos = finalTarget;
+        _isPortraitMoved = true;
+
         var portraitRt = _portraitImage.GetComponent<RectTransform>();
-        if (portraitRt == null) yield break;
-
-        Vector2 target = targetRect.anchoredPosition;
         if (_portraitMoveCoroutine != null) StopCoroutine(_portraitMoveCoroutine);
-        _portraitMoveCoroutine = StartCoroutine(MovePortraitToRoutine(portraitRt, target, duration));
-
-        yield return _portraitMoveCoroutine;
+        _portraitMoveCoroutine = StartCoroutine(MovePortraitToRoutine(portraitRt, finalTarget, duration));
     }
 
     /// <summary>
-    /// 대사판 위로 이동
+    /// 초상화 원위치 복귀 (이미 원위치면 스킵)
     /// </summary>
-    public IEnumerator MoveDialogPanel(float offset, float duration)
+    public void ResetPortraitPosition(float duration)
     {
+        if (_portraitImage == null || !_portraitOriginalCached || !_isPortraitMoved) return;
+
+        _isPortraitMoved = false;
+        _currentPortraitTargetPos = _portraitOriginalAnchoredPos;
+
+        var portraitRt = _portraitImage.GetComponent<RectTransform>();
+        if (_portraitMoveCoroutine != null) StopCoroutine(_portraitMoveCoroutine);
+
+        if (duration <= 0f)
+        {
+            portraitRt.anchoredPosition = _portraitOriginalAnchoredPos;
+            return;
+        }
+
+        _portraitMoveCoroutine = StartCoroutine(MovePortraitToRoutine(portraitRt, _portraitOriginalAnchoredPos, duration));
+    }
+
+    /// <summary>
+    /// 대사판 위로 이동 시작 (초기 위치 기준 절대 이동)
+    /// </summary>
+    public void StartDialogPanelMove(float offset, float duration)
+    {
+        // 동일한 오프셋이면 애니메이션 스킵
+        if (Mathf.Approximately(_currentDialogOffset, offset)) return;
+
+        _currentDialogOffset = offset;
+        Vector2 targetPos = _dialogOriginalAnchoredPos + new Vector2(0f, offset);
+
         if (_dialogMoveCoroutine != null) StopCoroutine(_dialogMoveCoroutine);
-        _dialogMoveCoroutine = StartCoroutine(MoveDialogUpRoutine(offset, duration));
-
-        yield return _dialogMoveCoroutine;
+        _dialogMoveCoroutine = StartCoroutine(MoveDialogRoutine(targetPos, duration));
     }
 
     /// <summary>
-    /// 화면 클릭 대기
+    /// 대사판 원위치 복귀 (이미 원위치면 스킵)
     /// </summary>
-    public IEnumerator WaitForScreenClick()
+    public void ResetDialogPanelPosition(float duration)
     {
-        _moveNextClicked = false;
-        yield return new WaitUntil(() => _moveNextClicked);
+        // 이미 원위치(오프셋 0)면 스킵
+        if (Mathf.Approximately(_currentDialogOffset, 0f)) return;
+
+        _currentDialogOffset = 0f;
+
+        if (_dialogMoveCoroutine != null) StopCoroutine(_dialogMoveCoroutine);
+        _dialogMoveCoroutine = StartCoroutine(MoveDialogRoutine(_dialogOriginalAnchoredPos, duration));
     }
 
-    /// <summary>
-    /// 배치 진행도 패널 표시
-    /// </summary>
     public void ShowPlacementProgress(string label)
     {
         if (_placementProgressPanel != null) _placementProgressPanel.SetActive(true);
         if (_placementProgressText != null) _placementProgressText.text = label;
     }
 
-    /// <summary>
-    /// 배치 진행도 패널 숨김
-    /// </summary>
     public void HidePlacementProgress()
     {
         if (_placementProgressPanel != null) _placementProgressPanel.SetActive(false);
     }
 
-    /// <summary>
-    /// UI 요소 강조 시작 (비블로킹 — 즉시 반환)
-    /// ✅ QuestModule의 Initialize에서 호출됨
-    /// </summary>
     public void StartUIHighlight(RectTransform targetUI)
     {
         if (_highlighter == null || targetUI == null) return;
@@ -418,18 +450,12 @@ public class TutorialDialoguePresenter : MonoBehaviour
         _pulseCoroutine = StartCoroutine(HighlighterPulseRoutine());
     }
 
-    /// <summary>
-    /// UI 강조 제거
-    /// </summary>
     public void RemoveUIHighlight()
     {
         if (_pulseCoroutine != null) StopCoroutine(_pulseCoroutine);
         if (_highlighter != null) _highlighter.gameObject.SetActive(false);
     }
 
-    /// <summary>
-    /// 대사 숨김
-    /// </summary>
     public void HideDialogue()
     {
         if (_dialogPanel != null) _dialogPanel.SetActive(false);

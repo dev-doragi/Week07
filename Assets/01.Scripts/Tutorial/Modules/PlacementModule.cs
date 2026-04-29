@@ -14,9 +14,9 @@ public class PlacementModule : ITutorialModule
     private bool _conditionMet = false;
 
     private const int DEFENSE_PART_MIN = 1;
-    private const int DEFENSE_PART_MAX = 3;
-    private const int ATTACK_PART_MIN = 4;
-    private const int ATTACK_PART_MAX = 6;
+    private const int DEFENSE_PART_MAX = 10;
+    private const int ATTACK_PART_MIN = 11;
+    private const int ATTACK_PART_MAX = 17;
 
     public void Initialize(TutorialStep step)
     {
@@ -24,8 +24,17 @@ public class PlacementModule : ITutorialModule
         _partsPlaced = 0;
         _conditionMet = false;
 
-        // 파트 배치 이벤트 구독
         EventBus.Instance?.Subscribe<PartPlacedEvent>(OnPartPlaced);
+
+        if (_config != null)
+        {
+            EventBus.Instance?.Publish(new TutorialProgressUpdatedEvent
+            {
+                CurrentProgress = 0,
+                RequiredProgress = _config.RequiredAmount,
+                Label = GetLabelForConfig(_config)
+            });
+        }
     }
 
     public IEnumerator Execute()

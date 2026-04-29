@@ -8,4 +8,7 @@ public class EnemyDefeatedModuleConfig
 {
     [Header("Enemy Defeat Condition")]
     public int RequiredEnemyCount = 1;
+
+    [SerializeField]
+    public TutorialEnemyDefeatTarget Target = TutorialEnemyDefeatTarget.Any;
 }

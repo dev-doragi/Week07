@@ -79,6 +79,12 @@ public class StageManager : Singleton<StageManager>
 
     private void OnCoreDestroyed(CoreDestroyedEvent evt)
     {
+        if (StageLoadContext.IsTutorial)
+        {
+            Debug.Log("[StageManager] 튜토리얼 중이므로 코어 파괴 시 스테이지 클리어를 무시합니다.");
+            return;
+        }
+
         // GameFlowManager가 없으면 EndWave를 호출하지 않음 (방어)
         if (GameFlowManager.Instance == null)
         {
@@ -143,7 +149,6 @@ public class StageManager : Singleton<StageManager>
 
         EventBus.Instance.Publish(new StageLoadedEvent { StageIndex = CurrentStageIndex });
 
-        // ⚠️ GridManager가 준비될 시간을 제공 (1프레임 대기)
         StartCoroutine(PublishStageGenerateCompleteAfterDelay());
 
         Debug.Log($"[StageManager] Stage {stageIndex} 로드 준비 완료.");
@@ -208,11 +213,7 @@ public class StageManager : Singleton<StageManager>
             return;
         }
 
-        CurrentWaveIndex = waveIndex;
-        CurrentState = InGameState.WavePlaying;
-        _isWaveEnding = false;
-        Debug.Log($"[StageManager] Starting Wave {waveIndex}");
-        EventBus.Instance?.Publish(new WaveStartedEvent { StageIndex = CurrentStageIndex, WaveIndex = waveIndex });
+        BeginWave(CurrentStageIndex, waveIndex);
     }
 
     public void StartStageFromMapNode(int stageIndex, float delay)
@@ -309,6 +310,16 @@ public class StageManager : Singleton<StageManager>
     private void PublishWaveWaitTick(float remainingTime)
     {
         EventBus.Instance?.Publish(new WaveWaitTimerTickEvent { RemainingTime = Mathf.Max(0f, remainingTime) });
+    }
+
+    private void BeginWave(int stageIndex, int waveIndex)
+    {
+        CurrentStageIndex = stageIndex;
+        CurrentWaveIndex = waveIndex;
+        CurrentState = InGameState.WavePlaying;
+        _isWaveEnding = false;
+        Debug.Log($"[StageManager] Starting Wave {waveIndex}");
+        EventBus.Instance?.Publish(new WaveStartedEvent { StageIndex = CurrentStageIndex, WaveIndex = waveIndex });
     }
 
     private void StopMapWaveStartRoutine()

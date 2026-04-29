@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -53,24 +52,15 @@ public class TutorialSkipButton : MonoBehaviour, IPointerDownHandler, IPointerUp
         ResetButton();
         Debug.Log("[Tutorial] Skip Hold Complete!");
 
-        // 1. 매니저에게 정식 건너뛰기 요청
         if (TutorialManager.Instance != null)
         {
             TutorialManager.Instance.SkipTutorial();
         }
         else
         {
-            // 매니저가 없을 경우를 대비한 최소한의 안전장치
             Time.timeScale = 1f;
         }
-        
-        EventBus.Instance?.Publish(new TutorialEnemyDefeatedEvent());
-        EventBus.Instance?.Publish(new TutorialCompletedEvent() { RewardStageIndex = 0});
 
-        // 2. UI 이동 (스테이지 선택 창으로)
-        if (UIManager.Instance != null)
-        {
-            UIManager.Instance.OnGoToStageSelectClicked();
-        }
+        // IF: 그냥 튜토리얼 클리어 패널 말고 아예 스테이지로 이동하게 할까?
     }
 }

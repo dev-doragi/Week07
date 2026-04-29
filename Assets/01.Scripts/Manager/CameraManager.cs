@@ -21,6 +21,17 @@ public class CameraManager : Singleton<CameraManager>
     private bool _isDragging;
     private bool _tutorialCameraEventPublished;
 
+    public Vector3 OriginalPosition => _originalPos;
+    public float InitialZoom => _initialZoom;
+
+    public void ResetCameraState()
+    {
+        _isDragging = false;
+        _targetZoom = _initialZoom;
+        _mainCamera.orthographicSize = _initialZoom;
+        transform.position = ClampCameraPosition(_originalPos, _initialZoom);
+    }
+
     protected override void Awake()
     {
         base.Awake();

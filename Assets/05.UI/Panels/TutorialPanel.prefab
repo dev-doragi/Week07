@@ -1,5 +1,155 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &402091746275934191
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1801893681592816424}
+  - component: {fileID: 1138272400843094374}
+  - component: {fileID: 2886910233741467318}
+  m_Layer: 5
+  m_Name: Highlighter_WaveRemainTime
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &1801893681592816424
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 402091746275934191}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1442253882853090380}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 20, y: 443}
+  m_SizeDelta: {x: 733.0021, y: 98.956}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &1138272400843094374
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 402091746275934191}
+  m_CullTransparentMesh: 1
+--- !u!114 &2886910233741467318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 402091746275934191}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 0.9858491, b: 0.9858491, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: e70d2b5e24adb37479ff551b9db3a7c2, type: 3}
+  m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!1 &485507123338458749
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5917001947995672328}
+  - component: {fileID: 7907860303954329496}
+  - component: {fileID: 5185731894608480151}
+  m_Layer: 5
+  m_Name: Highlighter_Tetris
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &5917001947995672328
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 485507123338458749}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1442253882853090380}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 584.7804, y: -380.38}
+  m_SizeDelta: {x: 680.9191, y: 389.25}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &7907860303954329496
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 485507123338458749}
+  m_CullTransparentMesh: 1
+--- !u!114 &5185731894608480151
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 485507123338458749}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 0.9858491, b: 0.9858491, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: e70d2b5e24adb37479ff551b9db3a7c2, type: 3}
+  m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &667328804029000553
 GameObject:
   m_ObjectHideFlags: 0
@@ -67,6 +217,81 @@ MonoBehaviour:
       m_Calls: []
   m_Sprite: {fileID: 21300000, guid: e70d2b5e24adb37479ff551b9db3a7c2, type: 3}
   m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!1 &687160529575125724
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9056698094391589131}
+  - component: {fileID: 8153353961854676096}
+  - component: {fileID: 7144084287705562369}
+  m_Layer: 5
+  m_Name: Portrait_L
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &9056698094391589131
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 687160529575125724}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6895544864151901847}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -641.59, y: 489}
+  m_SizeDelta: {x: 593.75, y: 906.25}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &8153353961854676096
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 687160529575125724}
+  m_CullTransparentMesh: 1
+--- !u!114 &7144084287705562369
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 687160529575125724}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -247,9 +472,9 @@ RectTransform:
   - {fileID: 5386302736405704101}
   m_Father: {fileID: 200397352298499964}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 513.5, y: -66.4978}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 300, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6159004171885337661
@@ -568,6 +793,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6895544864151901847}
   - component: {fileID: 1056619453457295274}
+  - component: {fileID: 7348342623763710469}
   m_Layer: 5
   m_Name: DialoguePanel
   m_TagString: Untagged
@@ -588,12 +814,13 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3074801695772211857}
+  - {fileID: 9056698094391589131}
   - {fileID: 3259685773516338474}
   m_Father: {fileID: 1442253882853090380}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 26}
+  m_AnchoredPosition: {x: 0, y: 25}
   m_SizeDelta: {x: 1876.9348, y: 343.0072}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &1056619453457295274
@@ -604,6 +831,31 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1698197600764794956}
   m_CullTransparentMesh: 1
+--- !u!114 &7348342623763710469
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1698197600764794956}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 717035f0a0db7904db99ca0720f88355, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TutorialDialoguePresenter
+  _dialogPanel: {fileID: 1698197600764794956}
+  _nameText: {fileID: 8094103395032301937}
+  _dialogText: {fileID: 32396568195685859}
+  _portraitImage: {fileID: 7975207625282867106}
+  _highlighter: {fileID: 2375346784971493985}
+  _clickButton: {fileID: 4439620085233567736}
+  _skipButton: {fileID: 4126793753550891711}
+  _postPanel: {fileID: 5926704351903602396}
+  _placementProgressPanel: {fileID: 3555276280400176784}
+  _placementProgressText: {fileID: 2119152732316717486}
+  _typingSpeed: 0.05
+  _pulseScale: 1.1
+  _pulseSpeed: 4
 --- !u!1 &2511805315824757954
 GameObject:
   m_ObjectHideFlags: 0
@@ -616,7 +868,7 @@ GameObject:
   - component: {fileID: 1201555515703639179}
   - component: {fileID: 7975207625282867106}
   m_Layer: 5
-  m_Name: Portrait
+  m_Name: Portrait_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -970,8 +1222,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 142, y: -459.98248}
-  m_SizeDelta: {x: 1493.8516, y: 244.9048}
+  m_AnchoredPosition: {x: -126.64957, y: -402.5}
+  m_SizeDelta: {x: 685.7151, y: 312.9416}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2850184103845678910
 CanvasRenderer:
@@ -1165,7 +1417,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &321073711573102817
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1361,6 +1613,81 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!1 &3758149291967940149
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3635614961665841245}
+  - component: {fileID: 1375984467051009517}
+  - component: {fileID: 1083065760280990175}
+  m_Layer: 5
+  m_Name: Highlighter_Charge
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &3635614961665841245
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3758149291967940149}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1442253882853090380}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 505, y: -119.59306}
+  m_SizeDelta: {x: 262.4929, y: 98.956}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &1375984467051009517
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3758149291967940149}
+  m_CullTransparentMesh: 1
+--- !u!114 &1083065760280990175
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3758149291967940149}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 0.9858491, b: 0.9858491, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: e70d2b5e24adb37479ff551b9db3a7c2, type: 3}
+  m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &4126793753550891711
 GameObject:
   m_ObjectHideFlags: 0
@@ -1480,13 +1807,13 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1442253882853090380}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -679, y: -201}
+  m_AnchoredPosition: {x: -559, y: -66.9}
   m_SizeDelta: {x: 76.0089, y: 237.6973}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2999623676053763616
@@ -1504,6 +1831,156 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4370108399103183130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 0.9858491, b: 0.9858491, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: e70d2b5e24adb37479ff551b9db3a7c2, type: 3}
+  m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!1 &4845895452538284234
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7888557912169610051}
+  - component: {fileID: 8310654914635033028}
+  - component: {fileID: 6249600007664393967}
+  m_Layer: 5
+  m_Name: Highlighter_WaveStart
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &7888557912169610051
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4845895452538284234}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1442253882853090380}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 807.2185, y: -119.59306}
+  m_SizeDelta: {x: 262.4929, y: 98.956}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &8310654914635033028
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4845895452538284234}
+  m_CullTransparentMesh: 1
+--- !u!114 &6249600007664393967
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4845895452538284234}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 0.9858491, b: 0.9858491, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: e70d2b5e24adb37479ff551b9db3a7c2, type: 3}
+  m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!1 &5004569171430396123
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6149680221526314953}
+  - component: {fileID: 7319395869019463586}
+  - component: {fileID: 4826816946408030177}
+  m_Layer: 5
+  m_Name: Highlighter_RitualPanel
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &6149680221526314953
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5004569171430396123}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1442253882853090380}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -613.2765, y: -473.21606}
+  m_SizeDelta: {x: 237.3582, y: 236.3562}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &7319395869019463586
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5004569171430396123}
+  m_CullTransparentMesh: 1
+--- !u!114 &4826816946408030177
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5004569171430396123}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
@@ -1657,7 +2134,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2375346784971493985
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1911,13 +2388,13 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1442253882853090380}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -679, y: 237}
+  m_AnchoredPosition: {x: -909, y: 190}
   m_SizeDelta: {x: 76.0089, y: 237.6973}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3690079578665433297
@@ -2133,6 +2610,11 @@ RectTransform:
   - {fileID: 507113195504626307}
   - {fileID: 255604084205943565}
   - {fileID: 405224111575878242}
+  - {fileID: 7888557912169610051}
+  - {fileID: 1801893681592816424}
+  - {fileID: 3635614961665841245}
+  - {fileID: 6149680221526314953}
+  - {fileID: 5917001947995672328}
   - {fileID: 7637483270051685808}
   - {fileID: 6491091956350355758}
   - {fileID: 8318967606368130318}
@@ -2196,14 +2678,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1543d413c5329d04daed02a778e0cb2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TutorialManager
-  _isDontDestroyOnLoad: 1
+  _isDontDestroyOnLoad: 0
   _steps:
-  - StepIndex: 0
-    StepName: 
+  - StepName: 
+    UIStateConfig:
+      OverrideUIState: 0
+      ShowInGamePanel: 0
+      ShowBlockPanel: 0
+      ShowShopButtonGroup: 0
+      ShowProductionGrid: 0
+      ShowWaveStartButton: 0
+      ShowChargeButton: 0
     PauseConfig:
       ShouldPause: 0
       BlockInput: 0
     DialogueConfig:
+      _inlineDialogue:
+        _speakerName: "\uC950\uC2E0\uAD00\uCA29"
+        _message: "\uAD50\uC8FC\uB2D8, \uC77C\uC5B4\uB098\uC168\uAD70\uC694! \uACE7
+          \uC801\uC758 \uC131\uCC44\uC5D0 \uB3C4\uB2EC\uD569\uB2C8\uB2E4!"
+        _portraitSprite: {fileID: 21300000, guid: e37bae4aaa7e5504f976e3425f937749, type: 3}
       _dialogueDataSO: {fileID: 0}
       _movePortraitLeft: 0
       _portraitMoveOffset: 150
@@ -2224,17 +2718,1066 @@ MonoBehaviour:
       ResetCameraAfterMove: 0
       ResetDuration: 0
     EnemySpawnConfig:
-      EnemySpawnCycles: 0
-      EnemySiegePrefab: {fileID: 0}
-      NextWaveInterval: 0
+      TutorialStageData: {fileID: 0}
+      TutorialWaveIndex: 0
+    EnemyDefeatedConfig:
+      RequiredEnemyCount: 1
+      Target: 0
+    InteractionConfig:
+      InteractionId: 
+      RequiredCount: 1
+      ProgressLabel: "\uC0C1\uD638\uC791\uC6A9"
+    HighlightConfig:
+      TargetUI: {fileID: 0}
+      PulseScale: 1.1
+      PulseSpeed: 4
+    AutoAdvanceConfig:
+      AutoAdvanceDelay: 0
+    Condition: 0
+  - StepName: 
+    UIStateConfig:
+      OverrideUIState: 1
+      ShowInGamePanel: 1
+      ShowBlockPanel: 0
+      ShowShopButtonGroup: 0
+      ShowProductionGrid: 1
+      ShowWaveStartButton: 1
+      ShowChargeButton: 0
+    PauseConfig:
+      ShouldPause: 0
+      BlockInput: 0
+    DialogueConfig:
+      _inlineDialogue:
+        _speakerName: "\uC950\uC2E0\uAD00\uCA29"
+        _message: "\uC801\uC744 \uACF5\uACA9\uD558\uAE30 \uC704\uD574 \uC0AC\uC6A9\uD560
+          \uD0C4\uC57D\u2026 \uC544\uB2C8, \uC2E0\uB3C4\uB4E4\uC744 \uC0DD\uC0B0\uD574\uC57C
+          \uD569\uB2C8\uB2E4!"
+        _portraitSprite: {fileID: 21300000, guid: e37bae4aaa7e5504f976e3425f937749, type: 3}
+      _dialogueDataSO: {fileID: 0}
+      _movePortraitLeft: 0
+      _portraitMoveOffset: 0
+      _portraitMoveDuration: 0.5
+      _portraitTarget: {fileID: 9056698094391589131}
+      _moveDialogUp: 1
+      _dialogMoveOffset: 350
+      _dialogMoveDuration: 0.5
+    QuestConfig:
+      TargetUI: {fileID: 0}
+      HighlightUI: 0
+    PlacementConfig:
+      RequiredAmount: 0
+      RequiredGroup: 0
+      RequiredPartKeys: 
+      PlacementLabel: 
+    CameraConfig:
+      ResetCameraAfterMove: 0
+      ResetDuration: 0
+    EnemySpawnConfig:
+      TutorialStageData: {fileID: 0}
+      TutorialWaveIndex: 0
     EnemyDefeatedConfig:
       RequiredEnemyCount: 0
+      Target: 0
+    InteractionConfig:
+      InteractionId: 
+      RequiredCount: 1
+      ProgressLabel: "\uC0C1\uD638\uC791\uC6A9"
+    HighlightConfig:
+      TargetUI: {fileID: 6491091956350355758}
+      PulseScale: 1.05
+      PulseSpeed: 4
+    AutoAdvanceConfig:
+      AutoAdvanceDelay: 0
+    Condition: 0
+  - StepName: 
+    UIStateConfig:
+      OverrideUIState: 1
+      ShowInGamePanel: 1
+      ShowBlockPanel: 0
+      ShowShopButtonGroup: 0
+      ShowProductionGrid: 1
+      ShowWaveStartButton: 0
+      ShowChargeButton: 0
+    PauseConfig:
+      ShouldPause: 0
+      BlockInput: 0
+    DialogueConfig:
+      _inlineDialogue:
+        _speakerName: "\uC950\uC2E0\uAD00\uCA29"
+        _message: "\uC774\uACF3\uC5D0 \uC704\uCE58\uD55C \uC0DD\uC0B0 \uC2DC\uC124\uC744
+          \uADF8\uB9AC\uB4DC\uC5D0 \uC62E\uACA8\uC11C \uC2E0\uB3C4\uB4E4\uC744 \uC0DD\uC0B0\uD558\uC138\uC694!"
+        _portraitSprite: {fileID: 21300000, guid: e37bae4aaa7e5504f976e3425f937749, type: 3}
+      _dialogueDataSO: {fileID: 0}
+      _movePortraitLeft: 1
+      _portraitMoveOffset: 150
+      _portraitMoveDuration: 0.5
+      _portraitTarget: {fileID: 9056698094391589131}
+      _moveDialogUp: 1
+      _dialogMoveOffset: 350
+      _dialogMoveDuration: 0.5
+    QuestConfig:
+      TargetUI: {fileID: 0}
+      HighlightUI: 0
+    PlacementConfig:
+      RequiredAmount: 0
+      RequiredGroup: 0
+      RequiredPartKeys: 
+      PlacementLabel: 
+    CameraConfig:
+      ResetCameraAfterMove: 0
+      ResetDuration: 0
+    EnemySpawnConfig:
+      TutorialStageData: {fileID: 0}
+      TutorialWaveIndex: 0
+    EnemyDefeatedConfig:
+      RequiredEnemyCount: 0
+      Target: 0
+    InteractionConfig:
+      InteractionId: 
+      RequiredCount: 1
+      ProgressLabel: "\uC0C1\uD638\uC791\uC6A9"
+    HighlightConfig:
+      TargetUI: {fileID: 5917001947995672328}
+      PulseScale: 1.05
+      PulseSpeed: 4
+    AutoAdvanceConfig:
+      AutoAdvanceDelay: 0
+    Condition: 0
+  - StepName: 
+    UIStateConfig:
+      OverrideUIState: 0
+      ShowInGamePanel: 0
+      ShowBlockPanel: 0
+      ShowShopButtonGroup: 0
+      ShowProductionGrid: 0
+      ShowWaveStartButton: 0
+      ShowChargeButton: 0
+    PauseConfig:
+      ShouldPause: 0
+      BlockInput: 0
+    DialogueConfig:
+      _inlineDialogue:
+        _speakerName: "\uC950\uC2E0\uAD00\uCA29"
+        _message: "5\uCD08\uB9C8\uB2E4 \uBC30\uCE58\uB41C \uC0DD\uC0B0 \uC2DC\uC124\uC758
+          \uCE78 \uC218\uC5D0 \uBE44\uB840\uD558\uC5EC \uC2E0\uB3C4\uB4E4\uC774 \uC0DD\uC0B0\uB429\uB2C8\uB2E4!"
+        _portraitSprite: {fileID: 21300000, guid: e37bae4aaa7e5504f976e3425f937749, type: 3}
+      _dialogueDataSO: {fileID: 0}
+      _movePortraitLeft: 1
+      _portraitMoveOffset: 150
+      _portraitMoveDuration: 0.5
+      _portraitTarget: {fileID: 9056698094391589131}
+      _moveDialogUp: 1
+      _dialogMoveOffset: 350
+      _dialogMoveDuration: 0.5
+    QuestConfig:
+      TargetUI: {fileID: 0}
+      HighlightUI: 0
+    PlacementConfig:
+      RequiredAmount: 0
+      RequiredGroup: 0
+      RequiredPartKeys: 
+      PlacementLabel: 
+    CameraConfig:
+      ResetCameraAfterMove: 0
+      ResetDuration: 0
+    EnemySpawnConfig:
+      TutorialStageData: {fileID: 0}
+      TutorialWaveIndex: 0
+    EnemyDefeatedConfig:
+      RequiredEnemyCount: 0
+      Target: 0
+    InteractionConfig:
+      InteractionId: 
+      RequiredCount: 0
+      ProgressLabel: 
+    HighlightConfig:
+      TargetUI: {fileID: 5917001947995672328}
+      PulseScale: 1.05
+      PulseSpeed: 4
+    AutoAdvanceConfig:
+      AutoAdvanceDelay: 0
+    Condition: 0
+  - StepName: 
+    UIStateConfig:
+      OverrideUIState: 0
+      ShowInGamePanel: 0
+      ShowBlockPanel: 0
+      ShowShopButtonGroup: 0
+      ShowProductionGrid: 0
+      ShowWaveStartButton: 0
+      ShowChargeButton: 0
+    PauseConfig:
+      ShouldPause: 0
+      BlockInput: 0
+    DialogueConfig:
+      _inlineDialogue:
+        _speakerName: "\uC950\uC2E0\uAD00\uCA29"
+        _message: "\uC2E0\uB3C4\uB4E4\uC740 \uC6B0\uB9AC\uC758 \uC131\uC804\uC5D0
+          \uC4F8 \uC720\uB2DB\uC758 \uBC30\uCE58\uC5D0\uB3C4 \uC4F0\uC774\uC9C0\uB9CC,
+          \uC720\uB2DB\uB4E4\uC774 \uC801\uC744 \uACF5\uACA9\uD558\uB294 \uC6A9\uB3C4\uB85C\uB3C4
+          \uC4F0\uC785\uB2C8\uB2E4."
+        _portraitSprite: {fileID: 21300000, guid: e37bae4aaa7e5504f976e3425f937749, type: 3}
+      _dialogueDataSO: {fileID: 0}
+      _movePortraitLeft: 0
+      _portraitMoveOffset: 150
+      _portraitMoveDuration: 0.5
+      _portraitTarget: {fileID: 0}
+      _moveDialogUp: 1
+      _dialogMoveOffset: 350
+      _dialogMoveDuration: 0.5
+    QuestConfig:
+      TargetUI: {fileID: 0}
+      HighlightUI: 0
+    PlacementConfig:
+      RequiredAmount: 0
+      RequiredGroup: 0
+      RequiredPartKeys: 
+      PlacementLabel: 
+    CameraConfig:
+      ResetCameraAfterMove: 0
+      ResetDuration: 0
+    EnemySpawnConfig:
+      TutorialStageData: {fileID: 0}
+      TutorialWaveIndex: 0
+    EnemyDefeatedConfig:
+      RequiredEnemyCount: 0
+      Target: 0
+    InteractionConfig:
+      InteractionId: 
+      RequiredCount: 0
+      ProgressLabel: 
+    HighlightConfig:
+      TargetUI: {fileID: 0}
+      PulseScale: 0
+      PulseSpeed: 0
+    AutoAdvanceConfig:
+      AutoAdvanceDelay: 0
+    Condition: 0
+  - StepName: 
+    UIStateConfig:
+      OverrideUIState: 0
+      ShowInGamePanel: 0
+      ShowBlockPanel: 0
+      ShowShopButtonGroup: 0
+      ShowProductionGrid: 0
+      ShowWaveStartButton: 0
+      ShowChargeButton: 0
+    PauseConfig:
+      ShouldPause: 0
+      BlockInput: 0
+    DialogueConfig:
+      _inlineDialogue:
+        _speakerName: "\uC950\uC2E0\uAD00\uCA29"
+        _message: "\uB9CC\uC57D \uC2E0\uB3C4\uAC00 \uBD80\uC871\uD558\uB2E4\uBA74
+          \uC6B0\uB9AC\uC758 \uACF5\uACA9 \uC720\uB2DB\uB3C4 \uC81C\uB300\uB85C \uACF5\uACA9\uD558\uC9C0
+          \uBABB\uD560 \uAC70\uC608\uC694."
+        _portraitSprite: {fileID: 21300000, guid: e37bae4aaa7e5504f976e3425f937749, type: 3}
+      _dialogueDataSO: {fileID: 0}
+      _movePortraitLeft: 0
+      _portraitMoveOffset: 150
+      _portraitMoveDuration: 0.5
+      _portraitTarget: {fileID: 0}
+      _moveDialogUp: 1
+      _dialogMoveOffset: 350
+      _dialogMoveDuration: 0.5
+    QuestConfig:
+      TargetUI: {fileID: 0}
+      HighlightUI: 0
+    PlacementConfig:
+      RequiredAmount: 0
+      RequiredGroup: 0
+      RequiredPartKeys: 
+      PlacementLabel: 
+    CameraConfig:
+      ResetCameraAfterMove: 0
+      ResetDuration: 0
+    EnemySpawnConfig:
+      TutorialStageData: {fileID: 0}
+      TutorialWaveIndex: 0
+    EnemyDefeatedConfig:
+      RequiredEnemyCount: 0
+      Target: 0
+    InteractionConfig:
+      InteractionId: 
+      RequiredCount: 0
+      ProgressLabel: 
+    HighlightConfig:
+      TargetUI: {fileID: 0}
+      PulseScale: 0
+      PulseSpeed: 0
+    AutoAdvanceConfig:
+      AutoAdvanceDelay: 0
+    Condition: 0
+  - StepName: 
+    UIStateConfig:
+      OverrideUIState: 1
+      ShowInGamePanel: 1
+      ShowBlockPanel: 0
+      ShowShopButtonGroup: 1
+      ShowProductionGrid: 1
+      ShowWaveStartButton: 0
+      ShowChargeButton: 0
+    PauseConfig:
+      ShouldPause: 0
+      BlockInput: 0
+    DialogueConfig:
+      _inlineDialogue:
+        _speakerName: "\uC950\uC2E0\uAD00\uCA29"
+        _message: "\uC774\uC81C \uC131\uC804\uC744 \uD5A5\uD55C \uACF5\uACA9\uC744
+          \uB9C9\uC544\uC904 \uBC29\uC5B4 \uC720\uB2DB\uC744 \uBC30\uCE58\uD574 \uBD05\uC2DC\uB2E4!"
+        _portraitSprite: {fileID: 21300000, guid: e37bae4aaa7e5504f976e3425f937749, type: 3}
+      _dialogueDataSO: {fileID: 0}
+      _movePortraitLeft: 0
+      _portraitMoveOffset: 150
+      _portraitMoveDuration: 0.5
+      _portraitTarget: {fileID: 0}
+      _moveDialogUp: 0
+      _dialogMoveOffset: 300
+      _dialogMoveDuration: 0.5
+    QuestConfig:
+      TargetUI: {fileID: 0}
+      HighlightUI: 0
+    PlacementConfig:
+      RequiredAmount: 3
+      RequiredGroup: 1
+      RequiredPartKeys: 
+      PlacementLabel: "\uBC29\uC5B4 \uC720\uB2DB \uC124\uCE58\uD558\uAE30"
+    CameraConfig:
+      ResetCameraAfterMove: 0
+      ResetDuration: 0
+    EnemySpawnConfig:
+      TutorialStageData: {fileID: 0}
+      TutorialWaveIndex: 0
+    EnemyDefeatedConfig:
+      RequiredEnemyCount: 0
+      Target: 0
+    InteractionConfig:
+      InteractionId: 
+      RequiredCount: 0
+      ProgressLabel: 
+    HighlightConfig:
+      TargetUI: {fileID: 255604084205943565}
+      PulseScale: 1.1
+      PulseSpeed: 4
+    AutoAdvanceConfig:
+      AutoAdvanceDelay: 0
+    Condition: 2
+  - StepName: 
+    UIStateConfig:
+      OverrideUIState: 0
+      ShowInGamePanel: 1
+      ShowBlockPanel: 1
+      ShowShopButtonGroup: 1
+      ShowProductionGrid: 1
+      ShowWaveStartButton: 1
+      ShowChargeButton: 1
+    PauseConfig:
+      ShouldPause: 0
+      BlockInput: 0
+    DialogueConfig:
+      _inlineDialogue:
+        _speakerName: "\uC950\uC2E0\uAD00\uCA29"
+        _message: "\uC798 \uD558\uC168\uC2B5\uB2C8\uB2E4!"
+        _portraitSprite: {fileID: 21300000, guid: e37bae4aaa7e5504f976e3425f937749, type: 3}
+      _dialogueDataSO: {fileID: 0}
+      _movePortraitLeft: 0
+      _portraitMoveOffset: 150
+      _portraitMoveDuration: 0.5
+      _portraitTarget: {fileID: 0}
+      _moveDialogUp: 0
+      _dialogMoveOffset: 300
+      _dialogMoveDuration: 0.5
+    QuestConfig:
+      TargetUI: {fileID: 0}
+      HighlightUI: 0
+    PlacementConfig:
+      RequiredAmount: 0
+      RequiredGroup: 0
+      RequiredPartKeys: 
+      PlacementLabel: 
+    CameraConfig:
+      ResetCameraAfterMove: 0
+      ResetDuration: 0
+    EnemySpawnConfig:
+      TutorialStageData: {fileID: 0}
+      TutorialWaveIndex: 0
+    EnemyDefeatedConfig:
+      RequiredEnemyCount: 0
+      Target: 0
+    InteractionConfig:
+      InteractionId: 
+      RequiredCount: 0
+      ProgressLabel: 
+    HighlightConfig:
+      TargetUI: {fileID: 0}
+      PulseScale: 0
+      PulseSpeed: 0
+    AutoAdvanceConfig:
+      AutoAdvanceDelay: 0
+    Condition: 0
+  - StepName: 
+    UIStateConfig:
+      OverrideUIState: 1
+      ShowInGamePanel: 1
+      ShowBlockPanel: 0
+      ShowShopButtonGroup: 1
+      ShowProductionGrid: 1
+      ShowWaveStartButton: 0
+      ShowChargeButton: 0
+    PauseConfig:
+      ShouldPause: 0
+      BlockInput: 0
+    DialogueConfig:
+      _inlineDialogue:
+        _speakerName: "\uC950\uC2E0\uAD00\uCA29"
+        _message: "\uB2E4\uC74C\uC740 \uACF5\uC131\uC744 \uC704\uD55C \uACF5\uACA9
+          \uC720\uB2DB\uB3C4 \uBC30\uCE58\uD574 \uBD05\uC2DC\uB2E4!"
+        _portraitSprite: {fileID: 21300000, guid: e37bae4aaa7e5504f976e3425f937749, type: 3}
+      _dialogueDataSO: {fileID: 0}
+      _movePortraitLeft: 0
+      _portraitMoveOffset: 150
+      _portraitMoveDuration: 0.5
+      _portraitTarget: {fileID: 0}
+      _moveDialogUp: 0
+      _dialogMoveOffset: 300
+      _dialogMoveDuration: 0.5
+    QuestConfig:
+      TargetUI: {fileID: 0}
+      HighlightUI: 0
+    PlacementConfig:
+      RequiredAmount: 1
+      RequiredGroup: 2
+      RequiredPartKeys: 
+      PlacementLabel: "\uACF5\uACA9 \uC720\uB2DB \uC124\uCE58\uD558\uAE30"
+    CameraConfig:
+      ResetCameraAfterMove: 0
+      ResetDuration: 0
+    EnemySpawnConfig:
+      TutorialStageData: {fileID: 0}
+      TutorialWaveIndex: 0
+    EnemyDefeatedConfig:
+      RequiredEnemyCount: 0
+      Target: 0
+    InteractionConfig:
+      InteractionId: 
+      RequiredCount: 0
+      ProgressLabel: 
+    HighlightConfig:
+      TargetUI: {fileID: 507113195504626307}
+      PulseScale: 1.1
+      PulseSpeed: 4
+    AutoAdvanceConfig:
+      AutoAdvanceDelay: 0
+    Condition: 2
+  - StepName: 
+    UIStateConfig:
+      OverrideUIState: 1
+      ShowInGamePanel: 1
+      ShowBlockPanel: 1
+      ShowShopButtonGroup: 1
+      ShowProductionGrid: 1
+      ShowWaveStartButton: 0
+      ShowChargeButton: 0
+    PauseConfig:
+      ShouldPause: 0
+      BlockInput: 0
+    DialogueConfig:
+      _inlineDialogue:
+        _speakerName: "\uC950\uC2E0\uAD00\uCA29"
+        _message: "\uD639\uC2DC \uC720\uB2DB\uC744 \uBC30\uCE58\uD560 \uC6A9\uB7C9\uC774
+          \uBD80\uC871\uD558\uB2E4\uBA74 \uAD74\uB9AC\uC950\uB97C \uB354 \uBC30\uCE58\uD558\uBA74
+          \uB429\uB2C8\uB2E4!"
+        _portraitSprite: {fileID: 21300000, guid: e37bae4aaa7e5504f976e3425f937749, type: 3}
+      _dialogueDataSO: {fileID: 0}
+      _movePortraitLeft: 0
+      _portraitMoveOffset: 150
+      _portraitMoveDuration: 0.5
+      _portraitTarget: {fileID: 0}
+      _moveDialogUp: 0
+      _dialogMoveOffset: 300
+      _dialogMoveDuration: 0.5
+    QuestConfig:
+      TargetUI: {fileID: 0}
+      HighlightUI: 0
+    PlacementConfig:
+      RequiredAmount: 0
+      RequiredGroup: 0
+      RequiredPartKeys: 
+      PlacementLabel: 
+    CameraConfig:
+      ResetCameraAfterMove: 0
+      ResetDuration: 0
+    EnemySpawnConfig:
+      TutorialStageData: {fileID: 0}
+      TutorialWaveIndex: 0
+    EnemyDefeatedConfig:
+      RequiredEnemyCount: 0
+      Target: 0
+    InteractionConfig:
+      InteractionId: 
+      RequiredCount: 0
+      ProgressLabel: 
+    HighlightConfig:
+      TargetUI: {fileID: 405224111575878242}
+      PulseScale: 1.1
+      PulseSpeed: 4
+    AutoAdvanceConfig:
+      AutoAdvanceDelay: 0
+    Condition: 0
+  - StepName: 
+    UIStateConfig:
+      OverrideUIState: 0
+      ShowInGamePanel: 0
+      ShowBlockPanel: 0
+      ShowShopButtonGroup: 0
+      ShowProductionGrid: 0
+      ShowWaveStartButton: 0
+      ShowChargeButton: 0
+    PauseConfig:
+      ShouldPause: 0
+      BlockInput: 0
+    DialogueConfig:
+      _inlineDialogue:
+        _speakerName: "\uC950\uC2E0\uAD00\uCA29"
+        _message: "\uC774\uC81C \uC6B0\uB9AC\uC758 \uAC00\uB974\uCE68\uC744 \uC804\uD30C\uD560
+          \uAE30\uBCF8\uC801\uC778 \uC900\uBE44\uAC00 \uB418\uC5C8\uAD70\uC694!"
+        _portraitSprite: {fileID: 21300000, guid: e37bae4aaa7e5504f976e3425f937749, type: 3}
+      _dialogueDataSO: {fileID: 0}
+      _movePortraitLeft: 0
+      _portraitMoveOffset: 150
+      _portraitMoveDuration: 0.5
+      _portraitTarget: {fileID: 0}
+      _moveDialogUp: 0
+      _dialogMoveOffset: 300
+      _dialogMoveDuration: 0.5
+    QuestConfig:
+      TargetUI: {fileID: 0}
+      HighlightUI: 0
+    PlacementConfig:
+      RequiredAmount: 0
+      RequiredGroup: 0
+      RequiredPartKeys: 
+      PlacementLabel: 
+    CameraConfig:
+      ResetCameraAfterMove: 0
+      ResetDuration: 0
+    EnemySpawnConfig:
+      TutorialStageData: {fileID: 0}
+      TutorialWaveIndex: 0
+    EnemyDefeatedConfig:
+      RequiredEnemyCount: 0
+      Target: 0
+    InteractionConfig:
+      InteractionId: 
+      RequiredCount: 0
+      ProgressLabel: 
+    HighlightConfig:
+      TargetUI: {fileID: 0}
+      PulseScale: 0
+      PulseSpeed: 0
+    AutoAdvanceConfig:
+      AutoAdvanceDelay: 0
+    Condition: 0
+  - StepName: 
+    UIStateConfig:
+      OverrideUIState: 1
+      ShowInGamePanel: 1
+      ShowBlockPanel: 1
+      ShowShopButtonGroup: 1
+      ShowProductionGrid: 1
+      ShowWaveStartButton: 1
+      ShowChargeButton: 0
+    PauseConfig:
+      ShouldPause: 0
+      BlockInput: 0
+    DialogueConfig:
+      _inlineDialogue:
+        _speakerName: "\uC950\uC2E0\uAD00\uCA29"
+        _message: "\uC774\uC81C \uC801\uC758 \uC131\uCC44\uB85C \uBE60\uB974\uAC8C
+          \uC774\uB3D9\uD569\uC2DC\uB2E4!"
+        _portraitSprite: {fileID: 21300000, guid: e37bae4aaa7e5504f976e3425f937749, type: 3}
+      _dialogueDataSO: {fileID: 0}
+      _movePortraitLeft: 0
+      _portraitMoveOffset: 150
+      _portraitMoveDuration: 0.5
+      _portraitTarget: {fileID: 9056698094391589131}
+      _moveDialogUp: 0
+      _dialogMoveOffset: 300
+      _dialogMoveDuration: 0.5
+    QuestConfig:
+      TargetUI: {fileID: 0}
+      HighlightUI: 0
+    PlacementConfig:
+      RequiredAmount: 0
+      RequiredGroup: 0
+      RequiredPartKeys: 
+      PlacementLabel: 
+    CameraConfig:
+      ResetCameraAfterMove: 0
+      ResetDuration: 0
+    EnemySpawnConfig:
+      TutorialStageData: {fileID: 0}
+      TutorialWaveIndex: 0
+    EnemyDefeatedConfig:
+      RequiredEnemyCount: 0
+      Target: 0
+    InteractionConfig:
+      InteractionId: 
+      RequiredCount: 0
+      ProgressLabel: 
+    HighlightConfig:
+      TargetUI: {fileID: 0}
+      PulseScale: 0.1
+      PulseSpeed: 0.1
+    AutoAdvanceConfig:
+      AutoAdvanceDelay: 0
+    Condition: 0
+  - StepName: 
+    UIStateConfig:
+      OverrideUIState: 1
+      ShowInGamePanel: 1
+      ShowBlockPanel: 1
+      ShowShopButtonGroup: 1
+      ShowProductionGrid: 1
+      ShowWaveStartButton: 1
+      ShowChargeButton: 0
+    PauseConfig:
+      ShouldPause: 1
+      BlockInput: 0
+    DialogueConfig:
+      _inlineDialogue:
+        _speakerName: "\uC950\uC2E0\uAD00\uCA29"
+        _message: "\uB0A8\uC740 \uC2DC\uAC04\uC744 \uC2A4\uD0B5\uD558\uACE0 \uC6E8\uC774\uBE0C\uB97C
+          \uC2DC\uC791\uD558\uBA74, \uB0A8\uC740 \uC2DC\uAC04\uC5D0 \uBE44\uB840\uD574\uC11C
+          \uC0DD\uC0B0\uB420 \uC2E0\uB3C4\uB4E4\uC744 \uD55C \uBC88\uC5D0 \uC9C0\uAE09\uBC1B\uAC8C
+          \uB429\uB2C8\uB2E4."
+        _portraitSprite: {fileID: 21300000, guid: e37bae4aaa7e5504f976e3425f937749, type: 3}
+      _dialogueDataSO: {fileID: 0}
+      _movePortraitLeft: 0
+      _portraitMoveOffset: 150
+      _portraitMoveDuration: 0.5
+      _portraitTarget: {fileID: 9056698094391589131}
+      _moveDialogUp: 0
+      _dialogMoveOffset: 300
+      _dialogMoveDuration: 0.5
+    QuestConfig:
+      TargetUI: {fileID: 0}
+      HighlightUI: 0
+    PlacementConfig:
+      RequiredAmount: 0
+      RequiredGroup: 0
+      RequiredPartKeys: 
+      PlacementLabel: 
+    CameraConfig:
+      ResetCameraAfterMove: 0
+      ResetDuration: 0
+    EnemySpawnConfig:
+      TutorialStageData: {fileID: 0}
+      TutorialWaveIndex: 0
+    EnemyDefeatedConfig:
+      RequiredEnemyCount: 0
+      Target: 0
+    InteractionConfig:
+      InteractionId: 
+      RequiredCount: 0
+      ProgressLabel: 
+    HighlightConfig:
+      TargetUI: {fileID: 0}
+      PulseScale: 0.1
+      PulseSpeed: 0.1
+    AutoAdvanceConfig:
+      AutoAdvanceDelay: 0
+    Condition: 0
+  - StepName: 
+    UIStateConfig:
+      OverrideUIState: 1
+      ShowInGamePanel: 1
+      ShowBlockPanel: 0
+      ShowShopButtonGroup: 1
+      ShowProductionGrid: 1
+      ShowWaveStartButton: 1
+      ShowChargeButton: 1
+    PauseConfig:
+      ShouldPause: 0
+      BlockInput: 0
+    DialogueConfig:
+      _inlineDialogue:
+        _speakerName: "\uC950\uC2E0\uAD00\uCA29"
+        _message: "WaveStart \uBC84\uD2BC\uC744 \uB204\uB974\uC138\uC694!"
+        _portraitSprite: {fileID: 21300000, guid: e37bae4aaa7e5504f976e3425f937749, type: 3}
+      _dialogueDataSO: {fileID: 0}
+      _movePortraitLeft: 1
+      _portraitMoveOffset: 150
+      _portraitMoveDuration: 0.5
+      _portraitTarget: {fileID: 9056698094391589131}
+      _moveDialogUp: 0
+      _dialogMoveOffset: 300
+      _dialogMoveDuration: 0.5
+    QuestConfig:
+      TargetUI: {fileID: 0}
+      HighlightUI: 0
+    PlacementConfig:
+      RequiredAmount: 0
+      RequiredGroup: 0
+      RequiredPartKeys: 
+      PlacementLabel: 
+    CameraConfig:
+      ResetCameraAfterMove: 0
+      ResetDuration: 0
+    EnemySpawnConfig:
+      TutorialStageData: {fileID: 11400000, guid: bfc4867ad330d9c4eb52d4fab21c9220, type: 2}
+      TutorialWaveIndex: 0
+    EnemyDefeatedConfig:
+      RequiredEnemyCount: 1
+      Target: 1
+    InteractionConfig:
+      InteractionId: WaveStartButton
+      RequiredCount: 1
+      ProgressLabel: 
+    HighlightConfig:
+      TargetUI: {fileID: 7888557912169610051}
+      PulseScale: 1.05
+      PulseSpeed: 4
+    AutoAdvanceConfig:
+      AutoAdvanceDelay: 0
+    Condition: 4
+  - StepName: 
+    UIStateConfig:
+      OverrideUIState: 1
+      ShowInGamePanel: 1
+      ShowBlockPanel: 1
+      ShowShopButtonGroup: 1
+      ShowProductionGrid: 1
+      ShowWaveStartButton: 1
+      ShowChargeButton: 0
+    PauseConfig:
+      ShouldPause: 1
+      BlockInput: 0
+    DialogueConfig:
+      _inlineDialogue:
+        _speakerName: "\uC950\uC2E0\uAD00\uCA29"
+        _message: "\uC67C\uCABD \uC544\uB798\uC5D0\uB294 \uC2E0\uB3C4\uB4E4\uC744
+          \uD76C\uC0DD\uD574 \uC0AC\uC6A9\uD560 \uC218 \uC788\uB294 \uC758\uC2DD
+          \uAE30\uC220\uB4E4\uC774 \uC788\uC2B5\uB2C8\uB2E4!"
+        _portraitSprite: {fileID: 21300000, guid: e37bae4aaa7e5504f976e3425f937749, type: 3}
+      _dialogueDataSO: {fileID: 0}
+      _movePortraitLeft: 0
+      _portraitMoveOffset: 150
+      _portraitMoveDuration: 0.5
+      _portraitTarget: {fileID: 0}
+      _moveDialogUp: 1
+      _dialogMoveOffset: 300
+      _dialogMoveDuration: 0.5
+    QuestConfig:
+      TargetUI: {fileID: 0}
+      HighlightUI: 0
+    PlacementConfig:
+      RequiredAmount: 0
+      RequiredGroup: 0
+      RequiredPartKeys: 
+      PlacementLabel: 
+    CameraConfig:
+      ResetCameraAfterMove: 0
+      ResetDuration: 0
+    EnemySpawnConfig:
+      TutorialStageData: {fileID: 0}
+      TutorialWaveIndex: 0
+    EnemyDefeatedConfig:
+      RequiredEnemyCount: 0
+      Target: 0
+    InteractionConfig:
+      InteractionId: 
+      RequiredCount: 0
+      ProgressLabel: 
+    HighlightConfig:
+      TargetUI: {fileID: 6149680221526314953}
+      PulseScale: 1.05
+      PulseSpeed: 4
+    AutoAdvanceConfig:
+      AutoAdvanceDelay: 0
+    Condition: 0
+  - StepName: 
+    UIStateConfig:
+      OverrideUIState: 0
+      ShowInGamePanel: 0
+      ShowBlockPanel: 0
+      ShowShopButtonGroup: 0
+      ShowProductionGrid: 0
+      ShowWaveStartButton: 0
+      ShowChargeButton: 0
+    PauseConfig:
+      ShouldPause: 1
+      BlockInput: 0
+    DialogueConfig:
+      _inlineDialogue:
+        _speakerName: "\uC950\uC2E0\uAD00\uCA29"
+        _message: "\uC9C0\uAE08\uC740 \uC950\uBCBD\uB9CC \uC4F8 \uC218 \uC788\uC9C0\uB9CC
+          \uB098\uC911\uC5D0 \uAD50\uB9AC\uB97C \uC120\uD0DD\uD574\uC11C \uD574\uAE08\uD560
+          \uC218 \uC788\uC5B4\uC694."
+        _portraitSprite: {fileID: 21300000, guid: e37bae4aaa7e5504f976e3425f937749, type: 3}
+      _dialogueDataSO: {fileID: 0}
+      _movePortraitLeft: 0
+      _portraitMoveOffset: 150
+      _portraitMoveDuration: 0.5
+      _portraitTarget: {fileID: 0}
+      _moveDialogUp: 1
+      _dialogMoveOffset: 300
+      _dialogMoveDuration: 0.5
+    QuestConfig:
+      TargetUI: {fileID: 0}
+      HighlightUI: 0
+    PlacementConfig:
+      RequiredAmount: 0
+      RequiredGroup: 0
+      RequiredPartKeys: 
+      PlacementLabel: 
+    CameraConfig:
+      ResetCameraAfterMove: 0
+      ResetDuration: 0
+    EnemySpawnConfig:
+      TutorialStageData: {fileID: 0}
+      TutorialWaveIndex: 0
+    EnemyDefeatedConfig:
+      RequiredEnemyCount: 0
+      Target: 0
+    InteractionConfig:
+      InteractionId: 
+      RequiredCount: 0
+      ProgressLabel: 
+    HighlightConfig:
+      TargetUI: {fileID: 0}
+      PulseScale: 0
+      PulseSpeed: 0
+    AutoAdvanceConfig:
+      AutoAdvanceDelay: 0
+    Condition: 0
+  - StepName: 
+    UIStateConfig:
+      OverrideUIState: 1
+      ShowInGamePanel: 1
+      ShowBlockPanel: 1
+      ShowShopButtonGroup: 1
+      ShowProductionGrid: 1
+      ShowWaveStartButton: 1
+      ShowChargeButton: 1
+    PauseConfig:
+      ShouldPause: 1
+      BlockInput: 0
+    DialogueConfig:
+      _inlineDialogue:
+        _speakerName: "\uC950\uC2E0\uAD00\uCA29"
+        _message: "\uADF8\uB9AC\uACE0 \uCDA9\uBD84\uD788 \uC801\uC744 \uACF5\uACA9\uD558\uBA74
+          \uB3CC\uC9C4\uC744 \uC2DC\uB3C4\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4!"
+        _portraitSprite: {fileID: 21300000, guid: e37bae4aaa7e5504f976e3425f937749, type: 3}
+      _dialogueDataSO: {fileID: 0}
+      _movePortraitLeft: 1
+      _portraitMoveOffset: 150
+      _portraitMoveDuration: 0.5
+      _portraitTarget: {fileID: 9056698094391589131}
+      _moveDialogUp: 0
+      _dialogMoveOffset: 300
+      _dialogMoveDuration: 0.5
+    QuestConfig:
+      TargetUI: {fileID: 0}
+      HighlightUI: 0
+    PlacementConfig:
+      RequiredAmount: 0
+      RequiredGroup: 0
+      RequiredPartKeys: 
+      PlacementLabel: 
+    CameraConfig:
+      ResetCameraAfterMove: 0
+      ResetDuration: 0
+    EnemySpawnConfig:
+      TutorialStageData: {fileID: 0}
+      TutorialWaveIndex: 0
+    EnemyDefeatedConfig:
+      RequiredEnemyCount: 0
+      Target: 0
+    InteractionConfig:
+      InteractionId: 
+      RequiredCount: 0
+      ProgressLabel: 
+    HighlightConfig:
+      TargetUI: {fileID: 3635614961665841245}
+      PulseScale: 1.05
+      PulseSpeed: 4
+    AutoAdvanceConfig:
+      AutoAdvanceDelay: 0
+    Condition: 0
+  - StepName: 
+    UIStateConfig:
+      OverrideUIState: 0
+      ShowInGamePanel: 0
+      ShowBlockPanel: 0
+      ShowShopButtonGroup: 0
+      ShowProductionGrid: 0
+      ShowWaveStartButton: 0
+      ShowChargeButton: 0
+    PauseConfig:
+      ShouldPause: 1
+      BlockInput: 0
+    DialogueConfig:
+      _inlineDialogue:
+        _speakerName: "\uC950\uC2E0\uAD00\uCA29"
+        _message: "\uB3CC\uC9C4\uC744 \uC0AC\uC6A9\uD558\uBA74 \uACF5\uC131\uB825\uC758
+          \uCC28\uC774\uB9CC\uD07C \uC804\uCCB4\uC5D0\uAC8C \uD53C\uD574\uB97C \uC904
+          \uC218 \uC788\uC2B5\uB2C8\uB2E4!"
+        _portraitSprite: {fileID: 21300000, guid: e37bae4aaa7e5504f976e3425f937749, type: 3}
+      _dialogueDataSO: {fileID: 0}
+      _movePortraitLeft: 1
+      _portraitMoveOffset: 150
+      _portraitMoveDuration: 0.5
+      _portraitTarget: {fileID: 9056698094391589131}
+      _moveDialogUp: 0
+      _dialogMoveOffset: 300
+      _dialogMoveDuration: 0.5
+    QuestConfig:
+      TargetUI: {fileID: 0}
+      HighlightUI: 0
+    PlacementConfig:
+      RequiredAmount: 0
+      RequiredGroup: 0
+      RequiredPartKeys: 
+      PlacementLabel: 
+    CameraConfig:
+      ResetCameraAfterMove: 0
+      ResetDuration: 0
+    EnemySpawnConfig:
+      TutorialStageData: {fileID: 0}
+      TutorialWaveIndex: 0
+    EnemyDefeatedConfig:
+      RequiredEnemyCount: 0
+      Target: 0
+    InteractionConfig:
+      InteractionId: 
+      RequiredCount: 0
+      ProgressLabel: 
+    HighlightConfig:
+      TargetUI: {fileID: 0}
+      PulseScale: 0
+      PulseSpeed: 0
+    AutoAdvanceConfig:
+      AutoAdvanceDelay: 0
+    Condition: 0
+  - StepName: 
+    UIStateConfig:
+      OverrideUIState: 1
+      ShowInGamePanel: 1
+      ShowBlockPanel: 0
+      ShowShopButtonGroup: 1
+      ShowProductionGrid: 1
+      ShowWaveStartButton: 1
+      ShowChargeButton: 1
+    PauseConfig:
+      ShouldPause: 0
+      BlockInput: 0
+    DialogueConfig:
+      _inlineDialogue:
+        _speakerName: "\uC950\uC2E0\uAD00\uCA29"
+        _message: "\uC758\uC2DD\uACFC \uB3CC\uC9C4\uC744 \uC798 \uC0AC\uC6A9\uD574\uC11C
+          \uD6A8\uC728\uC801\uC73C\uB85C \uACF5\uC131\uC744 \uC9C4\uD589\uD574 \uBCF4\uC138\uC694!"
+        _portraitSprite: {fileID: 21300000, guid: e37bae4aaa7e5504f976e3425f937749, type: 3}
+      _dialogueDataSO: {fileID: 0}
+      _movePortraitLeft: 1
+      _portraitMoveOffset: 150
+      _portraitMoveDuration: 0.5
+      _portraitTarget: {fileID: 0}
+      _moveDialogUp: 0
+      _dialogMoveOffset: 300
+      _dialogMoveDuration: 0.5
+    QuestConfig:
+      TargetUI: {fileID: 0}
+      HighlightUI: 0
+    PlacementConfig:
+      RequiredAmount: 0
+      RequiredGroup: 0
+      RequiredPartKeys: 
+      PlacementLabel: 
+    CameraConfig:
+      ResetCameraAfterMove: 0
+      ResetDuration: 0
+    EnemySpawnConfig:
+      TutorialStageData: {fileID: 11400000, guid: bfc4867ad330d9c4eb52d4fab21c9220, type: 2}
+      TutorialWaveIndex: 0
+    EnemyDefeatedConfig:
+      RequiredEnemyCount: 1
+      Target: 1
+    InteractionConfig:
+      InteractionId: 
+      RequiredCount: 0
+      ProgressLabel: 
+    HighlightConfig:
+      TargetUI: {fileID: 0}
+      PulseScale: 0
+      PulseSpeed: 0
+    AutoAdvanceConfig:
+      AutoAdvanceDelay: 0
+    Condition: 3
+  - StepName: 
+    UIStateConfig:
+      OverrideUIState: 0
+      ShowInGamePanel: 1
+      ShowBlockPanel: 0
+      ShowShopButtonGroup: 1
+      ShowProductionGrid: 1
+      ShowWaveStartButton: 1
+      ShowChargeButton: 1
+    PauseConfig:
+      ShouldPause: 0
+      BlockInput: 0
+    DialogueConfig:
+      _inlineDialogue:
+        _speakerName: "\uC950\uC2E0\uAD00\uCA29"
+        _message: "\uACE0\uC0DD\uD558\uC168\uC2B5\uB2C8\uB2E4! \uADF8\uB7FC \uC774\uC81C
+          \uC131\uC804\uC744 \uACC4\uC18D\uD569\uC2DC\uB2E4!"
+        _portraitSprite: {fileID: 21300000, guid: e37bae4aaa7e5504f976e3425f937749, type: 3}
+      _dialogueDataSO: {fileID: 0}
+      _movePortraitLeft: 0
+      _portraitMoveOffset: 150
+      _portraitMoveDuration: 0.5
+      _portraitTarget: {fileID: 0}
+      _moveDialogUp: 0
+      _dialogMoveOffset: 300
+      _dialogMoveDuration: 0.5
+    QuestConfig:
+      TargetUI: {fileID: 0}
+      HighlightUI: 0
+    PlacementConfig:
+      RequiredAmount: 0
+      RequiredGroup: 0
+      RequiredPartKeys: 
+      PlacementLabel: 
+    CameraConfig:
+      ResetCameraAfterMove: 0
+      ResetDuration: 0
+    EnemySpawnConfig:
+      TutorialStageData: {fileID: 0}
+      TutorialWaveIndex: 0
+    EnemyDefeatedConfig:
+      RequiredEnemyCount: 0
+      Target: 0
+    InteractionConfig:
+      InteractionId: 
+      RequiredCount: 0
+      ProgressLabel: 
+    HighlightConfig:
+      TargetUI: {fileID: 0}
+      PulseScale: 0
+      PulseSpeed: 0
     AutoAdvanceConfig:
       AutoAdvanceDelay: 0
     Condition: 0
   _startOnAwake: 1
-  _dialoguePresenter: {fileID: 0}
-  _ignoreConditionsForPlaytest: 1
+  _dialoguePresenter: {fileID: 7348342623763710469}
+  _highlighter: {fileID: 2375346784971493985}
+  _inGamePanel: {fileID: 0}
+  _blockPanel: {fileID: 0}
+  _shopButtonGroup: {fileID: 0}
+  _productionGridRoot: {fileID: 0}
+  _waveStartButton: {fileID: 0}
+  _chargeButton: {fileID: 0}
+  _ignoreConditionsForPlaytest: 0
 --- !u!1 &8852376054461784400
 GameObject:
   m_ObjectHideFlags: 0
@@ -2247,7 +3790,7 @@ GameObject:
   - component: {fileID: 8775138719301645477}
   - component: {fileID: 32396568195685859}
   m_Layer: 5
-  m_Name: DialogText
+  m_Name: DialogueText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2463,13 +4006,13 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1442253882853090380}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -679, y: 481.1528}
+  m_AnchoredPosition: {x: -559, y: 443}
   m_SizeDelta: {x: 76.0089, y: 237.6973}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &396011727113131146
