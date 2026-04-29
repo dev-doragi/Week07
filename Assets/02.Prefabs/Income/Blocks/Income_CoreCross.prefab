@@ -1,0 +1,81 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3064566276721381133
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2065061382422851488}
+  - component: {fileID: 5519042501635185554}
+  - component: {fileID: 6511116772430318385}
+  m_Layer: 0
+  m_Name: Income_CoreCross
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &2065061382422851488
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3064566276721381133}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!225 &5519042501635185554
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3064566276721381133}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &6511116772430318385
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3064566276721381133}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9ca2d508c0e3284096d3cb0eb03c260, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IncomeBlockPiece
+  _blockType: 7
+  _gridBoard: {fileID: 0}
+  _dragRoot: {fileID: 0}
+  _blockColor: {r: 0.72, g: 0.88, b: 1, a: 0.95}
+  _draggingColor: {r: 1, g: 0.95, b: 0.55, a: 0.95}
+  _cellFillColor: {r: 1, g: 1, b: 1, a: 1}
+  _outlineWidth: 3
+  _cellPadding: 4
+  _cellSprite: {fileID: 21300000, guid: 83bb5f401bf2c9345b8a03ff7880bf18, type: 3}
+  _rotationTweenDuration: 0.15
+  _dragHintLabel: "R \uD68C\uC804"
+  _dragHintOffset: {x: -40, y: 80}
+  _dragHintSize: {x: 120, y: 40}
+  _dragHintFontSize: 32
+  _dragHintColor: {r: 1, g: 1, b: 1, a: 1}
+  _dragHintOutlineColor: {r: 0, g: 0, b: 0, a: 0.85}
+  _dragHintOutlineDistance: {x: 1.5, y: -1.5}
+  _dragHintFontAsset: {fileID: 11400000, guid: e4dba54daa22213498a58638f5792dcd, type: 2}
