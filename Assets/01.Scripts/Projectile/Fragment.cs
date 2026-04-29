@@ -19,6 +19,7 @@ public class Fragment : MonoBehaviour
     private void OnEnable()
     {
         _isDead = false;            
+        _rigidBody.bodyType = RigidbodyType2D.Dynamic;
         _spriteRenderer.sprite = _aliveSprite;
         _spriteRenderer.color = Color.white;
 
@@ -32,15 +33,11 @@ public class Fragment : MonoBehaviour
         if (!_isDead && collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
             _isDead = true;
+            _rigidBody.linearVelocity = Vector2.zero;
+            _rigidBody.bodyType = RigidbodyType2D.Static;
             _spriteRenderer.sprite = _deadSprite;
             StartCoroutine(FadeOutAndDespawn());
         }
-    }
-
-    private void Update()
-    {
-        if (_isDead)
-            _rigidBody.linearVelocity = Vector2.left * _moveSpeed;
     }
 
     private IEnumerator FadeOutAndDespawn()
