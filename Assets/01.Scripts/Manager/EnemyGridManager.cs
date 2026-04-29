@@ -42,7 +42,14 @@ public class EnemyGridManager : MonoBehaviour
     }
 
     private void OnCoreDestroyed(CoreDestroyedEvent e)
-    {   // 적 코어가 파괴됐을 때만 적 유닛 전체 제거
+    {
+        if (StageLoadContext.IsTutorial)
+        {
+            Debug.Log("[StageManager] 튜토리얼 중이므로 코어 파괴 시 스테이지 클리어를 무시합니다.");
+            return;
+        }
+
+        // 적 코어가 파괴됐을 때만 적 유닛 전체 제거
         if (e.IsPlayerBase) return;
 
         // 씬에 있는 모든 적 Unit 찾아서 즉사 

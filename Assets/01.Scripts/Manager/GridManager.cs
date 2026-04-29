@@ -76,6 +76,12 @@ public class GridManager : Singleton<GridManager>
 
     private void OnCoreDestroyed(CoreDestroyedEvent e)
     {
+        if (StageLoadContext.IsTutorial)
+        {
+            Debug.Log("[StageManager] 튜토리얼 중이므로 코어 파괴 시 스테이지 클리어를 무시합니다.");
+            return;
+        }
+
         if (!e.IsPlayerBase) return;
 
         Debug.Log("[GridManager] 플레이어 코어 파괴 -> 전체 유닛 제거");

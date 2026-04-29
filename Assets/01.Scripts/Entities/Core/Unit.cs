@@ -229,16 +229,37 @@ public class Unit : MonoBehaviour, IDamageable
     {
         if (_team == TeamType.Enemy && _data.Category != UnitCategory.Core)
         {
-            EventBus.Instance?.Publish(new EnemyDefeatedEvent());
             if (_isTutorialEnemy)
-                EventBus.Instance?.Publish(new TutorialEnemyDefeatedEvent());
+            {
+                EventBus.Instance?.Publish(new TutorialEnemyDefeatedEvent
+                {
+                    DeadUnit = this,
+                    Category = _data.Category
+                });
+            }
+            else
+            {
+                EventBus.Instance?.Publish(new EnemyDefeatedEvent());
+            }
         }
 
         // 코어 파괴 이벤트 발행
         if (_data.Category == UnitCategory.Core && _team == TeamType.Enemy)
         {
             CameraManager.Instance?.ShakeWeak();
-            EventBus.Instance?.Publish(new CoreDestroyedEvent { IsPlayerBase = false });
+
+            if (_isTutorialEnemy)
+            {
+                EventBus.Instance?.Publish(new TutorialEnemyDefeatedEvent
+                {
+                    DeadUnit = this,
+                    Category = _data.Category
+                });
+            }
+            else
+            {
+                EventBus.Instance?.Publish(new CoreDestroyedEvent { IsPlayerBase = false });
+            }
         }
         else if (_data.Category == UnitCategory.Core && _team == TeamType.Player)
         {
