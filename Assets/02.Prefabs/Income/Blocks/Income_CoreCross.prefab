@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5519042501635185554}
   - component: {fileID: 6511116772430318385}
   m_Layer: 0
-  m_Name: Income_Cross
+  m_Name: Income_CoreCross
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

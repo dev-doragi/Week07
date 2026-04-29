@@ -21,7 +21,8 @@ public class IncomeInventory : MonoBehaviour
 {
     private const string DefaultGeneratorSpritePath = "Assets/04.Art/Generator/Generator_1.png";
     private const string DefaultBlockPrefabFolder = "Assets/02.Prefabs/Income/Blocks";
-    private const string DefaultCrossBlockPrefabPath = "Assets/02.Prefabs/Income/Blocks/Income_Cross.prefab";
+    private const string DefaultCoreCrossBlockPrefabPath = "Assets/02.Prefabs/Income/Blocks/Income_CoreCross.prefab";
+    private const string DefaultCoreSquareBlockPrefabPath = "Assets/02.Prefabs/Income/Blocks/Income_CoreSquare.prefab";
 
     private static readonly IncomeBlockType[] AllBlockTypes =
     {
@@ -43,8 +44,8 @@ public class IncomeInventory : MonoBehaviour
 
     [Header("Start Reward")]
     [SerializeField] private bool _spawnInitialOnStart = true;
-    [SerializeField] private IncomeBlockType _initialFixedBlockType = IncomeBlockType.Cross;
-    [SerializeField] private IncomeBlockPiece _fixedStartBlockPrefab;
+    [SerializeField] private IncomeBlockPiece _coreCrossBlockPrefab;
+    [SerializeField] private IncomeBlockPiece _coreSquareBlockPrefab;
 
     [Header("Layout")]
     [SerializeField] private Vector2 _startPosition = new Vector2(20f, 20f);
@@ -66,7 +67,8 @@ public class IncomeInventory : MonoBehaviour
     [SerializeField] private Color _sColor = new Color(0.45f, 0.90f, 0.45f, 0.95f);
     [SerializeField] private Color _tColor = new Color(0.80f, 0.45f, 0.90f, 0.95f);
     [SerializeField] private Color _zColor = new Color(0.95f, 0.40f, 0.40f, 0.95f);
-    [SerializeField] private Color _crossColor = new Color(0.95f, 0.95f, 0.95f, 0.95f);
+    [SerializeField] private Color _coreCrossColor = new Color(0.95f, 0.95f, 0.95f, 0.95f);
+    [SerializeField] private Color _coreSquareColor = new Color(0.95f, 0.85f, 0.45f, 0.95f);
 
     private readonly List<IncomeBlockPiece> _spawnedPieces = new();
     private bool _layoutInitialized;
@@ -180,9 +182,7 @@ public class IncomeInventory : MonoBehaviour
         IncomeBlockPiece piece = null;
         RectTransform spawnParent = parent != null ? parent : _inventoryRoot;
 
-        var prefab = type == _initialFixedBlockType && _fixedStartBlockPrefab != null
-            ? _fixedStartBlockPrefab
-            : ResolvePrefab(type);
+        var prefab = ResolvePrefab(type);
         if (prefab != null)
         {
             piece = Instantiate(prefab, spawnParent, false);
@@ -224,9 +224,10 @@ public class IncomeInventory : MonoBehaviour
             return;
         }
 
-        Vector2Int origin = CalculateCenteredOrigin(_initialFixedBlockType);
+        IncomeBlockType coreBlockType = ResolveCoreBlockTypeForGrid();
+        Vector2Int origin = CalculateCenteredOrigin(coreBlockType);
         Vector2 anchoredPosition = _gridBoard.GetAnchoredPositionFromOrigin(origin);
-        var piece = CreateBlock(_initialFixedBlockType, _gridBoard.GridRoot, anchoredPosition, GetColor(_initialFixedBlockType));
+        var piece = CreateBlock(coreBlockType, _gridBoard.GridRoot, anchoredPosition, GetColor(coreBlockType));
         if (piece == null)
             return;
 
@@ -243,6 +244,12 @@ public class IncomeInventory : MonoBehaviour
 
     private IncomeBlockPiece ResolvePrefab(IncomeBlockType type)
     {
+        if (type == IncomeBlockType.CoreCross && _coreCrossBlockPrefab != null)
+            return _coreCrossBlockPrefab;
+
+        if (type == IncomeBlockType.CoreSquare && _coreSquareBlockPrefab != null)
+            return _coreSquareBlockPrefab;
+
         if (_blockPrefabs == null)
             return null;
 
@@ -383,9 +390,18 @@ public class IncomeInventory : MonoBehaviour
             IncomeBlockType.S => _sColor,
             IncomeBlockType.T => _tColor,
             IncomeBlockType.Z => _zColor,
-            IncomeBlockType.Cross => _crossColor,
+            IncomeBlockType.CoreCross => _coreCrossColor,
+            IncomeBlockType.CoreSquare => _coreSquareColor,
             _ => Color.white
         };
+    }
+
+    private IncomeBlockType ResolveCoreBlockTypeForGrid()
+    {
+        if (_gridBoard != null && _gridBoard.Width == 6 && _gridBoard.Height == 6)
+            return IncomeBlockType.CoreSquare;
+
+        return IncomeBlockType.CoreCross;
     }
 
     private Vector2Int CalculateCenteredOrigin(IncomeBlockType type)
@@ -439,8 +455,11 @@ public class IncomeInventory : MonoBehaviour
             }
         }
 
-        if (_fixedStartBlockPrefab == null)
-            _fixedStartBlockPrefab = AssetDatabase.LoadAssetAtPath<IncomeBlockPiece>(DefaultCrossBlockPrefabPath);
+        if (_coreCrossBlockPrefab == null)
+            _coreCrossBlockPrefab = AssetDatabase.LoadAssetAtPath<IncomeBlockPiece>(DefaultCoreCrossBlockPrefabPath);
+
+        if (_coreSquareBlockPrefab == null)
+            _coreSquareBlockPrefab = AssetDatabase.LoadAssetAtPath<IncomeBlockPiece>(DefaultCoreSquareBlockPrefabPath);
     }
 #endif
 }

@@ -7,5 +7,6 @@
     S,
     T,
     Z,
-    Cross
+    CoreCross,
+    CoreSquare
 }
