@@ -15,13 +15,20 @@ public class DropRat : MonoBehaviour
     [SerializeField] private float _moveSpeed = 1f;
     [SerializeField] private int _rewardAmount = 2;
 
+    private int _defaultRewardAmount;
     private bool _isMoving;
     private bool _isCollected;
+
+    private void Awake()
+    {
+        _defaultRewardAmount = _rewardAmount;
+    }
 
     private void OnEnable()
     {
         _isMoving = false;
         _isCollected = false;
+        _rewardAmount = _defaultRewardAmount;
 
         _rigid.linearVelocity = Vector2.zero;
         _rigid.angularVelocity = 0f;
@@ -68,12 +75,22 @@ public class DropRat : MonoBehaviour
         }
     }
 
+    public void SetRewardAmount(int rewardAmount)
+    {
+        _rewardAmount = Mathf.Max(0, rewardAmount);
+    }
+
     private void Collect()
     {
         if (_isCollected) return;
         _isCollected = true;
 
-        ResourceManager.Instance?.AddMouseCount(_rewardAmount);
+        if (ResourceManager.Instance != null)
+        {
+            ResourceManager.Instance.AddMouseCount(_rewardAmount);
+            ResourceManager.Instance.ShowDropRatRewardFeedback(_rewardAmount);
+        }
+
         PoolManager.Instance.Despawn(gameObject);
     }
 }
