@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
@@ -25,6 +26,8 @@ public class ResourceManager : Singleton<ResourceManager>
     private int _activeAltarCount = 0; // 활성화된 스펠/제단 개수
     private float _genTimer;
     private float _subTimer;
+    private int _dropRatRewardFeedbackAmount;
+    private Coroutine _dropRatRewardTextRoutine;
     private bool _isDirty = false; // UI 갱신이 필요한지 체크하는 플래그
 
     [Header("State")]
@@ -36,6 +39,15 @@ public class ResourceManager : Singleton<ResourceManager>
     [SerializeField] private Slider _genGaugeSlider;
     [SerializeField] private Slider _subGaugeSlider;
 
+    [Header("Drop Rat Reward Feedback")]
+    [SerializeField] private TextMeshProUGUI _dropRatRewardText;
+    [SerializeField] private TMP_FontAsset _dropRatRewardFont;
+    [SerializeField] private Color _dropRatRewardTextColor = new Color(1f, 0.9f, 0.25f, 1f);
+    [SerializeField, Min(1f)] private float _dropRatRewardTextSize = 32f;
+    [SerializeField, Min(0.1f)] private float _dropRatRewardTextDuration = 1f;
+    [SerializeField] private Vector2 _dropRatRewardTextOffset = new Vector2(0f, 32f);
+    [SerializeField] private float _dropRatRewardTextRiseDistance = 24f;
+
     public int CurrentMouse => _currentMouseCount;
     public bool IsAltarSupportEnabled => _isAltarSupportEnabled;
 
@@ -43,8 +55,17 @@ public class ResourceManager : Singleton<ResourceManager>
     {
         base.Awake();
         EnsureWaveWaitDisplay();
+        EnsureDropRatRewardText();
         _isDirty = true; // 시작 시 UI 초기 갱신 예약
     }
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        if (_dropRatRewardFont == null)
+            _dropRatRewardFont = UnityEditor.AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/10.Fonts/Galmuri9 SDF.asset");
+    }
+#endif
 
     private void OnEnable()
     {
@@ -62,6 +83,17 @@ public class ResourceManager : Singleton<ResourceManager>
             EventBus.Instance.Unsubscribe<WaveWaitTimerTickEvent>(OnWaveWaitTimerTick);
             EventBus.Instance.Unsubscribe<WaveStartedEvent>(OnWaveStarted);
         }
+
+        if (_dropRatRewardTextRoutine != null)
+        {
+            StopCoroutine(_dropRatRewardTextRoutine);
+            _dropRatRewardTextRoutine = null;
+        }
+
+        _dropRatRewardFeedbackAmount = 0;
+
+        if (_dropRatRewardText != null)
+            _dropRatRewardText.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -169,6 +201,23 @@ public class ResourceManager : Singleton<ResourceManager>
 
     #endregion
 
+    public void ShowDropRatRewardFeedback(int rewardAmount)
+    {
+        if (rewardAmount <= 0)
+            return;
+
+        EnsureDropRatRewardText();
+        if (_dropRatRewardText == null)
+            return;
+
+        _dropRatRewardFeedbackAmount += rewardAmount;
+
+        if (_dropRatRewardTextRoutine != null)
+            StopCoroutine(_dropRatRewardTextRoutine);
+
+        _dropRatRewardTextRoutine = StartCoroutine(DropRatRewardTextRoutine());
+    }
+
     private void UpdateUI()
     {
         if (_countDisplayText != null)
@@ -197,6 +246,7 @@ public class ResourceManager : Singleton<ResourceManager>
     public void BuildWaveWaitUI()
     {
         EnsureWaveWaitDisplay();
+        EnsureDropRatRewardText();
 
         if (_waveWaitDisplayText != null && !Application.isPlaying)
             _waveWaitDisplayText.gameObject.SetActive(true);
@@ -236,5 +286,93 @@ public class ResourceManager : Singleton<ResourceManager>
         _waveWaitDisplayText.raycastTarget = false;
         _waveWaitDisplayText.text = string.Empty;
         _waveWaitDisplayText.gameObject.SetActive(false);
+    }
+
+    private void EnsureDropRatRewardText()
+    {
+        if (_dropRatRewardText != null || _countDisplayText == null)
+            return;
+
+        RectTransform countRect = _countDisplayText.transform as RectTransform;
+        if (countRect == null)
+            return;
+
+        Transform existing = countRect.parent != null ? countRect.parent.Find("DropRatRewardText") : null;
+        if (existing != null && existing.TryGetComponent(out TextMeshProUGUI existingText))
+        {
+            _dropRatRewardText = existingText;
+            ApplyDropRatRewardTextStyle();
+            _dropRatRewardText.gameObject.SetActive(false);
+            return;
+        }
+
+        GameObject displayObj = new GameObject("DropRatRewardText", typeof(RectTransform), typeof(TextMeshProUGUI));
+        RectTransform displayRect = displayObj.GetComponent<RectTransform>();
+        displayRect.SetParent(countRect.parent, false);
+        displayRect.anchorMin = countRect.anchorMin;
+        displayRect.anchorMax = countRect.anchorMax;
+        displayRect.pivot = countRect.pivot;
+        displayRect.sizeDelta = countRect.sizeDelta;
+        displayRect.anchoredPosition = countRect.anchoredPosition + _dropRatRewardTextOffset;
+
+        _dropRatRewardText = displayObj.GetComponent<TextMeshProUGUI>();
+        ApplyDropRatRewardTextStyle();
+        _dropRatRewardText.text = string.Empty;
+        _dropRatRewardText.gameObject.SetActive(false);
+    }
+
+    private void ApplyDropRatRewardTextStyle()
+    {
+        if (_dropRatRewardText == null)
+            return;
+
+        if (_dropRatRewardFont != null)
+            _dropRatRewardText.font = _dropRatRewardFont;
+        else if (_countDisplayText != null)
+            _dropRatRewardText.font = _countDisplayText.font;
+
+        _dropRatRewardText.fontSize = _dropRatRewardTextSize;
+        _dropRatRewardText.alignment = TextAlignmentOptions.Center;
+        _dropRatRewardText.color = _dropRatRewardTextColor;
+        _dropRatRewardText.raycastTarget = false;
+        _dropRatRewardText.textWrappingMode = TextWrappingModes.NoWrap;
+    }
+
+    private IEnumerator DropRatRewardTextRoutine()
+    {
+        RectTransform rewardRect = _dropRatRewardText.transform as RectTransform;
+        RectTransform countRect = _countDisplayText != null ? _countDisplayText.transform as RectTransform : null;
+        if (rewardRect == null || countRect == null)
+            yield break;
+
+        ApplyDropRatRewardTextStyle();
+
+        Vector2 start = countRect.anchoredPosition + _dropRatRewardTextOffset;
+        Vector2 end = start + Vector2.up * _dropRatRewardTextRiseDistance;
+        Color baseColor = _dropRatRewardTextColor;
+        float duration = Mathf.Max(0.1f, _dropRatRewardTextDuration);
+        float elapsed = 0f;
+
+        rewardRect.anchoredPosition = start;
+        _dropRatRewardText.text = $"+ {_dropRatRewardFeedbackAmount}";
+        _dropRatRewardText.color = baseColor;
+        _dropRatRewardText.gameObject.SetActive(true);
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+
+            rewardRect.anchoredPosition = Vector2.Lerp(start, end, t);
+            Color fadeColor = baseColor;
+            fadeColor.a *= 1f - t;
+            _dropRatRewardText.color = fadeColor;
+
+            yield return null;
+        }
+
+        _dropRatRewardText.gameObject.SetActive(false);
+        _dropRatRewardFeedbackAmount = 0;
+        _dropRatRewardTextRoutine = null;
     }
 }
