@@ -59,6 +59,15 @@ public static class IncomeShapeLibrary
         new Vector2Int(2, 0)
     };
 
+    private static readonly Vector2Int[] CrossCells =
+    {
+        new Vector2Int(1, 2),
+        new Vector2Int(0, 1),
+        new Vector2Int(1, 1),
+        new Vector2Int(2, 1),
+        new Vector2Int(1, 0)
+    };
+
     public static IReadOnlyList<Vector2Int> GetBaseCells(IncomeBlockType blockType)
     {
         return blockType switch
@@ -70,6 +79,7 @@ public static class IncomeShapeLibrary
             IncomeBlockType.S => SCells,
             IncomeBlockType.T => TCells,
             IncomeBlockType.Z => ZCells,
+            IncomeBlockType.Cross => CrossCells,
             _ => OCells
         };
     }

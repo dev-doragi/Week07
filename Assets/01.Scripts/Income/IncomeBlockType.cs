@@ -6,5 +6,6 @@
     O,
     S,
     T,
-    Z
+    Z,
+    Cross
 }

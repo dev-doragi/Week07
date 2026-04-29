@@ -8585,7 +8585,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2092958355
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9072,6 +9072,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: InGamePanel
       objectReference: {fileID: 0}
+    - target: {fileID: 2987505091822495725, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: _width
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2987505091822495725, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: _height
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2987505091822495725, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: _cellSize
+      value: 80
+      objectReference: {fileID: 0}
     - target: {fileID: 3341330664907624637, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: _dragRoot
       value: 
@@ -9097,8 +9109,20 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 113788105}
     - target: {fileID: 5726641389671934492, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 300
+      objectReference: {fileID: 0}
+    - target: {fileID: 5726641389671934492, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 300
+      objectReference: {fileID: 0}
+    - target: {fileID: 5726641389671934492, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: -552
+      objectReference: {fileID: 0}
+    - target: {fileID: 5726641389671934492, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 196
       objectReference: {fileID: 0}
     - target: {fileID: 6129702662900236002, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: m_AnchorMax.x

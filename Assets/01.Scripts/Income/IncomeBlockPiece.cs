@@ -71,6 +71,7 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
     private int _rotationStep;
     private bool _isDragging;
+    private bool _isInteractionLocked;
     private Camera _dragEventCamera;
     private Vector2 _lastPointerScreenPosition;
 
@@ -145,6 +146,7 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        if (_isInteractionLocked) return;
         if (StageMapController.IsMapVisible()) return;
         if (eventData.button != PointerEventData.InputButton.Left) return;
 
@@ -212,6 +214,7 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        if (_isInteractionLocked) return;
         if (StageMapController.IsMapVisible()) return;
         if (eventData.button != PointerEventData.InputButton.Right) return;
         if (_isDragging) return;
@@ -281,6 +284,31 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
         SnapToGrid(origin);
         return true;
+    }
+
+    public bool ForcePlaceOnGrid(Vector2Int origin)
+    {
+        EnsureComponents();
+
+        if (_gridBoard == null || _gridBoard.GridRoot == null)
+            return false;
+
+        if (!_gridBoard.TryPlace(this, origin, _rotatedCells))
+            return false;
+
+        SnapToGrid(origin);
+        return true;
+    }
+
+    public void SetInteractionLocked(bool locked)
+    {
+        _isInteractionLocked = locked;
+
+        if (_isDragging)
+            CancelDrag();
+
+        if (_canvasGroup != null)
+            _canvasGroup.blocksRaycasts = !locked;
     }
 
     private void SnapToGrid(Vector2Int origin)

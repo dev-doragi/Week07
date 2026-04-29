@@ -21,6 +21,7 @@ public class IncomeInventory : MonoBehaviour
 {
     private const string DefaultGeneratorSpritePath = "Assets/04.Art/Generator/Generator_1.png";
     private const string DefaultBlockPrefabFolder = "Assets/02.Prefabs/Income/Blocks";
+    private const string DefaultCrossBlockPrefabPath = "Assets/02.Prefabs/Income/Blocks/Income_Cross.prefab";
 
     private static readonly IncomeBlockType[] AllBlockTypes =
     {
@@ -42,7 +43,8 @@ public class IncomeInventory : MonoBehaviour
 
     [Header("Start Reward")]
     [SerializeField] private bool _spawnInitialOnStart = true;
-    [SerializeField] private IncomeBlockType _initialBlockType = IncomeBlockType.T;
+    [SerializeField] private IncomeBlockType _initialFixedBlockType = IncomeBlockType.Cross;
+    [SerializeField] private IncomeBlockPiece _fixedStartBlockPrefab;
 
     [Header("Layout")]
     [SerializeField] private Vector2 _startPosition = new Vector2(20f, 20f);
@@ -64,6 +66,7 @@ public class IncomeInventory : MonoBehaviour
     [SerializeField] private Color _sColor = new Color(0.45f, 0.90f, 0.45f, 0.95f);
     [SerializeField] private Color _tColor = new Color(0.80f, 0.45f, 0.90f, 0.95f);
     [SerializeField] private Color _zColor = new Color(0.95f, 0.40f, 0.40f, 0.95f);
+    [SerializeField] private Color _crossColor = new Color(0.95f, 0.95f, 0.95f, 0.95f);
 
     private readonly List<IncomeBlockPiece> _spawnedPieces = new();
     private bool _layoutInitialized;
@@ -94,7 +97,7 @@ public class IncomeInventory : MonoBehaviour
         if (_spawnedPieces.Count > 0)
             return;
 
-        AddBlock(_initialBlockType);
+        AddFixedStartBlockToGrid();
     }
 
     [ContextMenu("Acquire Random Block")]
@@ -125,7 +128,7 @@ public class IncomeInventory : MonoBehaviour
         Vector2 pieceSize = CalculatePieceSize(type, cellSize);
         Vector2 spawnPosition = GetNextSpawnPosition(pieceSize);
 
-        var piece = CreateBlock(type, spawnPosition, GetColor(type));
+        var piece = CreateBlock(type, _inventoryRoot, spawnPosition, GetColor(type));
         if (piece == null)
             return null;
 
@@ -172,18 +175,21 @@ public class IncomeInventory : MonoBehaviour
         _scrollRect = scrollRect;
     }
 
-    private IncomeBlockPiece CreateBlock(IncomeBlockType type, Vector2 homePosition, Color color)
+    private IncomeBlockPiece CreateBlock(IncomeBlockType type, RectTransform parent, Vector2 homePosition, Color color)
     {
         IncomeBlockPiece piece = null;
+        RectTransform spawnParent = parent != null ? parent : _inventoryRoot;
 
-        var prefab = ResolvePrefab(type);
+        var prefab = type == _initialFixedBlockType && _fixedStartBlockPrefab != null
+            ? _fixedStartBlockPrefab
+            : ResolvePrefab(type);
         if (prefab != null)
         {
-            piece = Instantiate(prefab, _inventoryRoot, false);
+            piece = Instantiate(prefab, spawnParent, false);
         }
         else if (_fallbackBlockPrefab != null)
         {
-            piece = Instantiate(_fallbackBlockPrefab, _inventoryRoot, false);
+            piece = Instantiate(_fallbackBlockPrefab, spawnParent, false);
         }
         else
         {
@@ -192,7 +198,7 @@ public class IncomeInventory : MonoBehaviour
                 typeof(CanvasGroup),
                 typeof(IncomeBlockPiece));
             var rect = pieceGo.GetComponent<RectTransform>();
-            rect.SetParent(_inventoryRoot, false);
+            rect.SetParent(spawnParent, false);
             rect.anchorMin = Vector2.zero;
             rect.anchorMax = Vector2.zero;
             rect.pivot = Vector2.zero;
@@ -204,10 +210,35 @@ public class IncomeInventory : MonoBehaviour
 
         piece.name = $"Income_{type}";
         // color는 내부 칸이 아닌 블록 외곽선 색상으로 사용된다.
-        piece.Initialize(type, _gridBoard, _dragRoot, _inventoryRoot, homePosition, color, _generatorCellSprite);
+        piece.Initialize(type, _gridBoard, _dragRoot, spawnParent, homePosition, color, _generatorCellSprite);
 
         _spawnedPieces.Add(piece);
         return piece;
+    }
+
+    private void AddFixedStartBlockToGrid()
+    {
+        if (_gridBoard == null || _gridBoard.GridRoot == null)
+        {
+            Debug.LogWarning("[IncomeInventory] GridBoard is not ready. Fixed start block was not placed.");
+            return;
+        }
+
+        Vector2Int origin = CalculateCenteredOrigin(_initialFixedBlockType);
+        Vector2 anchoredPosition = _gridBoard.GetAnchoredPositionFromOrigin(origin);
+        var piece = CreateBlock(_initialFixedBlockType, _gridBoard.GridRoot, anchoredPosition, GetColor(_initialFixedBlockType));
+        if (piece == null)
+            return;
+
+        if (!piece.ForcePlaceOnGrid(origin))
+        {
+            Debug.LogWarning("[IncomeInventory] Fixed start block could not be placed on the grid.");
+            Destroy(piece.gameObject);
+            _spawnedPieces.Remove(piece);
+            return;
+        }
+
+        piece.SetInteractionLocked(true);
     }
 
     private IncomeBlockPiece ResolvePrefab(IncomeBlockType type)
@@ -352,8 +383,30 @@ public class IncomeInventory : MonoBehaviour
             IncomeBlockType.S => _sColor,
             IncomeBlockType.T => _tColor,
             IncomeBlockType.Z => _zColor,
+            IncomeBlockType.Cross => _crossColor,
             _ => Color.white
         };
+    }
+
+    private Vector2Int CalculateCenteredOrigin(IncomeBlockType type)
+    {
+        var cells = IncomeShapeLibrary.GetBaseCells(type);
+        int maxX = 0;
+        int maxY = 0;
+
+        for (int i = 0; i < cells.Count; i++)
+        {
+            var cell = cells[i];
+            if (cell.x > maxX) maxX = cell.x;
+            if (cell.y > maxY) maxY = cell.y;
+        }
+
+        int shapeWidth = maxX + 1;
+        int shapeHeight = maxY + 1;
+        int originX = Mathf.Max(0, (_gridBoard.Width - shapeWidth) / 2);
+        int originY = Mathf.Max(0, (_gridBoard.Height - shapeHeight) / 2);
+
+        return new Vector2Int(originX, originY);
     }
 
 #if UNITY_EDITOR
@@ -385,6 +438,9 @@ public class IncomeInventory : MonoBehaviour
                 });
             }
         }
+
+        if (_fixedStartBlockPrefab == null)
+            _fixedStartBlockPrefab = AssetDatabase.LoadAssetAtPath<IncomeBlockPiece>(DefaultCrossBlockPrefabPath);
     }
 #endif
 }
