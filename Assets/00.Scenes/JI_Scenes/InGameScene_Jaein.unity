@@ -1344,12 +1344,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.CanvasScaler
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1200}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
+  m_MatchWidthOrHeight: 0.5
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
@@ -1365,7 +1365,7 @@ Canvas:
   m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 0
-  m_Camera: {fileID: 0}
+  m_Camera: {fileID: 1482599247}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
@@ -1436,7 +1436,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &302490024
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3785,22 +3785,6 @@ PrefabInstance:
       propertyPath: _uiPoolRoot
       value: 
       objectReference: {fileID: 4960253352866123614}
-    - target: {fileID: 5296992969310506774, guid: 810ff77847dc926408aa668c6034d877, type: 3}
-      propertyPath: _globalPools.Array.size
-      value: 17
-      objectReference: {fileID: 0}
-    - target: {fileID: 5296992969310506774, guid: 810ff77847dc926408aa668c6034d877, type: 3}
-      propertyPath: _globalPools.Array.data[16].Prefab
-      value: 
-      objectReference: {fileID: 123432135945263676, guid: e35825151b3160243a68e910be4128e4, type: 3}
-    - target: {fileID: 5296992969310506774, guid: 810ff77847dc926408aa668c6034d877, type: 3}
-      propertyPath: _globalPools.Array.data[16].MaxSize
-      value: 300
-      objectReference: {fileID: 0}
-    - target: {fileID: 5296992969310506774, guid: 810ff77847dc926408aa668c6034d877, type: 3}
-      propertyPath: _globalPools.Array.data[16].InitialSize
-      value: 200
-      objectReference: {fileID: 0}
     - target: {fileID: 8831656271116653013, guid: 810ff77847dc926408aa668c6034d877, type: 3}
       propertyPath: m_Name
       value: PoolManager
@@ -8618,7 +8602,7 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 1920, y: 1080}
+  m_ReferenceResolution: {x: 1920, y: 1200}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -9068,9 +9052,21 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1931545638337951360, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2419784750767299302, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: m_Name
       value: InGamePanel
+      objectReference: {fileID: 0}
+    - target: {fileID: 2624238241146693324, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_Name
+      value: UnitShopPanel
+      objectReference: {fileID: 0}
+    - target: {fileID: 2624238241146693324, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3341330664907624637, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: _dragRoot
@@ -9115,6 +9111,10 @@ PrefabInstance:
     - target: {fileID: 6905786238118524974, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6905786238118524974, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -0.0007625113
       objectReference: {fileID: 0}
     - target: {fileID: 7216775616069275396, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: _siegeHandler
@@ -9224,6 +9224,7 @@ SceneRoots:
   - {fileID: 1842864015}
   - {fileID: 1018384668}
   - {fileID: 1950871295}
+  - {fileID: 2092958358}
   - {fileID: 284887922}
   - {fileID: 1755229190}
   - {fileID: 16324339}
@@ -9237,4 +9238,3 @@ SceneRoots:
   - {fileID: 1384917482}
   - {fileID: 556531261}
   - {fileID: 1228591774}
-  - {fileID: 2092958358}

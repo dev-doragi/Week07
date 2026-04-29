@@ -20,8 +20,6 @@ public class Bootstrapper : MonoBehaviour
     [SerializeField] private SceneLoader _sceneLoaderPrefab;
     [SerializeField] private UIManager _uiManagerPrefab;
     [SerializeField] private PoolManager _poolManagerPrefab;
-    [SerializeField] private CameraManager _cameraManagerPrefab;
-    //[SerializeField] private SiegeSaveLoader _siegeSaveLoaderPrefab;
 
     private void Awake()
     {
@@ -39,8 +37,6 @@ public class Bootstrapper : MonoBehaviour
         EnsureInstance(_sceneLoaderPrefab);
         EnsureInstance(_uiManagerPrefab);
         EnsureInstance(_poolManagerPrefab);
-        EnsureInstance(_cameraManagerPrefab);
-        //EnsureInstance(_siegeSaveLoaderPrefab);
     }
 
     private void Start()
