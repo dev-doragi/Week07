@@ -99,6 +99,13 @@ public class PoolManager : Singleton<PoolManager>
         }
 
         GameObject obj = pool.Get();
+        if (obj == null)
+        {
+            Debug.LogWarning($"[PoolManager] '{prefabName}' 풀에서 파괴된 오브젝트를 반환받았습니다. 재시도합니다.");
+            obj = pool.Get();
+            if (obj == null) return null;
+        }
+
         obj.transform.SetPositionAndRotation(position, rotation);
         obj.SetActive(true);
         return obj;
