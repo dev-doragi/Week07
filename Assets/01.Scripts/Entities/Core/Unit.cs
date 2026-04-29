@@ -41,6 +41,7 @@ public class Unit : MonoBehaviour, IDamageable
     private bool _isInitialized = false;
     private UnitState _currentState = UnitState.Idle; // 현재 상태
     private bool _isOnGrid = false;
+    private bool _isTutorialEnemy = false;
 
     public UnitDataSO Data => _data;
     public SpriteRenderer BaseRenderer => _baseRenderer;
@@ -51,6 +52,7 @@ public class Unit : MonoBehaviour, IDamageable
     public UnitState CurrentState => _currentState;
     public EntityStatReceiver StatReceiver => _statReceiver;
     public void SetOnGrid(bool value) => _isOnGrid = value;
+    public void SetAsTutorialEnemy() => _isTutorialEnemy = true;
 
     public event Action<float, float> OnHpChanged;
     public event Action<Unit> OnDead;
@@ -228,7 +230,8 @@ public class Unit : MonoBehaviour, IDamageable
         if (_team == TeamType.Enemy && _data.Category != UnitCategory.Core)
         {
             EventBus.Instance?.Publish(new EnemyDefeatedEvent());
-            EventBus.Instance?.Publish(new TutorialEnemyDefeatedEvent());
+            if (_isTutorialEnemy)
+                EventBus.Instance?.Publish(new TutorialEnemyDefeatedEvent());
         }
 
         // 코어 파괴 이벤트 발행

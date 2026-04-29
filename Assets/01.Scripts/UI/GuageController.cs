@@ -15,7 +15,7 @@ public class GaugeController : MonoBehaviour
     [Header("References")]
     [SerializeField] private SiegeChargeHandler _siegeHandler;
 
-    public event Action OnActivated;
+    public event Action OnChargeActivated;
     public event Action<float> OnGaugeChanged;
 
     private float _currentGauge = 0f;
@@ -71,6 +71,7 @@ public class GaugeController : MonoBehaviour
 
         if (_siegeHandler != null)
         {
+            OnChargeActivated += _siegeHandler.ExecuteCrash;
             _siegeHandler.OnCrashEnd += Resume;
         }
     }
@@ -79,6 +80,7 @@ public class GaugeController : MonoBehaviour
     {
         if (_siegeHandler != null)
         {
+            OnChargeActivated -= _siegeHandler.ExecuteCrash;
             _siegeHandler.OnCrashEnd -= Resume;
         }
     }
@@ -137,7 +139,7 @@ public class GaugeController : MonoBehaviour
         }
     }
 
-    private void HandleButtonClick()
+    public void HandleButtonClick()
     {
         if (!_isGaugeFull || _isPaused || !_isWaveActive) return;
 
@@ -148,7 +150,7 @@ public class GaugeController : MonoBehaviour
 
         if (_button != null) _button.interactable = false;
 
-        OnActivated?.Invoke();
+        OnChargeActivated?.Invoke();
         EventBus.Instance?.Publish(new TutorialAccelerationButtonUsedEvent());
     }
 

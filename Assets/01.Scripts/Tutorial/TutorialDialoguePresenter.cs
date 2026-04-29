@@ -1,241 +1,368 @@
-using System.Collections.Generic;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 public class TutorialDialoguePresenter : MonoBehaviour
 {
-    [Header("Data")]
-    [SerializeField] private TutorialDialogueDataSO _dialogueData;
+    [Header("UI References")]
+    [SerializeField] private GameObject _dialogPanel;
+    [SerializeField] private TextMeshProUGUI _nameText;
+    [SerializeField] private TextMeshProUGUI _dialogText;
+    [SerializeField] private Image _portraitImage;
+    [SerializeField] private RectTransform _highlighter;
+    [SerializeField] private Button _clickButton; // 스크린 전체 판정 버튼 권장
+    [SerializeField] private GameObject _skipButton;
+    [SerializeField] private GameObject _postPanel;
 
-    [Header("UI (optional, auto-created when null)")]
-    [SerializeField] private GameObject _rootPanel;
-    [SerializeField] private TextMeshProUGUI _titleText;
-    [SerializeField] private TextMeshProUGUI _bodyText;
-    [SerializeField] private TextMeshProUGUI _stepText;
-    [SerializeField] private Button _nextButton;
-    [SerializeField] private TextMeshProUGUI _nextButtonLabel;
+    [Header("Placement Progress UI")]
+    [SerializeField] private GameObject _placementProgressPanel;
+    [SerializeField] private TextMeshProUGUI _placementProgressText;
 
-    [Header("Runtime")]
-    [SerializeField] private bool _autoCreateUI = true;
+    [Header("Settings")]
+    [SerializeField] private float _typingSpeed = 0.05f;
+    [SerializeField] private float _pulseScale = 1.1f;
+    [SerializeField] private float _pulseSpeed = 4.0f;
 
-    private readonly Dictionary<int, string[]> _fallbackLines = new Dictionary<int, string[]>
-    {
-        { 0, new[] { "카메라를 움직여 전장을 확인하세요.\n우클릭 드래그, 휠 줌을 사용합니다." } },
-        { 1, new[] { "생산시설을 1개 배치하세요.\n자원 순환의 시작입니다." } },
-        { 2, new[] { "가속 버튼을 눌러 전투 흐름을 당겨보세요." } },
-        { 3, new[] { "방어 유닛을 배치해 전열을 안정화하세요." } },
-        { 4, new[] { "스킬을 1회 사용해 전황 개입을 익히세요." } },
-        { 5, new[] { "공격 유닛을 배치해 화력을 확보하세요." } },
-        { 6, new[] { "적을 1회 처치하면 튜토리얼이 완료됩니다." } }
-    };
+    // State Flags & Cache
+    private bool _isTyping = false;
+    private bool _cancelTyping = false;
+    private string _fullTargetText = "";
+    private TutorialStep _currentStepData;
 
-    private int _currentStepIndex = -1;
-    private int _currentLineIndex = 0;
-    private List<string> _currentLines = new List<string>();
+    private Coroutine _typingCoroutine = null;
+    private Coroutine _dialogMoveCoroutine = null;
+    private Coroutine _pulseCoroutine = null;
+    private Coroutine _portraitMoveCoroutine = null;
+    private Coroutine _dialogCameraCoroutine = null;
+
+    private Vector2 _dialogOriginalAnchoredPos = Vector2.zero;
+    private Vector2 _highlighterBaseSize = Vector2.zero;
+    private Vector2 _clickButtonOriginalAnchoredPos = Vector2.zero;
+    private Vector2 _portraitOriginalAnchoredPos = Vector2.zero;
+    private bool _portraitOriginalCached = false;
 
     private void Awake()
     {
-        if (_autoCreateUI)
-            EnsureUiReferences();
+        if (_dialogPanel != null)
+        {
+            _dialogPanel.SetActive(false);
+            var rt = _dialogPanel.GetComponent<RectTransform>();
+            if (rt != null) _dialogOriginalAnchoredPos = rt.anchoredPosition;
+        }
 
-        if (_nextButton != null)
-            _nextButton.onClick.AddListener(OnNextClicked);
+        if (_highlighter != null) _highlighter.gameObject.SetActive(false);
+        if (_placementProgressPanel != null) _placementProgressPanel.SetActive(false);
+        if (_postPanel != null) _postPanel.SetActive(false);
+
+        if (_clickButton != null)
+        {
+            var cbRt = _clickButton.GetComponent<RectTransform>();
+            if (cbRt != null) _clickButtonOriginalAnchoredPos = cbRt.anchoredPosition;
+            _clickButton.onClick.AddListener(OnScreenClicked);
+        }
     }
 
     private void OnEnable()
     {
-        EventBus.Instance?.Subscribe<TutorialStepStartedEvent>(OnStepStarted);
-        EventBus.Instance?.Subscribe<TutorialStepCompletedEvent>(OnStepCompleted);
+        if (EventBus.Instance == null)
+        {
+            Debug.LogError("EventBus.Instance가 존재하지 않습니다.");
+            return;
+        }
+
+        EventBus.Instance.Subscribe<TutorialStepStartedEvent>(OnStepStarted);
+        EventBus.Instance.Subscribe<TutorialProgressUpdatedEvent>(OnProgressUpdated);
+        EventBus.Instance.Subscribe<TutorialStepCompletedEvent>(OnStepCompleted);
+        EventBus.Instance.Subscribe<TutorialCompletedEvent>(OnTutorialCompleted);
     }
 
     private void OnDisable()
     {
-        EventBus.Instance?.Unsubscribe<TutorialStepStartedEvent>(OnStepStarted);
-        EventBus.Instance?.Unsubscribe<TutorialStepCompletedEvent>(OnStepCompleted);
+        if (EventBus.Instance != null)
+        {
+            EventBus.Instance.Unsubscribe<TutorialStepStartedEvent>(OnStepStarted);
+            EventBus.Instance.Unsubscribe<TutorialProgressUpdatedEvent>(OnProgressUpdated);
+            EventBus.Instance.Unsubscribe<TutorialStepCompletedEvent>(OnStepCompleted);
+            EventBus.Instance.Unsubscribe<TutorialCompletedEvent>(OnTutorialCompleted);
+        }
     }
 
-    private void OnDestroy()
+    private void Update()
     {
-        if (_nextButton != null)
-            _nextButton.onClick.RemoveListener(OnNextClicked);
+        // 스페이스바 입력도 클릭과 동일하게 처리
+        var keyboard = Keyboard.current;
+        if (keyboard != null && keyboard.spaceKey.wasPressedThisFrame && _dialogPanel != null && _dialogPanel.activeSelf)
+        {
+            OnScreenClicked();
+        }
+    }
+
+    private void OnScreenClicked()
+    {
+        if (_isTyping)
+        {
+            _cancelTyping = true; // 타이핑 스킵
+        }
+        else
+        {
+            if (TutorialManager.Instance != null)
+            {
+                TutorialManager.Instance.OnNextButtonClicked();
+            }
+        }
     }
 
     private void OnStepStarted(TutorialStepStartedEvent evt)
     {
-        _currentStepIndex = evt.StepIndex;
-        _currentLineIndex = 0;
+        _currentStepData = evt.StepData;
 
-        BuildLinesForStep(evt.StepIndex);
-        SetVisible(true);
-        RefreshTexts(evt.StepIndex, evt.TotalStepCount);
-    }
+        if (_dialogPanel != null) _dialogPanel.SetActive(true);
+        if (_nameText != null) _nameText.text = _currentStepData.SpeakerName;
 
-    private void OnStepCompleted(TutorialStepCompletedEvent _)
-    {
-        // 다음 스텝 시작 이벤트에서 메시지가 교체되므로 별도 숨김 처리하지 않습니다.
-    }
-
-    private void OnNextClicked()
-    {
-        if (_currentLines.Count <= 1) return;
-        if (_currentLineIndex >= _currentLines.Count - 1) return;
-
-        _currentLineIndex++;
-        _bodyText.text = _currentLines[_currentLineIndex];
-        RefreshNextButtonState();
-    }
-
-    private void BuildLinesForStep(int stepIndex)
-    {
-        _currentLines.Clear();
-
-        if (_dialogueData != null && _dialogueData.TryGetDialogue(stepIndex, out TutorialDialogueDataSO.StepDialogue data))
+        // 카메라 고정
+        if (_currentStepData.Condition != TutorialCondition.CameraMove)
         {
-            if (data.Lines != null)
+            if (_dialogCameraCoroutine != null) StopCoroutine(_dialogCameraCoroutine);
+            _dialogCameraCoroutine = StartCoroutine(DialogCameraLockRoutine(0.25f));
+        }
+
+        // 다이얼로그 이동 처리
+        if (_currentStepData.MoveDialogUp && _dialogPanel != null)
+        {
+            if (_dialogMoveCoroutine != null) StopCoroutine(_dialogMoveCoroutine);
+            _dialogMoveCoroutine = StartCoroutine(MoveDialogUpRoutine(_currentStepData.MoveOffset, _currentStepData.MoveDuration));
+        }
+
+        // 포트레이트 처리
+        if (_portraitImage != null)
+        {
+            bool hasPortrait = _currentStepData.PortraitSprite != null;
+            _portraitImage.gameObject.SetActive(hasPortrait);
+
+            if (hasPortrait)
             {
-                for (int i = 0; i < data.Lines.Count; i++)
+                _portraitImage.sprite = _currentStepData.PortraitSprite;
+                var portraitRt = _portraitImage.GetComponent<RectTransform>();
+
+                if (portraitRt != null)
                 {
-                    string line = data.Lines[i];
-                    if (!string.IsNullOrWhiteSpace(line))
-                        _currentLines.Add(line);
+                    if (!_portraitOriginalCached)
+                    {
+                        _portraitOriginalAnchoredPos = portraitRt.anchoredPosition;
+                        _portraitOriginalCached = true;
+                    }
+
+                    if (_portraitMoveCoroutine != null) StopCoroutine(_portraitMoveCoroutine);
+
+                    if (_currentStepData.MovePortraitLeft || _currentStepData.PortraitTarget != null)
+                    {
+                        Vector2 target = _currentStepData.PortraitTarget != null
+                            ? _currentStepData.PortraitTarget.anchoredPosition
+                            : _portraitOriginalAnchoredPos + new Vector2(-Mathf.Abs(_currentStepData.PortraitMoveOffset), 0f);
+                        _portraitMoveCoroutine = StartCoroutine(MovePortraitToRoutine(portraitRt, target, _currentStepData.PortraitMoveDuration));
+                    }
+                    else
+                    {
+                        _portraitMoveCoroutine = StartCoroutine(MovePortraitToRoutine(portraitRt, _portraitOriginalAnchoredPos, _currentStepData.PortraitMoveDuration));
+                    }
                 }
             }
-
-            if (_titleText != null)
-                _titleText.text = string.IsNullOrWhiteSpace(data.Title) ? $"튜토리얼 {stepIndex + 1}" : data.Title;
         }
-        else
-        {
-            if (_titleText != null)
-                _titleText.text = $"튜토리얼 {stepIndex + 1}";
 
-            if (_fallbackLines.TryGetValue(stepIndex, out string[] lines))
+        // 하이라이터 처리
+        if (_pulseCoroutine != null) StopCoroutine(_pulseCoroutine);
+        if (_highlighter != null)
+        {
+            if (_currentStepData.TargetUI != null)
             {
-                for (int i = 0; i < lines.Length; i++)
-                    _currentLines.Add(lines[i]);
+                _highlighter.gameObject.SetActive(true);
+                _highlighter.position = _currentStepData.TargetUI.position;
+                _highlighterBaseSize = _currentStepData.TargetUI.sizeDelta;
+                _highlighter.sizeDelta = _highlighterBaseSize;
+                _pulseCoroutine = StartCoroutine(HighlighterPulseRoutine());
+            }
+            else
+            {
+                _highlighter.gameObject.SetActive(false);
             }
         }
 
-        if (_currentLines.Count == 0)
-            _currentLines.Add("진행 조건을 달성하세요.");
+        // 진행도 패널 표시 여부
+        bool showProgress = _currentStepData.Condition == TutorialCondition.PartPlacement
+                         || _currentStepData.Condition == TutorialCondition.CameraMove
+                         || _currentStepData.Condition == TutorialCondition.EnemyDefeated;
+        if (_placementProgressPanel != null) _placementProgressPanel.SetActive(showProgress);
+
+        // 텍스트 타이핑 시작
+        if (_typingCoroutine != null) StopCoroutine(_typingCoroutine);
+        _fullTargetText = _currentStepData.Message ?? "";
+        _typingCoroutine = StartCoroutine(TypingRoutine());
     }
 
-    private void RefreshTexts(int stepIndex, int totalStepCount)
+    private void OnProgressUpdated(TutorialProgressUpdatedEvent evt)
     {
-        if (_stepText != null)
-            _stepText.text = $"STEP {stepIndex + 1}/{totalStepCount}";
+        if (_placementProgressText == null) return;
 
-        if (_bodyText != null)
-            _bodyText.text = _currentLines[_currentLineIndex];
-
-        RefreshNextButtonState();
-    }
-
-    private void RefreshNextButtonState()
-    {
-        if (_nextButton == null) return;
-
-        bool canNext = _currentLines.Count > 1 && _currentLineIndex < _currentLines.Count - 1;
-        _nextButton.gameObject.SetActive(_currentLines.Count > 1);
-        _nextButton.interactable = canNext;
-
-        if (_nextButtonLabel != null)
-            _nextButtonLabel.text = canNext ? "다음" : "마지막";
-    }
-
-    private void SetVisible(bool visible)
-    {
-        if (_rootPanel != null)
-            _rootPanel.SetActive(visible);
-    }
-
-    private void EnsureUiReferences()
-    {
-        if (_rootPanel != null && _titleText != null && _bodyText != null && _stepText != null && _nextButton != null)
+        if (_currentStepData != null && _currentStepData.Condition == TutorialCondition.CameraMove)
+        {
+            _placementProgressText.text = !string.IsNullOrWhiteSpace(evt.Label) ? evt.Label : "";
             return;
-
-        Canvas targetCanvas = FindAnyObjectByType<Canvas>();
-        if (targetCanvas == null)
-        {
-            GameObject canvasGo = new GameObject("TutorialCanvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
-            targetCanvas = canvasGo.GetComponent<Canvas>();
-            targetCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
-
-            CanvasScaler scaler = canvasGo.GetComponent<CanvasScaler>();
-            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1920, 1080);
         }
 
-        if (_rootPanel == null)
-        {
-            _rootPanel = CreateUIObject("TutorialDialoguePanel", targetCanvas.transform).gameObject;
-            Image bg = _rootPanel.AddComponent<Image>();
-            bg.color = new Color(0f, 0f, 0f, 0.68f);
+        int current = Mathf.FloorToInt(evt.CurrentProgress);
+        int required = Mathf.Max(1, Mathf.FloorToInt(evt.RequiredProgress));
 
-            RectTransform panelRt = _rootPanel.GetComponent<RectTransform>();
-            panelRt.anchorMin = new Vector2(0.5f, 0f);
-            panelRt.anchorMax = new Vector2(0.5f, 0f);
-            panelRt.pivot = new Vector2(0.5f, 0f);
-            panelRt.sizeDelta = new Vector2(900f, 220f);
-            panelRt.anchoredPosition = new Vector2(0f, 30f);
+        if (!string.IsNullOrWhiteSpace(evt.Label))
+            _placementProgressText.text = $"{evt.Label} ({current}/{required})";
+        else
+            _placementProgressText.text = $"({current}/{required})";
+    }
+
+    private void OnStepCompleted(TutorialStepCompletedEvent evt)
+    {
+        if (_pulseCoroutine != null) StopCoroutine(_pulseCoroutine);
+        if (_dialogCameraCoroutine != null) StopCoroutine(_dialogCameraCoroutine);
+
+        if (_currentStepData != null && _currentStepData.MoveDialogUp && _dialogPanel != null)
+        {
+            if (_dialogMoveCoroutine != null) StopCoroutine(_dialogMoveCoroutine);
+            _dialogMoveCoroutine = StartCoroutine(MoveDialogDownRoutine(_currentStepData.MoveDuration));
         }
 
-        if (_stepText == null)
-            _stepText = CreateText("StepText", _rootPanel.transform, new Vector2(-420f, 82f), 24, TextAlignmentOptions.Left);
-        if (_titleText == null)
-            _titleText = CreateText("TitleText", _rootPanel.transform, new Vector2(-420f, 48f), 34, TextAlignmentOptions.Left);
-        if (_bodyText == null)
-            _bodyText = CreateText("BodyText", _rootPanel.transform, new Vector2(-420f, -18f), 30, TextAlignmentOptions.TopLeft);
+        if (_placementProgressPanel != null) _placementProgressPanel.SetActive(false);
+    }
 
-        if (_nextButton == null)
+    private void OnTutorialCompleted(TutorialCompletedEvent evt)
+    {
+        if (_dialogPanel != null) _dialogPanel.SetActive(false);
+        if (_highlighter != null) _highlighter.gameObject.SetActive(false);
+        if (_placementProgressPanel != null) _placementProgressPanel.SetActive(false);
+        if (_skipButton != null) _skipButton.SetActive(false);
+
+        if (_portraitImage != null && _portraitOriginalCached)
         {
-            GameObject buttonGo = CreateUIObject("NextButton", _rootPanel.transform).gameObject;
-            Image buttonBg = buttonGo.AddComponent<Image>();
-            buttonBg.color = new Color(1f, 1f, 1f, 0.18f);
-            _nextButton = buttonGo.AddComponent<Button>();
-
-            RectTransform brt = buttonGo.GetComponent<RectTransform>();
-            brt.anchorMin = new Vector2(1f, 0f);
-            brt.anchorMax = new Vector2(1f, 0f);
-            brt.pivot = new Vector2(1f, 0f);
-            brt.sizeDelta = new Vector2(170f, 62f);
-            brt.anchoredPosition = new Vector2(-20f, 20f);
+            var rt = _portraitImage.GetComponent<RectTransform>();
+            if (rt != null) rt.anchoredPosition = _portraitOriginalAnchoredPos;
         }
 
-        if (_nextButtonLabel == null && _nextButton != null)
+        if (_postPanel != null) _postPanel.SetActive(true);
+    }
+
+    // --- 애니메이션 코루틴 모음 ---
+    private IEnumerator TypingRoutine()
+    {
+        _isTyping = true;
+        _cancelTyping = false;
+
+        if (_dialogText != null) _dialogText.text = "";
+
+        foreach (char c in _fullTargetText.ToCharArray())
         {
-            _nextButtonLabel = CreateText("NextButtonText", _nextButton.transform, Vector2.zero, 28, TextAlignmentOptions.Center);
-            RectTransform lrt = _nextButtonLabel.rectTransform;
-            lrt.anchorMin = Vector2.zero;
-            lrt.anchorMax = Vector2.one;
-            lrt.offsetMin = Vector2.zero;
-            lrt.offsetMax = Vector2.zero;
-            _nextButtonLabel.text = "다음";
+            if (_cancelTyping) break;
+            if (_dialogText != null) _dialogText.text += c;
+            yield return new WaitForSecondsRealtime(_typingSpeed);
+        }
+
+        if (_dialogText != null) _dialogText.text = _fullTargetText;
+        _isTyping = false;
+    }
+
+    private IEnumerator HighlighterPulseRoutine()
+    {
+        while (true)
+        {
+            float t = (Mathf.Sin(Time.unscaledTime * _pulseSpeed) + 1f) / 2f;
+            if (_highlighter != null)
+            {
+                _highlighter.sizeDelta = Vector2.Lerp(_highlighterBaseSize, _highlighterBaseSize * _pulseScale, t);
+            }
+            yield return null;
         }
     }
 
-    private static RectTransform CreateUIObject(string name, Transform parent)
+    private IEnumerator MovePortraitToRoutine(RectTransform portraitRt, Vector2 target, float duration)
     {
-        GameObject go = new GameObject(name, typeof(RectTransform));
-        go.transform.SetParent(parent, false);
-        return go.GetComponent<RectTransform>();
+        if (portraitRt == null) yield break;
+        Vector2 start = portraitRt.anchoredPosition;
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            portraitRt.anchoredPosition = Vector2.Lerp(start, target, Mathf.Clamp01(elapsed / duration));
+            yield return null;
+        }
+        portraitRt.anchoredPosition = target;
     }
 
-    private static TextMeshProUGUI CreateText(string name, Transform parent, Vector2 anchoredPos, float fontSize, TextAlignmentOptions alignment)
+    private IEnumerator MoveDialogUpRoutine(float offset, float duration)
     {
-        RectTransform rt = CreateUIObject(name, parent);
-        TextMeshProUGUI text = rt.gameObject.AddComponent<TextMeshProUGUI>();
-        text.fontSize = fontSize;
-        text.alignment = alignment;
-        text.color = Color.white;
-        text.text = string.Empty;
+        if (_dialogPanel == null) yield break;
+        var rt = _dialogPanel.GetComponent<RectTransform>();
+        Vector2 start = rt.anchoredPosition;
+        Vector2 target = start + new Vector2(0f, offset);
 
-        rt.anchorMin = new Vector2(0f, 0.5f);
-        rt.anchorMax = new Vector2(0f, 0.5f);
-        rt.pivot = new Vector2(0f, 0.5f);
-        rt.anchoredPosition = anchoredPos;
-        rt.sizeDelta = new Vector2(760f, 90f);
-        return text;
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            rt.anchoredPosition = Vector2.Lerp(start, target, t);
+
+            if (_clickButton != null)
+            {
+                var cbRt = _clickButton.GetComponent<RectTransform>();
+                if (cbRt != null) cbRt.anchoredPosition = Vector2.Lerp(_clickButtonOriginalAnchoredPos, _clickButtonOriginalAnchoredPos + new Vector2(0f, offset), t);
+            }
+            yield return null;
+        }
+        rt.anchoredPosition = target;
+    }
+
+    private IEnumerator MoveDialogDownRoutine(float duration)
+    {
+        if (_dialogPanel == null) yield break;
+        var rt = _dialogPanel.GetComponent<RectTransform>();
+        Vector2 start = rt.anchoredPosition;
+        Vector2 target = _dialogOriginalAnchoredPos;
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            rt.anchoredPosition = Vector2.Lerp(start, target, t);
+            if (_clickButton != null)
+            {
+                var cbRt = _clickButton.GetComponent<RectTransform>();
+                if (cbRt != null) cbRt.anchoredPosition = Vector2.Lerp(_clickButtonOriginalAnchoredPos + new Vector2(0f, start.y - target.y), _clickButtonOriginalAnchoredPos, t);
+            }
+            yield return null;
+        }
+        rt.anchoredPosition = target;
+    }
+
+    private IEnumerator DialogCameraLockRoutine(float duration)
+    {
+        Camera mainCam = Camera.main;
+        if (mainCam == null) yield break;
+
+        float startSize = mainCam.orthographicSize;
+        Vector3 startPos = mainCam.transform.position;
+        Vector3 targetPos = new Vector3(0f, 0f, -10f); // default pos z
+
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            mainCam.orthographicSize = Mathf.Lerp(startSize, 10f, t); // default size
+            mainCam.transform.position = Vector3.Lerp(startPos, targetPos, t);
+            yield return null;
+        }
+
+        mainCam.orthographicSize = 10f;
+        mainCam.transform.position = targetPos;
+        while (true) yield return null;
     }
 }

@@ -146,7 +146,7 @@ public class CameraManager : Singleton<CameraManager>
         if (_tutorialCameraEventPublished) return;
 
         _tutorialCameraEventPublished = true;
-        EventBus.Instance?.Publish(new TutorialCameraManipulatedEvent());
+        EventBus.Instance?.Publish(new CameraManipulationEvent());
     }
 
     private void ApplyZoomAtMousePosition(float newZoom)
