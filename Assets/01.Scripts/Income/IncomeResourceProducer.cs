@@ -14,8 +14,7 @@ public class IncomeResourceProducer : MonoBehaviour
 
     [Header("Production")]
     [SerializeField] private float _scanInterval = 5f;
-    [Min(4)]
-    [SerializeField] private int _resourcePerCell = 4;
+    [SerializeField] private int _resourcePerCell = 1;
     [SerializeField] private bool _useUnscaledTime;
     [SerializeField] private bool _logProduction = true;
 
@@ -40,8 +39,8 @@ public class IncomeResourceProducer : MonoBehaviour
 
     private void OnEnable()
     {
-        if (_resourcePerCell < 4)
-            _resourcePerCell = 4;
+        if (_resourcePerCell <= 1)
+            _resourcePerCell = 1;
 
         if (EventBus.Instance != null)
             EventBus.Instance.Subscribe<StageMapVisibilityChangedEvent>(OnStageMapVisibilityChanged);
