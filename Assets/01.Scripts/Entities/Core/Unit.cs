@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -164,6 +165,18 @@ public class Unit : MonoBehaviour, IDamageable
 
         _currentHp -= Mathf.Max(0f, finalDamage);
 
+        GameCsvLogger.Instance.LogEvent(
+            eventType: GameLogEventType.DamageReceived,
+            actor: null,
+            target: gameObject,
+            value: finalDamage,
+            metadata: new Dictionary<string, object>
+            {
+                { "attackerTeam", hitData.AttackerTeam.ToString() },
+                { "isPiercing", hitData.IsPiercing },
+                { "hpAfter", Mathf.Max(0f, _currentHp) }
+            });
+
         UpdateVisualFeedback();
         OnHpChanged?.Invoke(_currentHp, _data.MaxHp);
 
@@ -227,6 +240,16 @@ public class Unit : MonoBehaviour, IDamageable
 
     private void HandleDeath()
     {
+        GameCsvLogger.Instance.LogEvent(
+            eventType: GameLogEventType.UnitKilled,
+            actor: null,
+            target: gameObject,
+            metadata: new Dictionary<string, object>
+            {
+                { "category", _data != null ? _data.Category.ToString() : "Unknown" },
+                { "team", _team.ToString() }
+            });
+
         if (_team == TeamType.Enemy && _data.Category != UnitCategory.Core)
         {
             EventBus.Instance?.Publish(new EnemyDefeatedEvent());

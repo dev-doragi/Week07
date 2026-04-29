@@ -222,7 +222,7 @@ public class GridManager : Singleton<GridManager>
         if (data.Cost > 0 && ResourceManager.Instance != null)
         {
             int before = ResourceManager.Instance.CurrentMouse;
-            if (!ResourceManager.Instance.SubtractMouseCount(data.Cost))
+            if (!ResourceManager.Instance.SubtractMouseCount(data.Cost, "grid_place:" + data.UnitName))
             {
                 Debug.Log($"[GridManager] {data.UnitName} 배치 실패 | 보유: {before} / 필요: {data.Cost}");
                 ShowPlacementFailureFeedback(
@@ -236,6 +236,7 @@ public class GridManager : Singleton<GridManager>
             Debug.Log($"[GridManager] {data.UnitName} 배치 완료 | 사용: {data.Cost} | {before} → {ResourceManager.Instance.CurrentMouse}");
         }
         CreateAndRegister(data, origin);
+        LogPlacementEvent(data, origin, true, false);
         return true;
     }
 
@@ -273,10 +274,11 @@ public class GridManager : Singleton<GridManager>
         if (unit.Data.Cost > 0 && ResourceManager.Instance != null)
         {
             int refund = Mathf.CeilToInt(unit.Data.Cost * 0.5f);
-            ResourceManager.Instance.AddMouseCount(refund);
+            ResourceManager.Instance.AddMouseCount(refund, "grid_remove_refund:" + unit.Data.UnitName);
             Debug.Log($"[GridManager] {unit.Data.UnitName} 제거 | 환불: {refund} (원가: {unit.Data.Cost})");
         }
 
+        LogPlacementEvent(unit.Data, unit.OriginCell, false, false);
         StartCollapse(unit);
         ScheduleCollapseCheck();
         return true;
@@ -565,8 +567,37 @@ public class GridManager : Singleton<GridManager>
     {
         if (unit == null) return;
         Debug.Log($"[GridManager] {unit.Data.UnitName} 전투 파괴 | 연쇄 붕괴 체크 시작");
+        LogPlacementEvent(unit.Data, unit.OriginCell, false, true);
         StartCollapse(unit);
         ScheduleCollapseCheck();
+    }
+
+    private void LogPlacementEvent(UnitDataSO data, Vector2Int origin, bool isPlaced, bool byCombat)
+    {
+        if (data == null) return;
+
+        bool isFacility = data.Category == UnitCategory.Support;
+        GameLogEventType eventType;
+        if (isPlaced)
+            eventType = isFacility ? GameLogEventType.FacilityPlaced : GameLogEventType.UnitPlaced;
+        else
+            eventType = isFacility ? GameLogEventType.FacilityRemoved : GameLogEventType.UnitRemoved;
+
+        Vector3 world = FootprintCenter(data, origin);
+        GameCsvLogger.Instance.LogEvent(
+            eventType: eventType,
+            value: data.Cost,
+            metadata: new Dictionary<string, object>
+            {
+                { "unitKey", data.Key },
+                { "unitName", data.UnitName },
+                { "category", data.Category.ToString() },
+                { "gridX", origin.x },
+                { "gridY", origin.y },
+                { "byCombat", byCombat },
+                { "worldX", world.x },
+                { "worldY", world.y }
+            });
     }
 
     /// <summary>

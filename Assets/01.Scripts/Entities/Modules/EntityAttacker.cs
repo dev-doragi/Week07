@@ -94,7 +94,7 @@ public class EntityAttacker : MonoBehaviour
                 Debug.Log($"[EntityAttacker] {_owner.name} 공격 비용 부족 | 필요: {_data.AttackCost}");
                 return;
             }
-            ResourceManager.Instance.SubtractMouseCount(_data.AttackCost);
+            ResourceManager.Instance.SubtractMouseCount(_data.AttackCost, "attack_cost:" + _owner.name);
         }
 
         IAttacker performer = (_data.Trajectory == AttackTrajectoryType.Arc) ? _arcPerformer : _directPerformer;
@@ -103,6 +103,16 @@ public class EntityAttacker : MonoBehaviour
             AttackModule attackDataForShot = BuildAttackDataForShot();
             if (performer.TryPerformAttack(_owner, _currentTarget, attackDataForShot))
             {
+                GameCsvLogger.Instance.LogEvent(
+                    eventType: GameLogEventType.AttackStarted,
+                    actor: _owner.gameObject,
+                    target: _currentTarget != null ? _currentTarget.gameObject : null,
+                    value: attackDataForShot.Damage,
+                    metadata: new Dictionary<string, object>
+                    {
+                        { "trajectory", _data.Trajectory.ToString() },
+                        { "area", _data.Area.ToString() }
+                    });
                         
                 float baseAttackInterval = Mathf.Max(0.01f, _data.Speed);
                 float baseAttacksPerSecond = 1f / baseAttackInterval;

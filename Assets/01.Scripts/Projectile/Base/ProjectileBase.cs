@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class ProjectileBase : MonoBehaviour
@@ -33,6 +34,16 @@ public abstract class ProjectileBase : MonoBehaviour
         _attackerTeam = team;
         _currentDamage = data.Damage;
         _remainingPiercing = data.PiercingCount;
+
+        GameCsvLogger.Instance.LogEvent(
+            eventType: GameLogEventType.ProjectileSpawned,
+            actor: gameObject,
+            value: _currentDamage,
+            metadata: new Dictionary<string, object>
+            {
+                { "attackerTeam", _attackerTeam.ToString() },
+                { "area", _attackData != null ? _attackData.Area.ToString() : "Unknown" }
+            });
     }
 
     protected virtual void OnImpact(Vector2 hitPoint)
@@ -58,6 +69,16 @@ public abstract class ProjectileBase : MonoBehaviour
         switch (_attackData.Area)
         {
             case AreaType.Single:
+                GameObject targetGoSingle = (target as Component) != null ? (target as Component).gameObject : null;
+                GameCsvLogger.Instance.LogEvent(
+                    eventType: GameLogEventType.DamageDealt,
+                    actor: gameObject,
+                    target: targetGoSingle,
+                    value: _currentDamage,
+                    metadata: new Dictionary<string, object>
+                    {
+                        { "areaType", "Single" }
+                    });
                 target.TakeDamage(data);
                 if (_attackerTeam == TeamType.Player)
                     EventBus.Instance?.Publish(new EnemyHitEvent { AttackerTeam = _attackerTeam });
@@ -66,6 +87,14 @@ public abstract class ProjectileBase : MonoBehaviour
                 break;
 
             case AreaType.Splash:
+                GameCsvLogger.Instance.LogEvent(
+                    eventType: GameLogEventType.ProjectileHit,
+                    actor: gameObject,
+                    value: _currentDamage,
+                    metadata: new Dictionary<string, object>
+                    {
+                        { "areaType", "Splash" }
+                    });
                 Explode(hitPoint);
                 OnImpact(hitPoint);
                 Despawn();
@@ -73,6 +102,17 @@ public abstract class ProjectileBase : MonoBehaviour
 
             case AreaType.Piercing:
                 data.IsPiercing = true;
+                GameObject targetGoPiercing = (target as Component) != null ? (target as Component).gameObject : null;
+                GameCsvLogger.Instance.LogEvent(
+                    eventType: GameLogEventType.DamageDealt,
+                    actor: gameObject,
+                    target: targetGoPiercing,
+                    value: _currentDamage,
+                    metadata: new Dictionary<string, object>
+                    {
+                        { "areaType", "Piercing" },
+                        { "remainingPierce", _remainingPiercing }
+                    });
                 target.TakeDamage(data);
                 if (_attackerTeam == TeamType.Player)
                     EventBus.Instance?.Publish(new EnemyHitEvent { AttackerTeam = _attackerTeam });
@@ -97,6 +137,16 @@ public abstract class ProjectileBase : MonoBehaviour
                 && target.Team != _attackerTeam
                 && !target.IsDead)
             {
+                GameCsvLogger.Instance.LogEvent(
+                    eventType: GameLogEventType.DamageDealt,
+                    actor: gameObject,
+                    target: col.gameObject,
+                    value: _currentDamage,
+                    metadata: new Dictionary<string, object>
+                    {
+                        { "areaType", "Splash" },
+                        { "radius", _attackData.RangeRadius }
+                    });
                 target.TakeDamage(new DamageData { Damage = _currentDamage, HitPoint = center });
                 hitCount++;
             }

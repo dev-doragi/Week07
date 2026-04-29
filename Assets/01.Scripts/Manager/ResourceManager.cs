@@ -100,7 +100,7 @@ public class ResourceManager : Singleton<ResourceManager>
         if (_genTimer >= _genInterval)
         {
             _genTimer = 0;
-            AddMouseCount(_generatorCount); // 자원 추가
+            AddMouseCount(_generatorCount, "auto_generation"); // 자원 추가
         }
     }
 
@@ -124,7 +124,7 @@ public class ResourceManager : Singleton<ResourceManager>
             // 자원 소모 체크
             if (_currentMouseCount >= _activeAltarCount)
             {
-                SubtractMouseCount(_activeAltarCount);
+                SubtractMouseCount(_activeAltarCount, "altar_upkeep");
                 _isAltarSupportEnabled = true;
             }
             else
@@ -137,15 +137,25 @@ public class ResourceManager : Singleton<ResourceManager>
 
     #region 외부 인터페이스 (API)
 
-    public void AddMouseCount(int amount)
+    public void AddMouseCount(int amount, string reason = null)
     {
         int before = _currentMouseCount;
         _currentMouseCount = Mathf.Min(_currentMouseCount + amount, _maxMouseCount);
         _isDirty = true; // 변경됨을 알림
         Debug.Log($"[Resource] + {amount} | {before} -> {_currentMouseCount} / {_maxMouseCount}");
+
+        GameCsvLogger.Instance.LogEvent(
+            eventType: GameLogEventType.ResourceGain,
+            value: amount,
+            metadata: new Dictionary<string, object>
+            {
+                { "before", before },
+                { "after", _currentMouseCount },
+                { "reason", string.IsNullOrWhiteSpace(reason) ? "unknown" : reason }
+            });
     }
 
-    public bool SubtractMouseCount(int amount)
+    public bool SubtractMouseCount(int amount, string reason = null)
     {
         if (_currentMouseCount < amount)
         {
@@ -157,6 +167,16 @@ public class ResourceManager : Singleton<ResourceManager>
         _currentMouseCount -= amount;
         _isDirty = true; // 변경됨을 알림
         //Debug.Log($"[Resource] -{amount} | {before} → {_currentMouseCount} / {_maxMouseCount}");
+
+        GameCsvLogger.Instance.LogEvent(
+            eventType: GameLogEventType.ResourceSpend,
+            value: amount,
+            metadata: new Dictionary<string, object>
+            {
+                { "before", before },
+                { "after", _currentMouseCount },
+                { "reason", string.IsNullOrWhiteSpace(reason) ? "unknown" : reason }
+            });
         return true;
     }
 

@@ -117,6 +117,7 @@ public class UIManager : Singleton<UIManager>
     }
 
     // Button handlers (connect from Inspector)
+    // TODO(CSV-Log): Add ButtonClicked/ShopOpened/ShopClosed logs per button and panel visibility transition.
 
     public void OnPauseClicked()
     {

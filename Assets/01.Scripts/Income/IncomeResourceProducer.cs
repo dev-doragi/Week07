@@ -110,7 +110,7 @@ public class IncomeResourceProducer : MonoBehaviour
             _warnedMissingResourceManager = false;
 
             int before = manager.CurrentMouse;
-            manager.AddMouseCount(amount);
+            manager.AddMouseCount(amount, "income_production");
             if (_logProduction)
             {
                 Debug.Log($"[IncomeResourceProducer] ResourceManager linked. Mouse: {before} -> {manager.CurrentMouse}");
@@ -147,7 +147,7 @@ public class IncomeResourceProducer : MonoBehaviour
 
         ResourceManager manager = ResolveResourceManager();
         if (manager != null)
-            manager.AddMouseCount(amount);
+            manager.AddMouseCount(amount, "income_skipped_wait");
 
         if (_logProduction)
             Debug.Log($"[IncomeResourceProducer] Granted {amount} resources for skipped wait ({duration:F1}s, occupied: {occupied}).");
