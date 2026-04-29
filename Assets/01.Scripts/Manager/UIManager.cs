@@ -135,18 +135,13 @@ public class UIManager : Singleton<UIManager>
 
     public void OnRetryClicked()
     {
-        VehicleCache.Clear();
+        SiegeCache.Clear();
         SceneLoader.Instance.ReloadCurrentScene();
     }
 
     public void OnNextStageClicked()
     {
-        // 현재 차량 상태를 캐싱한 뒤 다음 스테이지 로드
-        var saver = FindAnyObjectByType<VehicleSaveLoader>();
-        if (saver != null)
-        {
-            saver.SaveCurrentVehicle(StageManager.Instance.CurrentStageIndex);
-        }
+        // 차량 데이터 저장 로직은 제거
 
         HideAllPanels();
         if (_inGamePanel != null) _inGamePanel.SetActive(true);

@@ -165,6 +165,7 @@ public class SiegeChargeHandler : MonoBehaviour
     {
         float delta          = Mathf.Abs(playerCP - enemyCP);
         bool  isPlayerLosing = playerCP < enemyCP;
+        float finalDamage    = delta;
 
         Debug.Log($"[Collision] PlayerCP: {playerCP} | EnemyCP: {enemyCP} | Delta: {delta}");
 
@@ -172,12 +173,13 @@ public class SiegeChargeHandler : MonoBehaviour
         {
             if (isPlayerLosing)
             {
-                DistributeDamage(_grid.GetAllLivingUnits(), delta, TeamType.Enemy, "Player");
+                finalDamage = delta;
+                DistributeDamage(_grid.GetAllLivingUnits(), finalDamage, TeamType.Enemy, "Player");
             }
             else
             {
-                float boosted = delta * (1f + Mathf.Max(0f, _doctrineBonusDamagePercent));
-                DistributeDamage(enemyGrid.GetAllLivingUnits(), boosted, TeamType.Player, "Enemy");
+                finalDamage = delta * (1f + Mathf.Max(0f, _doctrineBonusDamagePercent));
+                DistributeDamage(enemyGrid.GetAllLivingUnits(), finalDamage, TeamType.Player, "Enemy");
             }
         }
 
@@ -189,7 +191,8 @@ public class SiegeChargeHandler : MonoBehaviour
             PlayerCP       = playerCP,
             EnemyCP        = enemyCP,
             Delta          = delta,
-            IsPlayerLosing = isPlayerLosing
+            IsPlayerLosing = isPlayerLosing,
+            FinalDamage    = finalDamage
         });
     }
 

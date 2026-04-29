@@ -14,12 +14,9 @@ public class MouseCountVisualizer : MonoBehaviour
 
     [Header("Options")]
     [SerializeField] private bool _despawnAllOnDisable = true;
-    [SerializeField] private int _poolInitialSize = 30;
-    [SerializeField] private int _poolMaxSize = 500;
 
     private readonly List<GameObject> _activeMice = new List<GameObject>();
     private int _lastSyncedCount = -1;
-    private bool _poolPrepared = false;
 
     private void Awake()
     {
@@ -32,27 +29,26 @@ public class MouseCountVisualizer : MonoBehaviour
         _lastSyncedCount = -1;
     }
 
+
     private void Start()
     {
-        if (TryPreparePool())
-            SyncToResourceCount(force: true);
+        SyncToResourceCount(force: true);
     }
 
     private void Update()
     {
-        if (!TryPreparePool())
-            return;
-
         SyncToResourceCount(force: false);
     }
+
 
     private void OnDisable()
     {
         if (_despawnAllOnDisable)
+        {
+            // 안전하게 반환
             DespawnMouse(_activeMice.Count);
-
+        }
         _lastSyncedCount = -1;
-        _poolPrepared = false;
     }
 
     [ContextMenu("Sync Mouse Count")]
@@ -67,26 +63,15 @@ public class MouseCountVisualizer : MonoBehaviour
             _resourceManager = ResourceManager.Instance;
     }
 
-    private bool TryPreparePool()
-    {
-        if (_poolPrepared)
-            return true;
 
-        if (_mousePrefab == null)
-            return false;
-
-        if (PoolManager.Instance == null)
-            return false;
-
-        PoolManager.Instance.BootstrapIfNeeded();
-        PoolManager.Instance.CreatePool(_mousePrefab, _poolInitialSize, _poolMaxSize);
-        _poolPrepared = true;
-        return true;
-    }
+    // 풀 생성/준비는 PoolManager의 글로벌 풀 세팅에서 담당
 
     private void SyncToResourceCount(bool force)
     {
         if (_resourceManager == null || _mousePrefab == null || _spawnLocation == null)
+            return;
+
+        if (PoolManager.Instance == null)
             return;
 
         int targetCount = Mathf.Max(0, _resourceManager.CurrentMouse / 10);
@@ -118,6 +103,8 @@ public class MouseCountVisualizer : MonoBehaviour
     {
         if (amount <= 0)
             return;
+        if (PoolManager.Instance == null)
+            return;
 
         for (int i = 0; i < amount; i++)
         {
@@ -135,6 +122,8 @@ public class MouseCountVisualizer : MonoBehaviour
     private void DespawnMouse(int amount)
     {
         if (amount <= 0)
+            return;
+        if (PoolManager.Instance == null)
             return;
 
         int count = Mathf.Min(amount, _activeMice.Count);
