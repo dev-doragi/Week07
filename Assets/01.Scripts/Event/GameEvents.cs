@@ -35,6 +35,11 @@ public struct EnemyHitEvent { public TeamType AttackerTeam; }
 public struct CollisionPowerUpdatedEvent { public float PlayerCP; public float EnemyCP; }
 public struct PlayerGridChangedEvent { }
 public struct EnemyGridChangedEvent { }
+public struct EnemyDefeatedEvent { }
+public struct PartPlacedEvent { public int PartKey; public UnityEngine.Vector2Int GridPos; public bool costUp; }
+public struct TutorialProductionFacilityPlacedEvent { public int PartKey; public UnityEngine.Vector2Int GridPos; }
+public struct TutorialDefenseUnitPlacedEvent { public int PartKey; public UnityEngine.Vector2Int GridPos; }
+public struct TutorialAttackUnitPlacedEvent { public int PartKey; public UnityEngine.Vector2Int GridPos; }
 
 // ============================================================================
 // [오디오/이펙트]
@@ -63,10 +68,42 @@ public struct RitualUnlockedEvent { public string RitualId; }
 public struct FeatureUnlockedEvent { public string UnlockId; }
 
 // ============================================================================
-// [튜토리얼 전용]
+// [튜토리얼 전용 이벤트]
 // ============================================================================
-public struct PartPlacedEvent { public int PartKey; public UnityEngine.Vector2Int GridPos; public bool costUp; }
-public struct AttackPlacementTutorialRequestedEvent { public int PartKey; }
-public struct AttackPlacementTutorialEndedEvent { }
-public struct TutorialCompletedEvent { public int RewardStageIndex; }
+
+/// <summary>
+/// 튜토리얼 스텝이 시작될 때 발행 (TutorialManager -> Presenter)
+/// </summary>
+public struct TutorialStepStartedEvent
+{
+    public int StepIndex;
+    public int TotalStepCount;
+    public TutorialStep StepData; // UI 생성을 위한 스텝 원본 데이터 전달
+}
+
+/// <summary>
+/// 튜토리얼 스텝 진행도가 변경될 때 발행 (TutorialManager -> Presenter)
+/// </summary>
+public struct TutorialProgressUpdatedEvent
+{
+    public float CurrentProgress;
+    public float RequiredProgress;
+    public string Label; // "공격 유닛" 등의 UI 표시 텍스트
+}
+
+/// <summary>
+/// 튜토리얼 스텝이 완료되었을 때 발행 (TutorialManager -> Presenter)
+/// </summary>
+public struct TutorialStepCompletedEvent
+{
+    public int StepIndex;
+}
+
+// (기존 이벤트들 유지)
 public struct TutorialEnemyDefeatedEvent { }
+public struct UnitDeployRequestedEvent { public int PartKey; }
+public struct UnitDeployEndedEvent { }
+public struct TutorialCompletedEvent { public int RewardStageIndex; }
+public struct TutorialAccelerationButtonUsedEvent { }
+public struct CameraManipulationEvent { }
+public struct TutorialSkillUsedEvent { public int SkillIndex; }

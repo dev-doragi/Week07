@@ -10,7 +10,7 @@ public static class IncomeBlockPrefabGenerator
     private const string BlockFolder = "Assets/02.Prefabs/Income/Blocks";
     private const string GeneratorSpritePath = "Assets/04.Art/Generator/Generator_1.png";
 
-    [MenuItem("Tools/Income/Generate 7 Tetromino Prefabs")]
+    [MenuItem("Tools/Income/Generate Income Block Prefabs")]
     public static void GenerateTetrominoPrefabs()
     {
         EnsureFolder(RootFolder);
@@ -47,7 +47,7 @@ public static class IncomeBlockPrefabGenerator
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
-        Debug.Log("[IncomeBlockPrefabGenerator] 7 tetromino prefabs were generated under Assets/02.Prefabs/Income/Blocks");
+        Debug.Log("[IncomeBlockPrefabGenerator] Income block prefabs were generated under Assets/02.Prefabs/Income/Blocks");
     }
 
     private static void EnsureFolder(string folderPath)

@@ -6,5 +6,7 @@
     O,
     S,
     T,
-    Z
+    Z,
+    CoreCross,
+    CoreSquare
 }

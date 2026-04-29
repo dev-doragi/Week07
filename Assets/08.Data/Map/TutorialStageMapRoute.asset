@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c7c49c32d76410f9b2640af99801ad0, type: 3}
+  m_Name: TutorialStageMapRoute
+  m_EditorClassIdentifier: Assembly-CSharp::StageMapRouteData
+  _startNodeId: start
+  _finalNodeId: final
+  _nodes:
+  - _nodeId: start
+    _stageIndex: 0
+    _normalizedPosition: {x: 0.08, y: 0.5}
+    _reward:
+      _type: 0
+      _rewardId: 
+      _amount: 0
+      _icon: {fileID: 21300000, guid: 83bb5f401bf2c9345b8a03ff7880bf18, type: 3}
+      _unitUnlock: {fileID: 0}
+    _nextNodeIds: []
+  _waveStartDelay: 20
+  _ritualPointsPerClear: 5
+  _unlockableRatUnits: []
+  _skillUnlocks: []

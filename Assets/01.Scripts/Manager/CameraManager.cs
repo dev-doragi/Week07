@@ -19,6 +19,7 @@ public class CameraManager : Singleton<CameraManager>
     private float _targetZoom;
     private float _initialZoom;
     private bool _isDragging;
+    private bool _tutorialCameraEventPublished;
 
     protected override void Awake()
     {
@@ -100,11 +101,16 @@ public class CameraManager : Singleton<CameraManager>
     {
         if (InputReader.Instance != null && InputReader.Instance.IsPointerOverUI && e.IsStarted) return;
         _isDragging = e.IsStarted;
+        if (e.IsStarted)
+            TryPublishTutorialCameraManipulated();
     }
 
     private void HandleScroll(ScrollEvent e)
     {
         if (InputReader.Instance != null && InputReader.Instance.IsPointerOverUI) return;
+
+        if (Mathf.Abs(e.Delta) > 0.001f)
+            TryPublishTutorialCameraManipulated();
 
         float direction = e.Delta > 0 ? -1f : 1f;
         float nextZoom = _targetZoom + direction * _zoomStep;
@@ -133,6 +139,14 @@ public class CameraManager : Singleton<CameraManager>
             _targetZoom = Mathf.Clamp(nextZoom, _minZoom, _maxZoom);
 
         ApplyZoomAtMousePosition(_targetZoom);
+    }
+
+    private void TryPublishTutorialCameraManipulated()
+    {
+        if (_tutorialCameraEventPublished) return;
+
+        _tutorialCameraEventPublished = true;
+        EventBus.Instance?.Publish(new CameraManipulationEvent());
     }
 
     private void ApplyZoomAtMousePosition(float newZoom)

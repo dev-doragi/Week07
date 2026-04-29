@@ -113,6 +113,7 @@ public class RitualSystem : MonoBehaviour
         if (!TryConsumeResource(_skill1Cost)) return;
         _skill1CooldownTimer = _skill1Cooldown;
         ActivateWall();
+        EventBus.Instance?.Publish(new TutorialSkillUsedEvent { SkillIndex = 1 });
         GameLogger.Instance?.RecordRitualSkillUsed(1, "Wall");
     }
 
@@ -123,6 +124,7 @@ public class RitualSystem : MonoBehaviour
         if (!TryConsumeResource(_skill2Cost)) return;
         _skill2CooldownTimer = _skill2Cooldown;
         OnSkill2();
+        EventBus.Instance?.Publish(new TutorialSkillUsedEvent { SkillIndex = 2 });
         GameLogger.Instance?.RecordRitualSkillUsed(2, "IncomeBlock");
     }
 
@@ -133,6 +135,7 @@ public class RitualSystem : MonoBehaviour
         if (!TryConsumeResource(_skill3Cost)) return;
         _skill3CooldownTimer = _skill3Cooldown;
         OnSkill3();
+        EventBus.Instance?.Publish(new TutorialSkillUsedEvent { SkillIndex = 3 });
         GameLogger.Instance?.RecordRitualSkillUsed(3, "Meteor");
     }
 
