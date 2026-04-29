@@ -78,6 +78,14 @@ public class Unit : MonoBehaviour, IDamageable
         UpdateVisualFeedback();
     }
 
+    public void RestoreFullHp()
+    {
+        if(!_isInitialized || IsDead) return;
+        _currentHp = _data.MaxHp;
+        OnHpChanged?.Invoke(_currentHp, _data.MaxHp);
+        UpdateVisualFeedback();
+    }
+
     private void AssembleModules()
     {
         if (_data.CanAttack)
@@ -200,9 +208,9 @@ public class Unit : MonoBehaviour, IDamageable
 
         float ratio = _currentHp / _data.MaxHp;
 
-        if (ratio <= 0.7f && _damageOverlays.Length > 0) _damageOverlays[0].gameObject.SetActive(true);
-        if (ratio <= 0.4f && _damageOverlays.Length > 1) _damageOverlays[1].gameObject.SetActive(true);
-        if (ratio <= 0.1f && _damageOverlays.Length > 2) _damageOverlays[2].gameObject.SetActive(true);
+        if(_damageOverlays.Length > 0) _damageOverlays[0].gameObject.SetActive(ratio <= 0.7f);
+        if(_damageOverlays.Length > 1) _damageOverlays[1].gameObject.SetActive(ratio <= 0.4f);
+        if(_damageOverlays.Length > 2) _damageOverlays[2].gameObject.SetActive(ratio <= 0.1f);
 
         float colorVal = 0.5f + (ratio / 2f);
         if (_hitEffectCo != null) StopCoroutine(_hitEffectCo);
