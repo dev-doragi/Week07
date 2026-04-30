@@ -6117,6 +6117,9 @@ MonoBehaviour:
   _logProduction: 1
   _productionGaugeSlider: {fileID: 0}
   _predictionText: {fileID: 981493398}
+  _attackConsumptionText: {fileID: 0}
+  _attackConsumptionParent: {fileID: 0}
+  _uiFont: {fileID: 0}
   _gaugeSize: {x: 220, y: 14}
   _gaugeOffset: {x: 0, y: -24}
   _gaugeBackgroundColor: {r: 1, g: 1, b: 1, a: 0.16}
@@ -6125,6 +6128,11 @@ MonoBehaviour:
   _predictionFontSize: 22
   _predictionTextColor: {r: 1, g: 1, b: 1, a: 0.95}
   _predictionTextFormat: "\uC608\uC0C1 \uD68D\uB4DD: +{0} / {1:0.#}s"
+  _attackConsumptionTextSize: {x: 300, y: 30}
+  _attackConsumptionTextOffset: {x: 0, y: 0}
+  _attackConsumptionFontSize: 22
+  _attackConsumptionTextColor: {r: 1, g: 0.35, b: 0.25, a: 0.95}
+  _attackConsumptionTextFormat: "\uC608\uC0C1 \uC18C\uBAA8: -{0:0.#} / {1:0.#}s"
 --- !u!114 &1024365161
 MonoBehaviour:
   m_ObjectHideFlags: 0
