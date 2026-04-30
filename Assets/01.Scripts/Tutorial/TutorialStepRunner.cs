@@ -58,10 +58,32 @@ public class TutorialStepRunner
             if (completionModule != null)
             {
                 yield return completionModule.Execute();
-                // 적 격파 조건이면 바로 다음 스텝으로
-                if (completionModule is EnemyDefeatedModule edm && edm.IsConditionMet())
+                if ((completionModule is EnemyDefeatedModule edm && edm.IsConditionMet()) ||
+                    (completionModule is InteractionModule im && im.IsConditionMet()))
                 {
                     yield break;
+                }
+            }
+
+            bool keepCamera = false;
+            foreach (var module in startupModules)
+            {
+                if (module is CameraModule camModule && camModule.KeepCameraSize)
+                {
+                    keepCamera = true;
+                    break;
+                }
+            }
+            if (!keepCamera)
+            {
+                CameraManager cameraManager = CameraManager.Instance;
+                Camera mainCam = Camera.main;
+                if (cameraManager != null && mainCam != null)
+                {
+                    float current = mainCam.orthographicSize;
+                    float initial = cameraManager.InitialZoom;
+                    if (!Mathf.Approximately(current, initial))
+                        yield return cameraManager.SmoothResetZoom(0.3f);
                 }
             }
 
@@ -159,44 +181,13 @@ public class TutorialStepRunner
         );
     }
 
-    private bool ShouldResetCamera(TutorialStep step)
-    {
-        return step != null
-            && step.Condition == TutorialCondition.CameraMove
-            && (step.CameraConfig == null || step.CameraConfig.ResetCameraAfterMove);
-    }
-
     private IEnumerator ResetCameraRoutine(float duration)
     {
         CameraManager cameraManager = CameraManager.Instance;
         Camera mainCam = Camera.main;
-        if (mainCam == null) yield break;
+        if (mainCam == null || cameraManager == null) yield break;
 
-        Vector3 startPos = mainCam.transform.position;
-        float startZoom = mainCam.orthographicSize;
-        Vector3 targetPos = cameraManager != null ? cameraManager.OriginalPosition : new Vector3(0f, 0f, CAMERA_DEFAULT_POS_Z);
-        float targetZoom = cameraManager != null ? cameraManager.InitialZoom : startZoom;
-        float elapsed = 0f;
-
-        if (InputReader.Instance != null) InputReader.Instance.SetInputBlocked(true);
-
-        while (elapsed < duration)
-        {
-            elapsed += Time.unscaledDeltaTime;
-            float t = Mathf.Clamp01(elapsed / duration);
-            mainCam.transform.position = Vector3.Lerp(startPos, targetPos, t);
-            if (mainCam.orthographic)
-            {
-                mainCam.orthographicSize = Mathf.Lerp(startZoom, targetZoom, t);
-            }
-            yield return null;
-        }
-
-        mainCam.transform.position = targetPos;
-        if (mainCam.orthographic)
-        {
-            mainCam.orthographicSize = targetZoom;
-        }
-        if (InputReader.Instance != null) InputReader.Instance.SetInputBlocked(false);
+        // 작업을 CameraManager.SmoothResetZoom으로 위임
+        yield return cameraManager.SmoothResetZoom(duration);
     }
 }

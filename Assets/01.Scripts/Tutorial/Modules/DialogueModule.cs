@@ -42,10 +42,10 @@ public class DialogueModule : ITutorialModule
             yield break;
         }
 
-        // [수정됨] 포트레이트 이동 로직
-        if (_config.MovePortraitLeft)
+        bool dialogMovesUp = _config.EnableDialogMove && _config.DialogMoveOffset > 0f;
+        if (_config.EnablePortraitMove)
         {
-            float portraitYOffset = _config.MoveDialogUp ? Mathf.Max(0f, _config.DialogMoveOffset - 100f) : 0f;
+            float portraitYOffset = dialogMovesUp ? Mathf.Max(0f, _config.DialogMoveOffset - 100f) : 0f;
             _presenter.StartPortraitMove(
                 _config.PortraitTarget,
                 _config.PortraitMoveOffset,
@@ -55,12 +55,10 @@ public class DialogueModule : ITutorialModule
         }
         else
         {
-            // 설정이 꺼져있다면 원위치로 복귀 요청
             _presenter.ResetPortraitPosition(_config.PortraitMoveDuration);
         }
 
-        // [수정됨] 다이얼로그 패널 이동 로직
-        if (_config.MoveDialogUp)
+        if (_config.EnableDialogMove)
         {
             _presenter.StartDialogPanelMove(
                 _config.DialogMoveOffset,
@@ -69,7 +67,6 @@ public class DialogueModule : ITutorialModule
         }
         else
         {
-            // 설정이 꺼져있다면 원위치로 복귀 요청
             _presenter.ResetDialogPanelPosition(_config.DialogMoveDuration);
         }
 
@@ -78,8 +75,7 @@ public class DialogueModule : ITutorialModule
 
     public void Cleanup()
     {
-        // 스텝 사이의 깜빡임을 막기 위해 대사 패널은 여기서 닫지 않는다.
-        // 대사가 없는 다음 스텝은 Presenter의 OnStepStarted에서 숨김 처리된다.
+
     }
 
     private bool TryResolveDialogue(out string speakerName, out string fullDialogue, out Sprite portraitSprite)

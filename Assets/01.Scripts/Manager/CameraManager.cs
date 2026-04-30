@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 [RequireComponent(typeof(Camera))]
 [DefaultExecutionOrder(-110)]
@@ -212,15 +213,44 @@ public class CameraManager : Singleton<CameraManager>
         return new Vector3(clampedX, clampedY, transform.localPosition.z);
     }
 
-    // --- 카메라 쉐이크 구현 (강도별) ---
-    public void ShakeWeak()   => StartShake(0.18f, 0.08f);
+    public IEnumerator SmoothResetZoom(float duration)
+    {
+        if (_mainCamera == null) yield break;
+
+        float start = _mainCamera.orthographicSize;
+        float target = _initialZoom;
+
+        if (Mathf.Approximately(start, target))
+            yield break;
+
+        if (InputReader.Instance != null) InputReader.Instance.SetInputBlocked(true);
+
+        _targetZoom = target;
+
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            _mainCamera.orthographicSize = Mathf.Lerp(start, target, t);
+            transform.position = ClampCameraPosition(transform.position, _mainCamera.orthographicSize);
+            yield return null;
+        }
+
+        _mainCamera.orthographicSize = target;
+        transform.position = ClampCameraPosition(transform.position, target);
+
+        if (InputReader.Instance != null) InputReader.Instance.SetInputBlocked(false);
+    }
+
+    public void ShakeWeak() => StartShake(0.18f, 0.08f);
     public void ShakeMedium() => StartShake(0.18f, 0.15f);
     public void ShakeStrong() => StartShake(0.18f, 0.25f);
 
     private void StartShake(float duration, float magnitude)
     {
         if (_shakeCoroutine != null)
-            return; // 이미 쉐이크 중이면 무시
+            return;
         _shakeCoroutine = StartCoroutine(ShakeCoroutine(duration, magnitude));
     }
 

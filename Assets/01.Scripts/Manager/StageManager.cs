@@ -50,7 +50,7 @@ public class StageManager : Singleton<StageManager>
 
     public int CurrentStageIndex { get; private set; } = 0;
     public int CurrentWaveIndex { get; private set; } = 0;
-    public StageLayout CurrentLayout { get; private set; }
+    public StageLayout CurrentLayout => _currentLayout;
     public InGameState CurrentState { get; private set; } = InGameState.None;
     public StageDataSO CurrentStageData => _stageDatas != null && CurrentStageIndex >= 0 && CurrentStageIndex < _stageDatas.Length ? _stageDatas[CurrentStageIndex] : null;
     public bool IsFinalStage => _stageDatas != null && CurrentStageIndex >= _stageDatas.Length - 1;
@@ -301,6 +301,51 @@ public class StageManager : Singleton<StageManager>
         CurrentState = InGameState.WaveEnded;
         Debug.Log($"[StageManager] Wave {CurrentWaveIndex} 종료 - isWin: {isWin}");
         EventBus.Instance?.Publish(new WaveEndedEvent { StageIndex = CurrentStageIndex, WaveIndex = CurrentWaveIndex, IsWin = isWin });
+    }
+
+    /// <summary>
+    /// 수동으로 적을 스폰하는 메서드 (튜토리얼 등에서 버튼 연동)
+    /// </summary>
+    public void ManualSpawnEnemy(int waveIndex)
+    {
+        StartCoroutine(ManualSpawnEnemyRoutine(waveIndex));
+    }
+
+    private IEnumerator ManualSpawnEnemyRoutine(int waveIndex)
+    {
+        // 스테이지/레이아웃 준비 체크
+        if (CurrentStageData == null)
+        {
+            Debug.LogError("[StageManager] CurrentStageData가 없습니다.");
+            yield break;
+        }
+        if (_currentLayout == null)
+        {
+            LoadStage(CurrentStageIndex);
+            yield return null;
+        }
+        int waitCount = 0;
+        while (_currentLayout == null && waitCount < 30)
+        {
+            yield return null;
+            waitCount++;
+        }
+        if (_currentLayout == null)
+        {
+            Debug.LogError("[StageManager] CurrentLayout이 없습니다.");
+            yield break;
+        }
+        if (waveIndex < 0 || waveIndex >= CurrentStageData.Waves.Count)
+        {
+            Debug.LogError($"[StageManager] 잘못된 웨이브 인덱스: {waveIndex}");
+            yield break;
+        }
+
+        EventBus.Instance.Publish(new WaveStartedEvent { WaveIndex = waveIndex });
+
+        WaveData currentWave = CurrentStageData.Waves[waveIndex];
+        _currentLayout.SpawnEnemy(currentWave);
+        Debug.Log($"[StageManager] ManualSpawnEnemy: Wave {waveIndex} 적 스폰 완료");
     }
 
     private float GetCurrentWaveElapsedTime()

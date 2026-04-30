@@ -30,23 +30,24 @@ public class DialogueModuleConfig
     [SerializeField] private TutorialDialogueDataSO _dialogueDataSO;
 
     [Header("Portrait Animation")]
-    [SerializeField] private bool _movePortraitLeft = false;
+    [SerializeField] private bool _enablePortraitMove = false;
     [SerializeField] private float _portraitMoveOffset = 150f;
     [SerializeField] private float _portraitMoveDuration = 0.5f;
     [SerializeField] private RectTransform _portraitTarget;
 
     [Header("UI Motion")]
-    [SerializeField] private bool _moveDialogUp = false;
+    [SerializeField] private bool _enableDialogMove = false;
     [SerializeField] private float _dialogMoveOffset = 300f;
     [SerializeField] private float _dialogMoveDuration = 0.5f;
 
     public TutorialInlineDialogueData InlineDialogue => _inlineDialogue;
     public TutorialDialogueDataSO DialogueDataSO => _dialogueDataSO;
-    public bool MovePortraitLeft => _movePortraitLeft;
+    // Enable directional movement for portrait and dialog panel. Offsets may be positive or negative to indicate direction.
+    public bool EnablePortraitMove => _enablePortraitMove;
     public float PortraitMoveOffset => _portraitMoveOffset;
     public float PortraitMoveDuration => _portraitMoveDuration;
     public RectTransform PortraitTarget => _portraitTarget;
-    public bool MoveDialogUp => _moveDialogUp;
+    public bool EnableDialogMove => _enableDialogMove;
     public float DialogMoveOffset => _dialogMoveOffset;
     public float DialogMoveDuration => _dialogMoveDuration;
     public bool HasDialogue => (_inlineDialogue != null && _inlineDialogue.HasContent) || _dialogueDataSO != null;

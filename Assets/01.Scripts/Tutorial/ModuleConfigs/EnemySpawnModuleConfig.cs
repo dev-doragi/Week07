@@ -14,4 +14,8 @@ public class EnemySpawnModuleConfig
     [Min(0)]
     [Tooltip("튜토리얼 스테이지 내에서 시작할 웨이브 인덱스")]
     public int TutorialWaveIndex = 0;
+
+    [Header("Spawn Option")]
+    [Tooltip("true: 자동 스폰, false: 버튼 등으로 수동 스폰")]
+    public bool AutoSpawn = true;
 }
