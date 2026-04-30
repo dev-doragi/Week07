@@ -36,9 +36,9 @@ public class PartSupportEffectData
     {
         string description = "";
         if (_targetRoleType == SupportTargetRoleType.Attack)
-            description += "공격 쥐의 ";
+            description += "모든 공격 쥐의 ";
         else if (_targetRoleType == SupportTargetRoleType.Defense)
-            description += "방어 쥐의 ";
+            description += "모든 방어 쥐의 ";
         else if (_targetRoleType == SupportTargetRoleType.All)
             description += "모든 쥐의 ";
         if (_targetStatType == SupportStatType.AttackSpeed)
