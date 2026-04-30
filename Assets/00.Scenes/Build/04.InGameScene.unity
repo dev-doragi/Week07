@@ -2053,6 +2053,7 @@ MonoBehaviour:
   _gameOverPanel: {fileID: 1349014929}
   _gameClearPanel: {fileID: 2066953703}
   _pausePanel: {fileID: 66539284}
+  _autoShowInGamePanelOnPlaying: 1
   _gameClearText: {fileID: 2066953702}
   _stageClearText: {fileID: 2066953701}
   _resumeButton: {fileID: 2066953700}
@@ -11314,7 +11315,7 @@ MonoBehaviour:
   _useDoctrineUnlockChecks: 1
   _unlockManager: {fileID: 603202823}
   _skill1Cost: 100
-  _skill2Cost: 100
+  _skill2Cost: 200
   _skill3Cost: 300
   _skill1Cooldown: 10
   _skill2Cooldown: 5
@@ -14907,7 +14908,7 @@ PrefabInstance:
       objectReference: {fileID: 113788105}
     - target: {fileID: 5648098865941523202, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5726641389671934492, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: m_SizeDelta.x
