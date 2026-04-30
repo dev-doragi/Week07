@@ -1223,7 +1223,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -126.64957, y: -402.5}
-  m_SizeDelta: {x: 685.7151, y: 312.9416}
+  m_SizeDelta: {x: 685.7151, y: 261.7542}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2850184103845678910
 CanvasRenderer:
@@ -2736,6 +2736,59 @@ MonoBehaviour:
     Condition: 0
   - StepName: 
     UIStateConfig:
+      OverrideUIState: 0
+      ShowInGamePanel: 0
+      ShowBlockPanel: 0
+      ShowShopButtonGroup: 0
+      ShowProductionGrid: 0
+      ShowWaveStartButton: 0
+      ShowChargeButton: 0
+    PauseConfig:
+      ShouldPause: 0
+      BlockInput: 0
+    DialogueConfig:
+      _inlineDialogue:
+        _speakerName: "\uC950\uC2E0\uAD00\uCA29"
+        _message: "\uADF8 \uC804\uC5D0 \uBA3C\uC800 \uC694\uC0C8\uB97C \uC644\uC131\uD574\uC57C\uD569\uB2C8\uB2E4!"
+        _portraitSprite: {fileID: 21300000, guid: e37bae4aaa7e5504f976e3425f937749, type: 3}
+      _dialogueDataSO: {fileID: 0}
+      _movePortraitLeft: 1
+      _portraitMoveOffset: 150
+      _portraitMoveDuration: 0.5
+      _portraitTarget: {fileID: 9056698094391589131}
+      _moveDialogUp: 0
+      _dialogMoveOffset: 300
+      _dialogMoveDuration: 0.5
+    QuestConfig:
+      TargetUI: {fileID: 0}
+      HighlightUI: 0
+    PlacementConfig:
+      RequiredAmount: 0
+      RequiredGroup: 0
+      RequiredPartKeys: 
+      PlacementLabel: 
+    CameraConfig:
+      ResetCameraAfterMove: 0
+      ResetDuration: 0
+    EnemySpawnConfig:
+      TutorialStageData: {fileID: 0}
+      TutorialWaveIndex: 0
+    EnemyDefeatedConfig:
+      RequiredEnemyCount: 1
+      Target: 0
+    InteractionConfig:
+      InteractionId: 
+      RequiredCount: 1
+      ProgressLabel: "\uC0C1\uD638\uC791\uC6A9"
+    HighlightConfig:
+      TargetUI: {fileID: 0}
+      PulseScale: 1.1
+      PulseSpeed: 4
+    AutoAdvanceConfig:
+      AutoAdvanceDelay: 0
+    Condition: 0
+  - StepName: 
+    UIStateConfig:
       OverrideUIState: 1
       ShowInGamePanel: 1
       ShowBlockPanel: 0
@@ -2754,12 +2807,12 @@ MonoBehaviour:
           \uD569\uB2C8\uB2E4!"
         _portraitSprite: {fileID: 21300000, guid: e37bae4aaa7e5504f976e3425f937749, type: 3}
       _dialogueDataSO: {fileID: 0}
-      _movePortraitLeft: 0
-      _portraitMoveOffset: 0
+      _movePortraitLeft: 1
+      _portraitMoveOffset: 150
       _portraitMoveDuration: 0.5
       _portraitTarget: {fileID: 9056698094391589131}
       _moveDialogUp: 1
-      _dialogMoveOffset: 350
+      _dialogMoveOffset: 300
       _dialogMoveDuration: 0.5
     QuestConfig:
       TargetUI: {fileID: 0}
@@ -2813,7 +2866,7 @@ MonoBehaviour:
       _portraitMoveDuration: 0.5
       _portraitTarget: {fileID: 9056698094391589131}
       _moveDialogUp: 1
-      _dialogMoveOffset: 350
+      _dialogMoveOffset: 300
       _dialogMoveDuration: 0.5
     QuestConfig:
       TargetUI: {fileID: 0}
@@ -2867,7 +2920,7 @@ MonoBehaviour:
       _portraitMoveDuration: 0.5
       _portraitTarget: {fileID: 9056698094391589131}
       _moveDialogUp: 1
-      _dialogMoveOffset: 350
+      _dialogMoveOffset: 300
       _dialogMoveDuration: 0.5
     QuestConfig:
       TargetUI: {fileID: 0}
@@ -2918,12 +2971,12 @@ MonoBehaviour:
           \uC4F0\uC785\uB2C8\uB2E4."
         _portraitSprite: {fileID: 21300000, guid: e37bae4aaa7e5504f976e3425f937749, type: 3}
       _dialogueDataSO: {fileID: 0}
-      _movePortraitLeft: 0
+      _movePortraitLeft: 1
       _portraitMoveOffset: 150
       _portraitMoveDuration: 0.5
-      _portraitTarget: {fileID: 0}
+      _portraitTarget: {fileID: 9056698094391589131}
       _moveDialogUp: 1
-      _dialogMoveOffset: 350
+      _dialogMoveOffset: 300
       _dialogMoveDuration: 0.5
     QuestConfig:
       TargetUI: {fileID: 0}
@@ -2973,12 +3026,12 @@ MonoBehaviour:
           \uBABB\uD560 \uAC70\uC608\uC694."
         _portraitSprite: {fileID: 21300000, guid: e37bae4aaa7e5504f976e3425f937749, type: 3}
       _dialogueDataSO: {fileID: 0}
-      _movePortraitLeft: 0
+      _movePortraitLeft: 1
       _portraitMoveOffset: 150
       _portraitMoveDuration: 0.5
-      _portraitTarget: {fileID: 0}
+      _portraitTarget: {fileID: 9056698094391589131}
       _moveDialogUp: 1
-      _dialogMoveOffset: 350
+      _dialogMoveOffset: 300
       _dialogMoveDuration: 0.5
     QuestConfig:
       TargetUI: {fileID: 0}
@@ -3342,7 +3395,7 @@ MonoBehaviour:
       ShowWaveStartButton: 1
       ShowChargeButton: 0
     PauseConfig:
-      ShouldPause: 1
+      ShouldPause: 0
       BlockInput: 0
     DialogueConfig:
       _inlineDialogue:
@@ -3403,7 +3456,7 @@ MonoBehaviour:
     DialogueConfig:
       _inlineDialogue:
         _speakerName: "\uC950\uC2E0\uAD00\uCA29"
-        _message: "WaveStart \uBC84\uD2BC\uC744 \uB204\uB974\uC138\uC694!"
+        _message: "\uC774\uC81C WaveStart \uBC84\uD2BC\uC744 \uB204\uB974\uC138\uC694!"
         _portraitSprite: {fileID: 21300000, guid: e37bae4aaa7e5504f976e3425f937749, type: 3}
       _dialogueDataSO: {fileID: 0}
       _movePortraitLeft: 1
@@ -3448,10 +3501,64 @@ MonoBehaviour:
       ShowBlockPanel: 1
       ShowShopButtonGroup: 1
       ShowProductionGrid: 1
-      ShowWaveStartButton: 1
+      ShowWaveStartButton: 0
       ShowChargeButton: 0
     PauseConfig:
-      ShouldPause: 1
+      ShouldPause: 0
+      BlockInput: 0
+    DialogueConfig:
+      _inlineDialogue:
+        _speakerName: "\uC950\uC2E0\uAD00\uCA29"
+        _message: "\uC6E8\uC774\uBE0C\uAC00 \uC2DC\uC791\uB418\uBA74 \uC801 \uC720\uB2DB\uC774
+          \uB4F1\uC7A5\uD569\uB2C8\uB2E4."
+        _portraitSprite: {fileID: 21300000, guid: e37bae4aaa7e5504f976e3425f937749, type: 3}
+      _dialogueDataSO: {fileID: 0}
+      _movePortraitLeft: 1
+      _portraitMoveOffset: 150
+      _portraitMoveDuration: 0.5
+      _portraitTarget: {fileID: 9056698094391589131}
+      _moveDialogUp: 0
+      _dialogMoveOffset: 300
+      _dialogMoveDuration: 0.5
+    QuestConfig:
+      TargetUI: {fileID: 0}
+      HighlightUI: 0
+    PlacementConfig:
+      RequiredAmount: 0
+      RequiredGroup: 0
+      RequiredPartKeys: 
+      PlacementLabel: 
+    CameraConfig:
+      ResetCameraAfterMove: 0
+      ResetDuration: 0
+    EnemySpawnConfig:
+      TutorialStageData: {fileID: 0}
+      TutorialWaveIndex: 0
+    EnemyDefeatedConfig:
+      RequiredEnemyCount: 0
+      Target: 0
+    InteractionConfig:
+      InteractionId: 
+      RequiredCount: 0
+      ProgressLabel: 
+    HighlightConfig:
+      TargetUI: {fileID: 6149680221526314953}
+      PulseScale: 1.05
+      PulseSpeed: 4
+    AutoAdvanceConfig:
+      AutoAdvanceDelay: 0
+    Condition: 0
+  - StepName: 
+    UIStateConfig:
+      OverrideUIState: 1
+      ShowInGamePanel: 1
+      ShowBlockPanel: 1
+      ShowShopButtonGroup: 1
+      ShowProductionGrid: 1
+      ShowWaveStartButton: 0
+      ShowChargeButton: 0
+    PauseConfig:
+      ShouldPause: 0
       BlockInput: 0
     DialogueConfig:
       _inlineDialogue:
@@ -3461,10 +3568,10 @@ MonoBehaviour:
           \uAE30\uC220\uB4E4\uC774 \uC788\uC2B5\uB2C8\uB2E4!"
         _portraitSprite: {fileID: 21300000, guid: e37bae4aaa7e5504f976e3425f937749, type: 3}
       _dialogueDataSO: {fileID: 0}
-      _movePortraitLeft: 0
+      _movePortraitLeft: 1
       _portraitMoveOffset: 150
       _portraitMoveDuration: 0.5
-      _portraitTarget: {fileID: 0}
+      _portraitTarget: {fileID: 9056698094391589131}
       _moveDialogUp: 1
       _dialogMoveOffset: 300
       _dialogMoveDuration: 0.5
@@ -3506,7 +3613,7 @@ MonoBehaviour:
       ShowWaveStartButton: 0
       ShowChargeButton: 0
     PauseConfig:
-      ShouldPause: 1
+      ShouldPause: 0
       BlockInput: 0
     DialogueConfig:
       _inlineDialogue:
@@ -3516,10 +3623,10 @@ MonoBehaviour:
           \uC218 \uC788\uC5B4\uC694."
         _portraitSprite: {fileID: 21300000, guid: e37bae4aaa7e5504f976e3425f937749, type: 3}
       _dialogueDataSO: {fileID: 0}
-      _movePortraitLeft: 0
+      _movePortraitLeft: 1
       _portraitMoveOffset: 150
       _portraitMoveDuration: 0.5
-      _portraitTarget: {fileID: 0}
+      _portraitTarget: {fileID: 9056698094391589131}
       _moveDialogUp: 1
       _dialogMoveOffset: 300
       _dialogMoveDuration: 0.5
@@ -3561,7 +3668,7 @@ MonoBehaviour:
       ShowWaveStartButton: 1
       ShowChargeButton: 1
     PauseConfig:
-      ShouldPause: 1
+      ShouldPause: 0
       BlockInput: 0
     DialogueConfig:
       _inlineDialogue:
@@ -3615,7 +3722,7 @@ MonoBehaviour:
       ShowWaveStartButton: 0
       ShowChargeButton: 0
     PauseConfig:
-      ShouldPause: 1
+      ShouldPause: 0
       BlockInput: 0
     DialogueConfig:
       _inlineDialogue:
@@ -3662,27 +3769,28 @@ MonoBehaviour:
     Condition: 0
   - StepName: 
     UIStateConfig:
-      OverrideUIState: 1
-      ShowInGamePanel: 1
+      OverrideUIState: 0
+      ShowInGamePanel: 0
       ShowBlockPanel: 0
-      ShowShopButtonGroup: 1
-      ShowProductionGrid: 1
-      ShowWaveStartButton: 1
-      ShowChargeButton: 1
+      ShowShopButtonGroup: 0
+      ShowProductionGrid: 0
+      ShowWaveStartButton: 0
+      ShowChargeButton: 0
     PauseConfig:
       ShouldPause: 0
       BlockInput: 0
     DialogueConfig:
       _inlineDialogue:
         _speakerName: "\uC950\uC2E0\uAD00\uCA29"
-        _message: "\uC758\uC2DD\uACFC \uB3CC\uC9C4\uC744 \uC798 \uC0AC\uC6A9\uD574\uC11C
-          \uD6A8\uC728\uC801\uC73C\uB85C \uACF5\uC131\uC744 \uC9C4\uD589\uD574 \uBCF4\uC138\uC694!"
+        _message: "\uADF8\uB7FC \uC9C0\uAE08\uBD80\uD130 \uC758\uC2DD\uACFC \uB3CC\uC9C4\uC744
+          \uC798 \uC0AC\uC6A9\uD574\uC11C \uD6A8\uC728\uC801\uC73C\uB85C \uACF5\uC131\uC744
+          \uC9C4\uD589\uD574 \uBCF4\uC138\uC694!"
         _portraitSprite: {fileID: 21300000, guid: e37bae4aaa7e5504f976e3425f937749, type: 3}
       _dialogueDataSO: {fileID: 0}
-      _movePortraitLeft: 1
+      _movePortraitLeft: 0
       _portraitMoveOffset: 150
       _portraitMoveDuration: 0.5
-      _portraitTarget: {fileID: 0}
+      _portraitTarget: {fileID: 9056698094391589131}
       _moveDialogUp: 0
       _dialogMoveOffset: 300
       _dialogMoveDuration: 0.5
@@ -3698,7 +3806,60 @@ MonoBehaviour:
       ResetCameraAfterMove: 0
       ResetDuration: 0
     EnemySpawnConfig:
-      TutorialStageData: {fileID: 11400000, guid: bfc4867ad330d9c4eb52d4fab21c9220, type: 2}
+      TutorialStageData: {fileID: 0}
+      TutorialWaveIndex: 0
+    EnemyDefeatedConfig:
+      RequiredEnemyCount: 0
+      Target: 0
+    InteractionConfig:
+      InteractionId: 
+      RequiredCount: 0
+      ProgressLabel: 
+    HighlightConfig:
+      TargetUI: {fileID: 0}
+      PulseScale: 0
+      PulseSpeed: 0
+    AutoAdvanceConfig:
+      AutoAdvanceDelay: 0
+    Condition: 0
+  - StepName: 
+    UIStateConfig:
+      OverrideUIState: 1
+      ShowInGamePanel: 1
+      ShowBlockPanel: 0
+      ShowShopButtonGroup: 1
+      ShowProductionGrid: 1
+      ShowWaveStartButton: 0
+      ShowChargeButton: 1
+    PauseConfig:
+      ShouldPause: 0
+      BlockInput: 0
+    DialogueConfig:
+      _inlineDialogue:
+        _speakerName: "\uC950\uC2E0\uAD00\uCA29"
+        _message: "\uC804 \uB3C4\uB9DD\uAC00 \uC788\uC744\uAC8C\uC694\uC787~~!!!!~~"
+        _portraitSprite: {fileID: 21300000, guid: e37bae4aaa7e5504f976e3425f937749, type: 3}
+      _dialogueDataSO: {fileID: 0}
+      _movePortraitLeft: 1
+      _portraitMoveOffset: -500
+      _portraitMoveDuration: 2
+      _portraitTarget: {fileID: 0}
+      _moveDialogUp: 1
+      _dialogMoveOffset: -500
+      _dialogMoveDuration: 2
+    QuestConfig:
+      TargetUI: {fileID: 0}
+      HighlightUI: 0
+    PlacementConfig:
+      RequiredAmount: 0
+      RequiredGroup: 0
+      RequiredPartKeys: 
+      PlacementLabel: 
+    CameraConfig:
+      ResetCameraAfterMove: 0
+      ResetDuration: 0
+    EnemySpawnConfig:
+      TutorialStageData: {fileID: 0}
       TutorialWaveIndex: 0
     EnemyDefeatedConfig:
       RequiredEnemyCount: 1
@@ -3729,8 +3890,61 @@ MonoBehaviour:
     DialogueConfig:
       _inlineDialogue:
         _speakerName: "\uC950\uC2E0\uAD00\uCA29"
-        _message: "\uACE0\uC0DD\uD558\uC168\uC2B5\uB2C8\uB2E4! \uADF8\uB7FC \uC774\uC81C
-          \uC131\uC804\uC744 \uACC4\uC18D\uD569\uC2DC\uB2E4!"
+        _message: "\uACE0\uC0DD\uD558\uC168\uC2B5\uB2C8\uB2E4! \uC801\uC744 \uCC98\uCE58\uD558\uC168\uAD70\uC694!"
+        _portraitSprite: {fileID: 21300000, guid: e37bae4aaa7e5504f976e3425f937749, type: 3}
+      _dialogueDataSO: {fileID: 0}
+      _movePortraitLeft: 0
+      _portraitMoveOffset: 150
+      _portraitMoveDuration: 0.5
+      _portraitTarget: {fileID: 0}
+      _moveDialogUp: 0
+      _dialogMoveOffset: 300
+      _dialogMoveDuration: 0.5
+    QuestConfig:
+      TargetUI: {fileID: 0}
+      HighlightUI: 0
+    PlacementConfig:
+      RequiredAmount: 0
+      RequiredGroup: 0
+      RequiredPartKeys: 
+      PlacementLabel: 
+    CameraConfig:
+      ResetCameraAfterMove: 0
+      ResetDuration: 0
+    EnemySpawnConfig:
+      TutorialStageData: {fileID: 0}
+      TutorialWaveIndex: 0
+    EnemyDefeatedConfig:
+      RequiredEnemyCount: 0
+      Target: 0
+    InteractionConfig:
+      InteractionId: 
+      RequiredCount: 0
+      ProgressLabel: 
+    HighlightConfig:
+      TargetUI: {fileID: 0}
+      PulseScale: 0
+      PulseSpeed: 0
+    AutoAdvanceConfig:
+      AutoAdvanceDelay: 0
+    Condition: 0
+  - StepName: 
+    UIStateConfig:
+      OverrideUIState: 0
+      ShowInGamePanel: 1
+      ShowBlockPanel: 0
+      ShowShopButtonGroup: 1
+      ShowProductionGrid: 1
+      ShowWaveStartButton: 1
+      ShowChargeButton: 1
+    PauseConfig:
+      ShouldPause: 0
+      BlockInput: 0
+    DialogueConfig:
+      _inlineDialogue:
+        _speakerName: "\uC950\uC2E0\uAD00\uCA29"
+        _message: "\uC774\uC81C \uB05D\uC5C6\uB294 \uC131\uC804\uC744 \uD558\uB7EC
+          \uAC08 \uC2DC\uAC04\uC785\uB2C8\uB2E4! \uD589\uC6B4\uC744 \uBE55\uB2C8\uB2E4!"
         _portraitSprite: {fileID: 21300000, guid: e37bae4aaa7e5504f976e3425f937749, type: 3}
       _dialogueDataSO: {fileID: 0}
       _movePortraitLeft: 0

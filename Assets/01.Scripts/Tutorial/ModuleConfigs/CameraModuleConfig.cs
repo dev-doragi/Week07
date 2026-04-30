@@ -6,7 +6,7 @@ using UnityEngine;
 [System.Serializable]
 public class CameraModuleConfig
 {
-    [Header("Camera Reset")]
-    public bool ResetCameraAfterMove = true;
+    [Header("Camera 유지(리셋 방지)")]
+    public bool KeepCameraSize = false;
     public float ResetDuration = 1f;
 }

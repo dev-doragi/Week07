@@ -11,6 +11,7 @@ public class CameraModule : ITutorialModule
     private CameraModuleConfig _config;
     private bool _cameraMoved = false;
     private bool _cameraZoomed = false;
+    public bool KeepCameraSize => _config != null && _config.KeepCameraSize;
 
     public void Initialize(TutorialStep step)
     {

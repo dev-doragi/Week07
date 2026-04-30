@@ -410,6 +410,7 @@ public class GameCsvLogger : MonoBehaviour
             case GameLogEventType.ShopClosed:
             case GameLogEventType.MapNodeSelected:
             case GameLogEventType.RewardSelected:
+            case GameLogEventType.DoctrineSelected:
                 return enableUILog;
 
             default:

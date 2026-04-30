@@ -74,6 +74,24 @@ public class TutorialManager : Singleton<TutorialManager>
         _moveNextClicked = true;
     }
 
+    public void OnNextButtonClicked()
+    {
+        EventBus.Instance?.Publish(new TutorialNextRequestedEvent());
+    }
+
+    public void PublishTutorialInteraction(string interactionId)
+    {
+        EventBus.Instance?.Publish(new TutorialInteractionTriggeredEvent
+        {
+            InteractionId = interactionId
+        });
+    }
+
+    public void PublishWaveStartButtonInteraction()
+    {
+        PublishTutorialInteraction("WaveStartButton");
+    }
+
     public void TryStartTutorial()
     {
         if (_isPlaying) return;
@@ -97,56 +115,20 @@ public class TutorialManager : Singleton<TutorialManager>
         StartCoroutine(TutorialSequenceRoutine());
     }
 
-    public void OnNextButtonClicked()
-    {
-        EventBus.Instance?.Publish(new TutorialNextRequestedEvent());
-    }
-
-    public void PublishTutorialInteraction(string interactionId)
-    {
-        EventBus.Instance?.Publish(new TutorialInteractionTriggeredEvent
-        {
-            InteractionId = interactionId
-        });
-    }
-
-    public void PublishWaveStartButtonInteraction()
-    {
-        PublishTutorialInteraction("WaveStartButton");
-    }
-
     private IEnumerator TutorialSequenceRoutine()
     {
         yield return null;
 
+        // 튜토리얼 단계 루프 등 필요한 최소한의 로직만 남김
         var stepRunner = new TutorialStepRunner(_dialoguePresenter, () => _moveNextClicked, _ignoreConditionsForPlaytest, this, _highlighter);
-
         for (_currentStepIndex = 0; _currentStepIndex < _steps.Length; _currentStepIndex++)
         {
             ApplyTutorialUiState(_steps[_currentStepIndex]);
-
             _moveNextClicked = false;
             yield return stepRunner.RunStep(_steps[_currentStepIndex], _currentStepIndex, _steps.Length);
         }
-
         CleanupTutorial();
         EventBus.Instance?.Publish(new TutorialCompletedEvent { RewardStageIndex = 0 });
-    }
-
-    public void SkipTutorial()
-    {
-        StopAllCoroutines();
-        CleanupTutorial();
-        EventBus.Instance?.Publish(new TutorialCompletedEvent { RewardStageIndex = 0 });
-    }
-
-    private void CleanupTutorial()
-    {
-        _isPlaying = false;
-        if (InputReader.Instance != null) InputReader.Instance.SetInputBlocked(false);
-        Time.timeScale = 1f;
-        SetActive(_blockPanel, false);
-        StageLoadContext.TutorialClear();
     }
 
     private void ApplyTutorialUiState(TutorialStep step)
@@ -181,5 +163,27 @@ public class TutorialManager : Singleton<TutorialManager>
         {
             target.SetActive(active);
         }
+    }
+
+    // 버튼에서 호출할 수 있도록 StageManager의 ManualSpawnEnemy을 직접 호출
+    public void ManualSpawnEnemy(int waveIndex)
+    {
+        StageManager.Instance.ManualSpawnEnemy(waveIndex);
+    }
+
+    public void SkipTutorial()
+    {
+        StopAllCoroutines();
+        CleanupTutorial();
+        EventBus.Instance?.Publish(new TutorialCompletedEvent { RewardStageIndex = 0 });
+    }
+
+    private void CleanupTutorial()
+    {
+        _isPlaying = false;
+        if (InputReader.Instance != null) InputReader.Instance.SetInputBlocked(false);
+        Time.timeScale = 1f;
+        SetActive(_blockPanel, false);
+        StageLoadContext.TutorialClear();
     }
 }

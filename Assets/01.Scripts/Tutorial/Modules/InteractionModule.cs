@@ -54,4 +54,9 @@ public class InteractionModule : ITutorialModule
             _conditionMet = true;
         }
     }
+
+    public bool IsConditionMet()
+    {
+        return _conditionMet;
+    }
 }

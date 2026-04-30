@@ -99,6 +99,7 @@ public class GaugeController : MonoBehaviour
     {
         _isWaveActive = true;
         // 게이지가 찼으면 버튼 활성화
+        Debug.Log("게이지 차기 시작");
         if (_isGaugeFull && _button != null)
             _button.interactable = true;
     }

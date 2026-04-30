@@ -11,7 +11,6 @@ public class Fragment : MonoBehaviour
     [SerializeField] private Sprite _aliveSprite;
     [SerializeField] private Sprite _deadSprite;
     [SerializeField] private float _knockBackPower = 2f;
-    [SerializeField] private float _moveSpeed = 3f;
     [SerializeField] private float _fadeDuration = 1f;
 
     private bool _isDead;

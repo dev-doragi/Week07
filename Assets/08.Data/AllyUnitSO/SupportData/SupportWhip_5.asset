@@ -44,7 +44,7 @@ MonoBehaviour:
   Defense:
     CollisionPower: 0
   Support:
-    Radius: 10
+    Radius: 30
     Effects:
     - _targetRoleType: 2
       _targetStatType: 2

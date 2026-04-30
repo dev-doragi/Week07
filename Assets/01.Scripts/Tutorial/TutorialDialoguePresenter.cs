@@ -358,13 +358,15 @@ public class TutorialDialoguePresenter : MonoBehaviour
     {
         if (_portraitImage == null || !_portraitOriginalCached) return;
 
-        Vector2 baseTarget = targetRect != null
-            ? targetRect.anchoredPosition
-            : _portraitOriginalAnchoredPos + Vector2.left * Mathf.Abs(offset);
+        // Treat offset as a directional X-axis delta. If a target rect is provided, apply the offset relative to it;
+        // otherwise apply the offset relative to the portrait's original anchored position.
+        Vector2 baseOrigin = targetRect != null ? targetRect.anchoredPosition : _portraitOriginalAnchoredPos;
+        Vector2 baseTarget = baseOrigin + new Vector2(offset, 0f);
 
+        // If dialog requested a downward safety offset (yOffset > 0), move portrait down accordingly to keep it in view.
         Vector2 finalTarget = baseTarget + Vector2.down * yOffset;
 
-        // 이미 목표 위치라면 애니메이션 스킵
+        // Skip if already at (or very near) target
         if (_isPortraitMoved && Vector2.Distance(_currentPortraitTargetPos, finalTarget) < 1f) return;
 
         _currentPortraitTargetPos = finalTarget;
