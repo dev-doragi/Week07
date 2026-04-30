@@ -42,6 +42,9 @@ public class RitualSystem : MonoBehaviour
     [Header("Skill 2 - Income Block")]
     [SerializeField] private IncomeInventory _incomeInventory;
 
+    [Header("Visual Only - Skill Cost Fly")]
+    [SerializeField] private RitualSkillCostFlyVisual _skillCostFlyVisual;
+
     [Header("Cooldown Gauges")]
     [SerializeField] private Image _skill1CooldownGauge;
     [SerializeField] private Image _skill2CooldownGauge;
@@ -115,6 +118,7 @@ public class RitualSystem : MonoBehaviour
         GameCsvLogger.Instance.LogEvent(GameLogEventType.SkillUsed, actor: gameObject, value: _skill1Cost, metadata: new System.Collections.Generic.Dictionary<string, object> { { "skillIndex", 1 }, { "skillName", "Wall" }, { "kind", "Ritual" } });
         GameCsvLogger.Instance.LogEvent(GameLogEventType.RitualUsed, actor: gameObject, value: _skill1Cost, metadata: new System.Collections.Generic.Dictionary<string, object> { { "skillIndex", 1 }, { "skillName", "Wall" } });
         ActivateWall();
+        _skillCostFlyVisual?.Play(1, _skill1Cost);
         EventBus.Instance?.Publish(new TutorialSkillUsedEvent { SkillIndex = 1 });
         GameLogger.Instance?.RecordRitualSkillUsed(1, "Wall");
     }
@@ -128,6 +132,7 @@ public class RitualSystem : MonoBehaviour
         GameCsvLogger.Instance.LogEvent(GameLogEventType.SkillUsed, actor: gameObject, value: _skill2Cost, metadata: new System.Collections.Generic.Dictionary<string, object> { { "skillIndex", 2 }, { "skillName", "IncomeBlock" }, { "kind", "Ritual" } });
         GameCsvLogger.Instance.LogEvent(GameLogEventType.RitualUsed, actor: gameObject, value: _skill2Cost, metadata: new System.Collections.Generic.Dictionary<string, object> { { "skillIndex", 2 }, { "skillName", "IncomeBlock" } });
         OnSkill2();
+        _skillCostFlyVisual?.Play(2, _skill2Cost);
         EventBus.Instance?.Publish(new TutorialSkillUsedEvent { SkillIndex = 2 });
         GameLogger.Instance?.RecordRitualSkillUsed(2, "IncomeBlock");
     }
@@ -141,6 +146,7 @@ public class RitualSystem : MonoBehaviour
         GameCsvLogger.Instance.LogEvent(GameLogEventType.SkillUsed, actor: gameObject, value: _skill3Cost, metadata: new System.Collections.Generic.Dictionary<string, object> { { "skillIndex", 3 }, { "skillName", "Meteor" }, { "kind", "Ritual" } });
         GameCsvLogger.Instance.LogEvent(GameLogEventType.RitualUsed, actor: gameObject, value: _skill3Cost, metadata: new System.Collections.Generic.Dictionary<string, object> { { "skillIndex", 3 }, { "skillName", "Meteor" } });
         OnSkill3();
+        _skillCostFlyVisual?.Play(3, _skill3Cost);
         EventBus.Instance?.Publish(new TutorialSkillUsedEvent { SkillIndex = 3 });
         GameLogger.Instance?.RecordRitualSkillUsed(3, "Meteor");
     }
