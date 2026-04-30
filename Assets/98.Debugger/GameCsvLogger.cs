@@ -199,9 +199,10 @@ public class GameCsvLogger : MonoBehaviour
         _sessionId = Guid.NewGuid().ToString("N");
         string safePrefix = string.IsNullOrWhiteSpace(fileNamePrefix) ? "game_log" : fileNamePrefix.Trim();
         string fileName = safePrefix + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss", CultureInfo.InvariantCulture) + ".csv";
-        _filePath = Path.Combine(Application.persistentDataPath, fileName);
+        string logDirectory = ResolveLogDirectory();
+        _filePath = Path.Combine(logDirectory, fileName);
 
-        Directory.CreateDirectory(Application.persistentDataPath);
+        Directory.CreateDirectory(logDirectory);
 
         if (writeHeader)
         {
@@ -226,6 +227,28 @@ public class GameCsvLogger : MonoBehaviour
         {
             { "scene", SceneManager.GetActiveScene().name }
         });
+    }
+
+    private static string ResolveLogDirectory()
+    {
+        try
+        {
+#if UNITY_EDITOR
+            string projectRoot = Directory.GetParent(Application.dataPath)?.FullName;
+            if (!string.IsNullOrWhiteSpace(projectRoot))
+                return Path.Combine(projectRoot, "Logs");
+#else
+            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            if (!string.IsNullOrWhiteSpace(baseDir))
+                return Path.Combine(baseDir, "Logs");
+#endif
+        }
+        catch
+        {
+            // Fall back below.
+        }
+
+        return Application.persistentDataPath;
     }
 
     private void FlushNoLock()

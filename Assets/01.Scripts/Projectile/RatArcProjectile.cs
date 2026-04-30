@@ -11,7 +11,7 @@ public class RatArcProjectile : ArcProjectile
     [SerializeField] private string _fragmentPoolKey;
     [SerializeField] private int _fragmentCount = 3;
 
-    public void Initialize(AttackModule data, TeamType team, Vector3 startPosition, Vector3 targetPosition, float travelTime, float arcHeight, GameObject owner = null)
+    public new void Initialize(AttackModule data, TeamType team, Vector3 startPosition, Vector3 targetPosition, float travelTime, float arcHeight, GameObject owner = null)
     {
         if (data == null)
         {
