@@ -79,6 +79,14 @@ public class Unit : MonoBehaviour, IDamageable
         UpdateVisualFeedback();
     }
 
+    public void RestoreFullHp()
+    {
+        if(!_isInitialized || IsDead) return;
+        _currentHp = _data.MaxHp;
+        OnHpChanged?.Invoke(_currentHp, _data.MaxHp);
+        UpdateVisualFeedback();
+    }
+
     private void AssembleModules()
     {
         if (_data.CanAttack)
@@ -213,9 +221,9 @@ public class Unit : MonoBehaviour, IDamageable
 
         float ratio = _currentHp / _data.MaxHp;
 
-        if (ratio <= 0.7f && _damageOverlays.Length > 0) _damageOverlays[0].gameObject.SetActive(true);
-        if (ratio <= 0.4f && _damageOverlays.Length > 1) _damageOverlays[1].gameObject.SetActive(true);
-        if (ratio <= 0.1f && _damageOverlays.Length > 2) _damageOverlays[2].gameObject.SetActive(true);
+        if(_damageOverlays.Length > 0) _damageOverlays[0].gameObject.SetActive(ratio <= 0.7f);
+        if(_damageOverlays.Length > 1) _damageOverlays[1].gameObject.SetActive(ratio <= 0.4f);
+        if(_damageOverlays.Length > 2) _damageOverlays[2].gameObject.SetActive(ratio <= 0.1f);
 
         float colorVal = 0.5f + (ratio / 2f);
         if (_hitEffectCo != null) StopCoroutine(_hitEffectCo);
@@ -252,16 +260,37 @@ public class Unit : MonoBehaviour, IDamageable
 
         if (_team == TeamType.Enemy && _data.Category != UnitCategory.Core)
         {
-            EventBus.Instance?.Publish(new EnemyDefeatedEvent());
             if (_isTutorialEnemy)
-                EventBus.Instance?.Publish(new TutorialEnemyDefeatedEvent());
+            {
+                EventBus.Instance?.Publish(new TutorialEnemyDefeatedEvent
+                {
+                    DeadUnit = this,
+                    Category = _data.Category
+                });
+            }
+            else
+            {
+                EventBus.Instance?.Publish(new EnemyDefeatedEvent());
+            }
         }
 
         // 코어 파괴 이벤트 발행
         if (_data.Category == UnitCategory.Core && _team == TeamType.Enemy)
         {
             CameraManager.Instance?.ShakeWeak();
-            EventBus.Instance?.Publish(new CoreDestroyedEvent { IsPlayerBase = false });
+
+            if (_isTutorialEnemy)
+            {
+                EventBus.Instance?.Publish(new TutorialEnemyDefeatedEvent
+                {
+                    DeadUnit = this,
+                    Category = _data.Category
+                });
+            }
+            else
+            {
+                EventBus.Instance?.Publish(new CoreDestroyedEvent { IsPlayerBase = false });
+            }
         }
         else if (_data.Category == UnitCategory.Core && _team == TeamType.Player)
         {
@@ -288,14 +317,36 @@ public class Unit : MonoBehaviour, IDamageable
         if (string.IsNullOrEmpty(key) || count <= 0) return;
         if (PoolManager.Instance == null) return;
 
+        bool shouldApplyDropRatClearReward = false;
+        int totalDropRatReward = 0;
+
         if (_data.Category == UnitCategory.Core && StageManager.Instance != null)
         {
             count += (StageManager.Instance.CurrentWaveIndex * 15)
                    + (StageManager.Instance.CurrentStageIndex * 20);
+
+            shouldApplyDropRatClearReward = _team == TeamType.Enemy;
+            if (shouldApplyDropRatClearReward)
+            {
+                totalDropRatReward = StageManager.Instance.CalculateDropRatClearReward();
+            }
         }
 
         for (int i = 0; i < count; i++)
-            PoolManager.Instance.Spawn(key, transform.position, Quaternion.identity);
+        {
+            GameObject spawnedObject = PoolManager.Instance.Spawn(key, transform.position, Quaternion.identity);
+            if (!shouldApplyDropRatClearReward || spawnedObject == null)
+                continue;
+
+            if (spawnedObject.TryGetComponent(out DropRat dropRat))
+            {
+                int rewardAmount = totalDropRatReward / count;
+                if (i < totalDropRatReward % count)
+                    rewardAmount++;
+
+                dropRat.SetRewardAmount(rewardAmount);
+            }
+        }
     }
 
     private void OnDestroy()

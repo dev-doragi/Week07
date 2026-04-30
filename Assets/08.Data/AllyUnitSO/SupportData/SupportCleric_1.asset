@@ -18,6 +18,9 @@ MonoBehaviour:
   Category: 5
   Prefab: {fileID: 464603893784749280, guid: 8b8b2ceaaf2c40748ad1df6f6304fbdf, type: 3}
   Icon: {fileID: -2417847074671435042, guid: 739b85737b59dfc4eb8a9335d18aba72, type: 3}
+  Description: "\"\uC950\uC758 \uC2E0, \uC124\uCE58\uB958\uC758 \uAD70\uC8FC, \uD584\uC2A4\uD130
+    \uBC14\uD034\uB97C \uB3CC\uB9AC\uB294 \uAD70\uC8FC, \uB0B4 \uB9C8\uC74C\uC758
+    \uAC00\uB824\uC6C0\uC744 \uAE01\uC5B4\uC8FC\uB294 \uAD70\uC8FC\uAED8 \uAE30\uB3C4\uD569\uB2C8\uB2E4.\""
   Size: {x: 1, y: 1}
   PlacementRule: 1
   ActsAsFoundation: 0
@@ -50,5 +53,7 @@ MonoBehaviour:
       _modifierType: 2
       _value: 0.25
       _description: "\uBC29\uC5B4\uB825 25% \uC99D\uAC00"
+  Heal:
+    HealRange: 10
     HealAmount: 0
-    HealCooldown: 0
+    HealCooldown: 2

@@ -20,6 +20,9 @@ public class UIManager : Singleton<UIManager>
     [SerializeField] private GameObject _gameClearPanel;
     [SerializeField] private GameObject _pausePanel;
 
+    [Header("Tutorial")]
+    [SerializeField] private bool _autoShowInGamePanelOnPlaying = true;
+
     [Header("TutorialClear Panel Elements")]
     [SerializeField] private GameObject _gameClearText;
     [SerializeField] private GameObject _stageClearText;
@@ -49,7 +52,7 @@ public class UIManager : Singleton<UIManager>
         {
             case GameState.Playing:
                 HideAllPanels();
-                if (_inGamePanel != null) _inGamePanel.SetActive(true);
+                if (_autoShowInGamePanelOnPlaying && _inGamePanel != null) _inGamePanel.SetActive(true);
                 break;
             case GameState.Paused:
                 if (_pausePanel != null) _pausePanel.SetActive(true);
@@ -114,6 +117,17 @@ public class UIManager : Singleton<UIManager>
     {
         HideAllPanels();
         if (_inGamePanel != null) _inGamePanel.SetActive(true);
+    }
+
+    public void SetInGamePanelVisible(bool isVisible)
+    {
+        if (isVisible)
+        {
+            ShowInGamePanel();
+            return;
+        }
+
+        if (_inGamePanel != null) _inGamePanel.SetActive(false);
     }
 
     // Button handlers (connect from Inspector)

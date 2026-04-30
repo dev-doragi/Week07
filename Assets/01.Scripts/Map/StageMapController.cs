@@ -64,6 +64,7 @@ public class StageMapController : MonoBehaviour
     private bool _isMapVisible;
     private bool _hasPausedTimeScale;
     private float _timeScaleBeforeMap = 1f;
+    private bool _suppressDoctrinePanel = false;
 
     [System.Serializable]
     private class StageMapNodeLayoutOverride
@@ -248,21 +249,14 @@ public class StageMapController : MonoBehaviour
             _runtimeNodeList.Add(node);
         }
 
-        bool appliedSavedLayout = ApplySavedNodeLayoutOverrides();
-        bool appliedHierarchyLayout = ApplyHierarchyNodePositions();
-        bool appliedCustomLayout = appliedSavedLayout || appliedHierarchyLayout;
+        bool appliedCustomLayout = false;
 
-        if (allowRandomize && _randomizeRewardOnStart)
+        if (!(allowRandomize && _randomizePathOnStart))
         {
-            if (_routeData.UnlockableRatUnits != null && _routeData.UnlockableRatUnits.Count > 0)
-            {
-                AssignRouteRewardPool();
-            }
-            else
-            {
-                RandomizeRewards();
-            }
-
+            //랜덤화가 꺼져 있을 때만 저장된 레이아웃 적용
+            bool appliedSavedLayout = ApplySavedNodeLayoutOverrides();
+            bool appliedHierarchyLayout = ApplyHierarchyNodePositions();
+            appliedCustomLayout = appliedSavedLayout || appliedHierarchyLayout;
         }
 
         if (allowRandomize && _randomizePathOnStart && !appliedCustomLayout)
@@ -852,11 +846,14 @@ public class StageMapController : MonoBehaviour
         RefreshNodeStates();
         SetMapVisible(true);
         _mapRoot.gameObject.SetActive(true);
-        EnsureDoctrinePanel();
-        if (_doctrinePanelRoot != null)
+        if (!_suppressDoctrinePanel)
         {
-            _doctrinePanelRoot.gameObject.SetActive(true);
-            _doctrinePanelRoot.SetAsLastSibling();
+            EnsureDoctrinePanel();
+            if (_doctrinePanelRoot != null)
+            {
+                _doctrinePanelRoot.gameObject.SetActive(true);
+                _doctrinePanelRoot.SetAsLastSibling();
+            }
         }
     }
 
@@ -869,6 +866,27 @@ public class StageMapController : MonoBehaviour
             _doctrinePanelRoot.gameObject.SetActive(false);
 
         SetMapVisible(false);
+    }
+
+    public void SetMapVisibleForTutorial(bool isVisible)
+    {
+        if (isVisible)
+        {
+            ShowMap();
+            return;
+        }
+
+        HideMap();
+    }
+
+    public void SetDoctrinePanelSuppressed(bool suppressed)
+    {
+        _suppressDoctrinePanel = suppressed;
+
+        if (_doctrinePanelRoot != null)
+        {
+            _doctrinePanelRoot.gameObject.SetActive(!suppressed && _isMapVisible);
+        }
     }
 
     private void SetMapVisible(bool isVisible)

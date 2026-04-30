@@ -26,11 +26,27 @@ public class StageManager : Singleton<StageManager>
     [Tooltip("All automatic wave waits use this value, including the first wave, map-selected waves, and next-wave waits.")]
     [SerializeField] private float _initialWaveStartDelay = 15f;
 
+    [Header("Drop Rat Clear Reward")]
+    [Min(0f)]
+    [Tooltip("Clear times at or below this value grant the maximum DropRat resource reward.")]
+    [SerializeField] private float _maxRewardClearTime = 20f;
+    [Min(0f)]
+    [Tooltip("Clear times at or above this value grant the minimum DropRat resource reward.")]
+    [SerializeField] private float _minRewardClearTime = 60f;
+    [Min(0)]
+    [Tooltip("Total DropRat resource reward granted for the fastest clear time.")]
+    [SerializeField] private int _maxDropRatReward = 300;
+    [Min(0)]
+    [Tooltip("Total DropRat resource reward granted for the slowest clear time.")]
+    [SerializeField] private int _minDropRatReward = 50;
+
     private StageLayout _currentLayout;
     private bool _isWaveEnding;
     private Coroutine _mapWaveStartCoroutine;
     private int _pendingWaveStartIndex = -1;
     private float _waveStartRemainingTime;
+    private float _waveStartTime;
+    private float _lastWaveClearTime;
 
     public int CurrentStageIndex { get; private set; } = 0;
     public int CurrentWaveIndex { get; private set; } = 0;
@@ -42,6 +58,7 @@ public class StageManager : Singleton<StageManager>
     public bool IsWaitingForWaveStart => _mapWaveStartCoroutine != null;
     public int PendingWaveStartIndex => _pendingWaveStartIndex;
     public float WaveStartRemainingTime => Mathf.Max(0f, _waveStartRemainingTime);
+    public float CurrentWaveClearTime => CurrentState == InGameState.WavePlaying ? GetCurrentWaveElapsedTime() : _lastWaveClearTime;
 
     protected override void OnBootstrap()
     {
@@ -79,6 +96,12 @@ public class StageManager : Singleton<StageManager>
 
     private void OnCoreDestroyed(CoreDestroyedEvent evt)
     {
+        if (StageLoadContext.IsTutorial)
+        {
+            Debug.Log("[StageManager] 튜토리얼 중이므로 코어 파괴 시 스테이지 클리어를 무시합니다.");
+            return;
+        }
+
         // GameFlowManager가 없으면 EndWave를 호출하지 않음 (방어)
         if (GameFlowManager.Instance == null)
         {
@@ -143,7 +166,6 @@ public class StageManager : Singleton<StageManager>
 
         EventBus.Instance.Publish(new StageLoadedEvent { StageIndex = CurrentStageIndex });
 
-        // ⚠️ GridManager가 준비될 시간을 제공 (1프레임 대기)
         StartCoroutine(PublishStageGenerateCompleteAfterDelay());
 
         Debug.Log($"[StageManager] Stage {stageIndex} 로드 준비 완료.");
@@ -208,11 +230,27 @@ public class StageManager : Singleton<StageManager>
             return;
         }
 
-        CurrentWaveIndex = waveIndex;
-        CurrentState = InGameState.WavePlaying;
-        _isWaveEnding = false;
-        Debug.Log($"[StageManager] Starting Wave {waveIndex}");
-        EventBus.Instance?.Publish(new WaveStartedEvent { StageIndex = CurrentStageIndex, WaveIndex = waveIndex });
+        BeginWave(CurrentStageIndex, waveIndex);
+    }
+
+    public int CalculateDropRatClearReward()
+    {
+        return CalculateDropRatClearReward(CurrentWaveClearTime);
+    }
+
+    public int CalculateDropRatClearReward(float clearTime)
+    {
+        float maxRewardTime = Mathf.Max(0f, _maxRewardClearTime);
+        float minRewardTime = Mathf.Max(maxRewardTime, _minRewardClearTime);
+        int maxReward = Mathf.Max(0, _maxDropRatReward);
+        int minReward = Mathf.Clamp(_minDropRatReward, 0, maxReward);
+
+        if (Mathf.Approximately(minRewardTime, maxRewardTime))
+            return clearTime <= maxRewardTime ? maxReward : minReward;
+
+        float rewardRatio = Mathf.InverseLerp(maxRewardTime, minRewardTime, clearTime);
+        float reward = Mathf.Lerp(maxReward, minReward, rewardRatio);
+        return Mathf.RoundToInt(reward);
     }
 
     public void StartStageFromMapNode(int stageIndex, float delay)
@@ -257,9 +295,17 @@ public class StageManager : Singleton<StageManager>
         if (_isWaveEnding) return;
 
         _isWaveEnding = true;
+        if (isWin)
+            _lastWaveClearTime = GetCurrentWaveElapsedTime();
+
         CurrentState = InGameState.WaveEnded;
         Debug.Log($"[StageManager] Wave {CurrentWaveIndex} 종료 - isWin: {isWin}");
         EventBus.Instance?.Publish(new WaveEndedEvent { StageIndex = CurrentStageIndex, WaveIndex = CurrentWaveIndex, IsWin = isWin });
+    }
+
+    private float GetCurrentWaveElapsedTime()
+    {
+        return Mathf.Max(0f, Time.time - _waveStartTime);
     }
 
     private IEnumerator PublishStageGenerateCompleteAfterDelay()
@@ -309,6 +355,18 @@ public class StageManager : Singleton<StageManager>
     private void PublishWaveWaitTick(float remainingTime)
     {
         EventBus.Instance?.Publish(new WaveWaitTimerTickEvent { RemainingTime = Mathf.Max(0f, remainingTime) });
+    }
+
+    private void BeginWave(int stageIndex, int waveIndex)
+    {
+        CurrentStageIndex = stageIndex;
+        CurrentWaveIndex = waveIndex;
+        CurrentState = InGameState.WavePlaying;
+        _isWaveEnding = false;
+        _waveStartTime = Time.time;
+        _lastWaveClearTime = 0f;
+        Debug.Log($"[StageManager] Starting Wave {waveIndex}");
+        EventBus.Instance?.Publish(new WaveStartedEvent { StageIndex = CurrentStageIndex, WaveIndex = waveIndex });
     }
 
     private void StopMapWaveStartRoutine()
