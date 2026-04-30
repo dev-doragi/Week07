@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -217,6 +218,17 @@ public class DoctrineManager : MonoBehaviour
         doctrinePoint -= 1;
         Debug.Log($"[DoctrineManager] Confirmed | NodeId: {data.nodeId}, RemainingPoint: {doctrinePoint}");
         GameLogger.Instance?.RecordDoctrineSelected(data);
+        GameCsvLogger.Instance.LogEvent(GameLogEventType.DoctrineSelected, actor: gameObject, metadata: new Dictionary<string, object>
+        {
+            { "rowIndex", data.rowIndex },
+            { "rowStep", data.rowIndex + 1 },
+            { "columnIndex", data.columnIndex },
+            { "nodeId", data.nodeId },
+            { "nodeName", data.nodeName },
+            { "doctrineType", data.doctrineType.ToString() },
+            { "effectId", data.effectId },
+            { "path", BuildDoctrinePathForCsv(data) }
+        });
 
         ApplyDoctrineEffect(data);
         if (tooltipUI != null)
@@ -352,6 +364,57 @@ public class DoctrineManager : MonoBehaviour
         }
     }
 
+    private string BuildDoctrinePathForCsv(DoctrineNodeData latestSelection)
+    {
+        if (allNodes == null || allNodes.Count == 0)
+        {
+            return "none";
+        }
+
+        Dictionary<int, string> rowTypeMap = new Dictionary<int, string>();
+
+        for (int i = 0; i < allNodes.Count; i++)
+        {
+            DoctrineNodeUI node = allNodes[i];
+            DoctrineNodeData data = node != null ? node.GetData() : null;
+            if (data == null || string.IsNullOrWhiteSpace(data.nodeId))
+            {
+                continue;
+            }
+
+            if (confirmedNodeIds.Contains(data.nodeId))
+            {
+                rowTypeMap[data.rowIndex] = data.doctrineType.ToString();
+            }
+        }
+
+        if (latestSelection != null)
+        {
+            rowTypeMap[latestSelection.rowIndex] = latestSelection.doctrineType.ToString();
+        }
+
+        if (rowTypeMap.Count == 0)
+        {
+            return "none";
+        }
+
+        List<int> rows = new List<int>(rowTypeMap.Keys);
+        rows.Sort();
+
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < rows.Count; i++)
+        {
+            if (i > 0)
+            {
+                builder.Append(" - ");
+            }
+
+            int rowIndex = rows[i];
+            builder.Append(rowIndex + 1).Append(":").Append(rowTypeMap[rowIndex]);
+        }
+
+        return builder.ToString();
+    }
     private void RefreshConfirmButtonState()
     {
         if (confirmButton == null)
@@ -362,3 +425,4 @@ public class DoctrineManager : MonoBehaviour
         confirmButton.interactable = _pendingNode != null && doctrinePoint > 0;
     }
 }
+
