@@ -36,6 +36,7 @@ public class IncomeResourceProducer : MonoBehaviour
     private Coroutine _scanRoutine;
     private bool _warnedMissingResourceManager;
     private float _scanTimer;
+    private int _productionBonus = 0;
 
     private void OnEnable()
     {
@@ -87,14 +88,20 @@ public class IncomeResourceProducer : MonoBehaviour
         ProduceOnce();
     }
 
+    public void SetProductionBonus(int bonus)
+    {
+        _productionBonus = bonus;
+    }
+
     [ContextMenu("Produce Once")]
     public void ProduceOnce()
     {
         if (_gridBoard == null)
             return;
 
-        int occupied = _gridBoard.GetOccupiedCellCount();
-        int amount = occupied * Mathf.Max(1, _resourcePerCell);
+
+        int totalOccupied = _gridBoard.GetOccupiedCellCount();
+        int amount = (totalOccupied * Mathf.Max(1, _resourcePerCell)) + _productionBonus;
 
         LastProduced = amount;
         if (amount <= 0)
@@ -123,7 +130,10 @@ public class IncomeResourceProducer : MonoBehaviour
 
         if (_logProduction)
         {
-            Debug.Log($"[IncomeResourceProducer] Produced {amount} resources (occupied: {occupied}, perCell: {_resourcePerCell}).");
+            int baseAmount = totalOccupied * Mathf.Max(1, _resourcePerCell);
+            Debug.Log($"[IncomeResourceProducer] 생산 완료 | 총 {amount} " +
+              $"(전체칸: {totalOccupied} × {_resourcePerCell} = {baseAmount}" +
+              $" + 우하단보너스: {_productionBonus})");
         }
     }
 
@@ -346,10 +356,8 @@ public class IncomeResourceProducer : MonoBehaviour
             return 0;
 
         int occupied = _gridBoard.GetOccupiedCellCount();
-        if (occupied <= 0)
-            return 0;
-
-        return occupied * Mathf.Max(1, _resourcePerCell);
+        if (occupied <= 0) return 0;
+        return (occupied * Mathf.Max(1, _resourcePerCell)) + _productionBonus;
     }
 
     private static void Stretch(RectTransform rect)

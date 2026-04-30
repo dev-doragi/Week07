@@ -43,6 +43,7 @@ public class Unit : MonoBehaviour, IDamageable
     private UnitState _currentState = UnitState.Idle; // 현재 상태
     private bool _isOnGrid = false;
     private bool _isTutorialEnemy = false;
+    private int _maxHpBonus = 0;
 
     public UnitDataSO Data => _data;
     public SpriteRenderer BaseRenderer => _baseRenderer;
@@ -69,10 +70,10 @@ public class Unit : MonoBehaviour, IDamageable
         _animator = GetComponent<UnitAnimator>();
         _statReceiver = GetComponent<EntityStatReceiver>();
         _team = _data.Team;
-        _currentHp = _data.MaxHp;
+        _currentHp = _data.MaxHp + _maxHpBonus;
         _isInitialized = true;
 
-        OnHpChanged?.Invoke(_currentHp, _data.MaxHp);
+        OnHpChanged?.Invoke(_currentHp, _data.MaxHp + _maxHpBonus);
         AssembleModules();
 
         ChangeState(UnitState.Idle);
@@ -82,8 +83,8 @@ public class Unit : MonoBehaviour, IDamageable
     public void RestoreFullHp()
     {
         if(!_isInitialized || IsDead) return;
-        _currentHp = _data.MaxHp;
-        OnHpChanged?.Invoke(_currentHp, _data.MaxHp);
+        _currentHp = _data.MaxHp + _maxHpBonus;
+        OnHpChanged?.Invoke(_currentHp, _data.MaxHp + _maxHpBonus);
         UpdateVisualFeedback();
     }
 
@@ -186,7 +187,7 @@ public class Unit : MonoBehaviour, IDamageable
             });
 
         UpdateVisualFeedback();
-        OnHpChanged?.Invoke(_currentHp, _data.MaxHp);
+        OnHpChanged?.Invoke(_currentHp, _data.MaxHp + _maxHpBonus);
 
         if (_currentHp <= 0f)
             ChangeState(UnitState.Dead);
@@ -215,11 +216,21 @@ public class Unit : MonoBehaviour, IDamageable
         }
     }
 
+    public void ApplyMaxHpBonusDelta(int delta)
+    {
+        _maxHpBonus += delta;
+        //보너스가 늘면 현재체력도 같이 증가
+        //보너스가 늘면 현재체력도 그만큼 감소
+        _currentHp = Mathf.Clamp(_currentHp + delta, 0f, _data.MaxHp + _maxHpBonus);
+        OnHpChanged?.Invoke(_currentHp, _data.MaxHp + _maxHpBonus);
+        UpdateVisualFeedback();
+    }
+
     private void UpdateVisualFeedback()
     {
         if (_baseRenderer == null || _damageOverlays == null) return;
 
-        float ratio = _currentHp / _data.MaxHp;
+        float ratio = _currentHp / (_data.MaxHp + _maxHpBonus);
 
         if(_damageOverlays.Length > 0) _damageOverlays[0].gameObject.SetActive(ratio <= 0.7f);
         if(_damageOverlays.Length > 1) _damageOverlays[1].gameObject.SetActive(ratio <= 0.4f);
