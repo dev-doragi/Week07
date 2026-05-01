@@ -113,6 +113,7 @@ public class SiegeChargeHandler : MonoBehaviour
     {
         _isCrashing = true;
         RefreshCollisionPowerUI();
+        PublishScheduledImpactAnimation(_pullBackDuration + _crashDuration);
 
         var tf           = _grid.transform;
         Vector3 pullBack = _startPosition + Vector3.left  * _pullBackDistance;
@@ -174,15 +175,6 @@ public class SiegeChargeHandler : MonoBehaviour
         float finalDamage    = isPlayerLosing ? delta : delta * (1f + Mathf.Max(0f, _doctrineBonusDamagePercent));
 
         Debug.Log($"[Collision] PlayerCP: {playerCP} | EnemyCP: {enemyCP} | Delta: {delta}");
-
-        EventBus.Instance?.Publish(new SiegeImpactStartedEvent
-        {
-            PlayerCP       = playerCP,
-            EnemyCP        = enemyCP,
-            Delta          = delta,
-            IsPlayerLosing = isPlayerLosing,
-            FinalDamage    = finalDamage
-        });
 
         if (delta > 0f)
         {
@@ -256,6 +248,30 @@ public class SiegeChargeHandler : MonoBehaviour
         float enemyCP = _enemyGrid != null ? _enemyGrid.CalculateTotalCollisionPower() : 0f;
 
         EventBus.Instance?.Publish(new CollisionPowerUpdatedEvent { PlayerCP = playerCP, EnemyCP = enemyCP });
+    }
+
+    private void PublishScheduledImpactAnimation(float delayUntilImpact)
+    {
+        _enemyGrid = _enemyGrid != null ? _enemyGrid : ResolveEnemyGrid();
+        if (_enemyGrid == null) return;
+
+        _enemyGrid.RegisterExistingUnitsFromChildren();
+
+        float playerCP = _grid != null ? _grid.CalculateTotalCollisionPower() : 0f;
+        float enemyCP  = _enemyGrid.CalculateTotalCollisionPower() * (1f - _doctrineEnemyCollisionPowerReductionPercent);
+        float delta    = Mathf.Abs(playerCP - enemyCP);
+        bool isPlayerLosing = playerCP < enemyCP;
+        float finalDamage = isPlayerLosing ? delta : delta * (1f + Mathf.Max(0f, _doctrineBonusDamagePercent));
+
+        EventBus.Instance?.Publish(new SiegeImpactStartedEvent
+        {
+            PlayerCP          = playerCP,
+            EnemyCP           = enemyCP,
+            Delta             = delta,
+            IsPlayerLosing    = isPlayerLosing,
+            FinalDamage       = finalDamage,
+            DelayUntilImpact  = Mathf.Max(0f, delayUntilImpact)
+        });
     }
 
     private EnemyGridManager ResolveEnemyGrid()

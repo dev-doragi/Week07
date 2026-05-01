@@ -38,6 +38,7 @@ public struct SiegeImpactStartedEvent {
     public float Delta;
     public bool IsPlayerLosing;
     public float FinalDamage;
+    public float DelayUntilImpact;
 }
 public struct EnemyHitEvent { public TeamType AttackerTeam; }
 public struct CollisionPowerUpdatedEvent { public float PlayerCP; public float EnemyCP; }

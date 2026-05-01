@@ -15,7 +15,7 @@ public class CollisionPowerUIController : MonoBehaviour
     [SerializeField, Min(0f)] private float _gatherDuration = 0.35f;
     [SerializeField, Min(0f)] private float _scaleDuration = 0.2f;
     [SerializeField, Min(0f)] private float _subtractRevealDelay = 0.1f;
-    [SerializeField] private float _calculationScale = 1.15f;
+    [SerializeField] private float _calculationScale = 1.5f;
 
     [Header("Result Impact Animation")]
     [SerializeField] private RectTransform _resultRoot;
@@ -26,7 +26,7 @@ public class CollisionPowerUIController : MonoBehaviour
     [SerializeField, Min(0f)] private float _resultRevealDuration = 0.25f;
     [SerializeField, Min(0f)] private float _flyDuration = 0.45f;
     [SerializeField] private float _resultPopScale = 1.25f;
-    [SerializeField] private float _impactScale = 0.85f;
+    [SerializeField] private float _impactScale = 1.2f;
 
     private Sequence _calculationSequence;
     private Sequence _impactSequence;
@@ -81,10 +81,10 @@ public class CollisionPowerUIController : MonoBehaviour
     private void OnCollisionPowerUpdated(CollisionPowerUpdatedEvent e)
     {
         if (_playerCPText != null)
-            _playerCPText.text = $"아군 공성력: {e.PlayerCP:F1}";
+            _playerCPText.text = $"{e.PlayerCP:F1}";
 
         if (_enemyCPText != null)
-            _enemyCPText.text = $"적군 공성력: {e.EnemyCP:F1}";
+            _enemyCPText.text = $"{e.EnemyCP:F1}";
     }
 
     private void OnSiegeChargeStarted(SiegeChargeStartedEvent _)
@@ -158,9 +158,8 @@ public class CollisionPowerUIController : MonoBehaviour
         _impactSequence?.Kill();
 
         if (_resultText != null)
-            _resultText.text = $"- {e.FinalDamage:F1}";
+            _resultText.text = $"{e.FinalDamage:F1}";
 
-        SetActive(_emphasisImage, true);
         SetActive(_resultRoot.gameObject, true);
 
         Vector2 revealPosition = GetTargetAnchoredPosition(_resultRoot, _resultRevealPoint, new Vector2(0f, 170f));
@@ -173,7 +172,11 @@ public class CollisionPowerUIController : MonoBehaviour
             .SetUpdate(true)
             .SetLink(gameObject, LinkBehaviour.KillOnDestroy);
 
+        float startDelay = Mathf.Max(0f, e.DelayUntilImpact - _resultRevealDuration - _flyDuration);
+
         _impactSequence
+            .AppendInterval(startDelay)
+            .AppendCallback(() => SetActive(_emphasisImage, true))
             .Append(_resultRoot.DOScale(_resultOriginalScale * _resultPopScale, _resultRevealDuration).SetEase(Ease.OutBack))
             .Append(_resultRoot.DOAnchorPos(impactPosition, _flyDuration).SetEase(Ease.InCubic))
             .Join(_resultRoot.DOScale(_resultOriginalScale * _impactScale, _flyDuration).SetEase(Ease.InCubic))
