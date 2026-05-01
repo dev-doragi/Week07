@@ -18,6 +18,7 @@ MonoBehaviour:
     - 53e77309c16627845a144ff3b65a8d44
     - 8a4eb43e9ae5a2e4aaf16180fb06680a
     - 92389a604a7dd984689a74add8368cae
+    - 69339eee86e6a414293aef9b1829e788
     values:
     - goDatas_byGlobalId:
         keys:
@@ -94,6 +95,29 @@ MonoBehaviour:
         - globalObjectIdString: GlobalObjectId_V1-2-92389a604a7dd984689a74add8368cae-23439173-0
         - globalObjectIdString: GlobalObjectId_V1-2-92389a604a7dd984689a74add8368cae-1073840655-0
         - globalObjectIdString: GlobalObjectId_V1-2-92389a604a7dd984689a74add8368cae-410994392-0
+        values:
+        - colorIndex: 0
+          iconNameOrGuid: Camera Icon
+          isIconRecursive: 0
+          isColorRecursive: 0
+        - colorIndex: 6
+          iconNameOrGuid: Settings Icon
+          isIconRecursive: 0
+          isColorRecursive: 0
+        - colorIndex: 8
+          iconNameOrGuid: 
+          isIconRecursive: 0
+          isColorRecursive: 0
+        - colorIndex: 4
+          iconNameOrGuid: Canvas Icon
+          isIconRecursive: 0
+          isColorRecursive: 0
+    - goDatas_byGlobalId:
+        keys:
+        - globalObjectIdString: GlobalObjectId_V1-2-69339eee86e6a414293aef9b1829e788-1482599245-0
+        - globalObjectIdString: GlobalObjectId_V1-2-69339eee86e6a414293aef9b1829e788-23439173-0
+        - globalObjectIdString: GlobalObjectId_V1-2-69339eee86e6a414293aef9b1829e788-1073840655-0
+        - globalObjectIdString: GlobalObjectId_V1-2-69339eee86e6a414293aef9b1829e788-410994392-0
         values:
         - colorIndex: 0
           iconNameOrGuid: Camera Icon

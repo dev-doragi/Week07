@@ -17,165 +17,124 @@ MonoBehaviour:
   _nodes:
   - _nodeId: start
     _stageIndex: 0
-    _normalizedPosition: {x: 0.08, y: 0.5}
+    _normalizedPosition: {x: 0.05, y: 0.5}
     _reward:
       _type: 0
       _rewardId: 
       _amount: 0
       _icon: {fileID: 21300000, guid: 83bb5f401bf2c9345b8a03ff7880bf18, type: 3}
       _unitUnlock: {fileID: 0}
+    _choiceUnitUnlock: {fileID: 0}
     _nextNodeIds:
-    - c1_top
-    - c1_mid
-    - c1_bot
-  - _nodeId: c1_top
+    - stage_1
+  - _nodeId: stage_1
     _stageIndex: 1
-    _normalizedPosition: {x: 0.25, y: 0.78}
+    _normalizedPosition: {x: 0.15, y: 0.5}
     _reward:
-      _type: 1
-      _rewardId: generator
-      _amount: 1
+      _type: 0
+      _rewardId: 
+      _amount: 0
       _icon: {fileID: 21300000, guid: 83bb5f401bf2c9345b8a03ff7880bf18, type: 3}
       _unitUnlock: {fileID: 0}
+    _choiceUnitUnlock: {fileID: 0}
     _nextNodeIds:
-    - c2_mid
-  - _nodeId: c1_mid
-    _stageIndex: 1
+    - stage_2
+  - _nodeId: stage_2
+    _stageIndex: 2
     _normalizedPosition: {x: 0.25, y: 0.5}
     _reward:
-      _type: 1
-      _rewardId: generator
-      _amount: 1
+      _type: 0
+      _rewardId: 
+      _amount: 0
       _icon: {fileID: 21300000, guid: 83bb5f401bf2c9345b8a03ff7880bf18, type: 3}
       _unitUnlock: {fileID: 0}
+    _choiceUnitUnlock: {fileID: 0}
     _nextNodeIds:
-    - c2_top
-    - c2_mid
-  - _nodeId: c1_bot
-    _stageIndex: 1
-    _normalizedPosition: {x: 0.25, y: 0.22}
-    _reward:
-      _type: 1
-      _rewardId: generator
-      _amount: 1
-      _icon: {fileID: 21300000, guid: 83bb5f401bf2c9345b8a03ff7880bf18, type: 3}
-      _unitUnlock: {fileID: 0}
-    _nextNodeIds:
-    - c2_mid
-    - c2_bot
-  - _nodeId: c2_top
-    _stageIndex: 2
-    _normalizedPosition: {x: 0.42, y: 0.78}
-    _reward:
-      _type: 1
-      _rewardId: generator
-      _amount: 1
-      _icon: {fileID: 21300000, guid: 83bb5f401bf2c9345b8a03ff7880bf18, type: 3}
-      _unitUnlock: {fileID: 0}
-    _nextNodeIds:
-    - c3_top
-  - _nodeId: c2_mid
-    _stageIndex: 2
-    _normalizedPosition: {x: 0.42, y: 0.5}
-    _reward:
-      _type: 2
-      _rewardId: 54
-      _amount: 1
-      _icon: {fileID: 21300000, guid: 9e09145af0cf4c04da2ad33486f9a382, type: 3}
-      _unitUnlock: {fileID: 11400000, guid: 0bf8fb6a6b632e440a5754fc12dcc176, type: 2}
-    _nextNodeIds:
-    - c3_mid
-  - _nodeId: c2_bot
-    _stageIndex: 2
-    _normalizedPosition: {x: 0.42, y: 0.22}
-    _reward:
-      _type: 1
-      _rewardId: generator
-      _amount: 1
-      _icon: {fileID: 21300000, guid: 83bb5f401bf2c9345b8a03ff7880bf18, type: 3}
-      _unitUnlock: {fileID: 0}
-    _nextNodeIds:
-    - c3_bot
-  - _nodeId: c3_top
+    - stage_3
+  - _nodeId: stage_3
     _stageIndex: 3
-    _normalizedPosition: {x: 0.58, y: 0.78}
+    _normalizedPosition: {x: 0.35, y: 0.5}
     _reward:
-      _type: 2
-      _rewardId: 55
-      _amount: 1
-      _icon: {fileID: 21300000, guid: 9e09145af0cf4c04da2ad33486f9a382, type: 3}
-      _unitUnlock: {fileID: 11400000, guid: 3a6c2837145a3f148bdf0cc5d5edbb69, type: 2}
-    _nextNodeIds:
-    - c4_top
-    - c4_mid
-  - _nodeId: c3_mid
-    _stageIndex: 3
-    _normalizedPosition: {x: 0.58, y: 0.5}
-    _reward:
-      _type: 1
-      _rewardId: generator
-      _amount: 1
+      _type: 0
+      _rewardId: 
+      _amount: 0
       _icon: {fileID: 21300000, guid: 83bb5f401bf2c9345b8a03ff7880bf18, type: 3}
       _unitUnlock: {fileID: 0}
+    _choiceUnitUnlock: {fileID: 11400000, guid: 0bf8fb6a6b632e440a5754fc12dcc176, type: 2}
     _nextNodeIds:
-    - c4_mid
-    - c4_bot
-  - _nodeId: c3_bot
-    _stageIndex: 3
-    _normalizedPosition: {x: 0.58, y: 0.22}
-    _reward:
-      _type: 2
-      _rewardId: 55
-      _amount: 1
-      _icon: {fileID: 21300000, guid: 9e09145af0cf4c04da2ad33486f9a382, type: 3}
-      _unitUnlock: {fileID: 11400000, guid: 3a6c2837145a3f148bdf0cc5d5edbb69, type: 2}
-    _nextNodeIds:
-    - c4_mid
-  - _nodeId: c4_top
+    - stage_4
+  - _nodeId: stage_4
     _stageIndex: 4
-    _normalizedPosition: {x: 0.75, y: 0.78}
+    _normalizedPosition: {x: 0.45, y: 0.5}
     _reward:
-      _type: 1
-      _rewardId: generator
-      _amount: 1
+      _type: 0
+      _rewardId: 
+      _amount: 0
       _icon: {fileID: 21300000, guid: 83bb5f401bf2c9345b8a03ff7880bf18, type: 3}
       _unitUnlock: {fileID: 0}
+    _choiceUnitUnlock: {fileID: 0}
     _nextNodeIds:
-    - final
-  - _nodeId: c4_mid
-    _stageIndex: 4
+    - stage_5
+  - _nodeId: stage_5
+    _stageIndex: 5
+    _normalizedPosition: {x: 0.55, y: 0.5}
+    _reward:
+      _type: 0
+      _rewardId: 
+      _amount: 0
+      _icon: {fileID: 21300000, guid: 83bb5f401bf2c9345b8a03ff7880bf18, type: 3}
+      _unitUnlock: {fileID: 0}
+    _choiceUnitUnlock: {fileID: 0}
+    _nextNodeIds:
+    - stage_6
+  - _nodeId: stage_6
+    _stageIndex: 6
+    _normalizedPosition: {x: 0.65, y: 0.5}
+    _reward:
+      _type: 0
+      _rewardId: 
+      _amount: 0
+      _icon: {fileID: 21300000, guid: 83bb5f401bf2c9345b8a03ff7880bf18, type: 3}
+      _unitUnlock: {fileID: 0}
+    _choiceUnitUnlock: {fileID: 11400000, guid: 67e1321594bd8034783162a4c27fcbd3, type: 2}
+    _nextNodeIds:
+    - stage_7
+  - _nodeId: stage_7
+    _stageIndex: 7
     _normalizedPosition: {x: 0.75, y: 0.5}
     _reward:
-      _type: 2
-      _rewardId: 56
-      _amount: 1
-      _icon: {fileID: 21300000, guid: 9e09145af0cf4c04da2ad33486f9a382, type: 3}
-      _unitUnlock: {fileID: 11400000, guid: 67e1321594bd8034783162a4c27fcbd3, type: 2}
-    _nextNodeIds:
-    - final
-  - _nodeId: c4_bot
-    _stageIndex: 4
-    _normalizedPosition: {x: 0.75, y: 0.22}
-    _reward:
-      _type: 1
-      _rewardId: generator
-      _amount: 1
+      _type: 0
+      _rewardId: 
+      _amount: 0
       _icon: {fileID: 21300000, guid: 83bb5f401bf2c9345b8a03ff7880bf18, type: 3}
       _unitUnlock: {fileID: 0}
+    _choiceUnitUnlock: {fileID: 0}
+    _nextNodeIds:
+    - stage_8
+  - _nodeId: stage_8
+    _stageIndex: 8
+    _normalizedPosition: {x: 0.85, y: 0.5}
+    _reward:
+      _type: 0
+      _rewardId: 
+      _amount: 0
+      _icon: {fileID: 21300000, guid: 83bb5f401bf2c9345b8a03ff7880bf18, type: 3}
+      _unitUnlock: {fileID: 0}
+    _choiceUnitUnlock: {fileID: 0}
     _nextNodeIds:
     - final
   - _nodeId: final
-    _stageIndex: 5
-    _normalizedPosition: {x: 0.92, y: 0.5}
+    _stageIndex: 9
+    _normalizedPosition: {x: 0.95, y: 0.5}
     _reward:
       _type: 0
       _rewardId: 
       _amount: 0
       _icon: {fileID: 0}
       _unitUnlock: {fileID: 0}
+    _choiceUnitUnlock: {fileID: 0}
     _nextNodeIds: []
   _waveStartDelay: 20
-  _ritualPointsPerClear: 1
   _unlockableRatUnits:
   - {fileID: 11400000, guid: 67e1321594bd8034783162a4c27fcbd3, type: 2}
   - {fileID: 11400000, guid: c1c51b752c581ff48857766478134efa, type: 2}

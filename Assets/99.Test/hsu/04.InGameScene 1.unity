@@ -2229,10 +2229,6 @@ PrefabInstance:
       propertyPath: _randomizeOnStart
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5701285067502101643, guid: 7c499f19c34edce40a8a4f4fdbd124e9, type: 3}
-      propertyPath: _randomizeRewardOnStart
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7589229047284350834, guid: 7c499f19c34edce40a8a4f4fdbd124e9, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1153.1709

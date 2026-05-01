@@ -195,6 +195,7 @@ public class DoctrineManager : MonoBehaviour
             return;
         }
 
+        int confirmedRowIndex = data.rowIndex;
         _pendingNode.SetState(DoctrineNodeState.Confirmed);
         RecordConfirmedNode(data.nodeId);
 
@@ -246,6 +247,12 @@ public class DoctrineManager : MonoBehaviour
         {
             doctrinePanelToHide.SetActive(false);
         }
+
+        EventBus.Instance?.Publish(new DoctrineSelectionConfirmedEvent
+        {
+            NodeId = data.nodeId,
+            RowIndex = confirmedRowIndex
+        });
     }
 
     public void AddDoctrinePoint(int amount)

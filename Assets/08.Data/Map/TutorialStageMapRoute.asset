@@ -26,6 +26,5 @@ MonoBehaviour:
       _unitUnlock: {fileID: 0}
     _nextNodeIds: []
   _waveStartDelay: 20
-  _ritualPointsPerClear: 5
   _unlockableRatUnits: []
   _skillUnlocks: []

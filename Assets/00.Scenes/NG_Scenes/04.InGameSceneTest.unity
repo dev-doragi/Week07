@@ -7254,10 +7254,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5701285067502101643, guid: 7c499f19c34edce40a8a4f4fdbd124e9, type: 3}
-      propertyPath: _randomizeRewardOnStart
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5701285067502101643, guid: 7c499f19c34edce40a8a4f4fdbd124e9, type: 3}
       propertyPath: _useHierarchyNodePositions
       value: 1
       objectReference: {fileID: 0}
