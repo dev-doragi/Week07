@@ -17,6 +17,7 @@ public enum GameLogEventType
     ResourceSpend,
     SacrificeGain,
     SacrificeSpend,
+    IncomeZoneBonusChanged,
 
     // Placement / Build
     UnitPlaced,

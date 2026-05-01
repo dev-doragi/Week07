@@ -27,6 +27,11 @@ public class IncomeZoneBonusSystem : MonoBehaviour
     private int   _appliedCapacityBonus    = 0;
     private int   _appliedProductionBonus  = 0;
 
+    private const int AttackSpeedZoneIndex = 0;
+    private const int MaxHpZoneIndex = 1;
+    private const int CapacityZoneIndex = 2;
+    private const int ProductionZoneIndex = 3;
+
     private void OnEnable()
     {
         if(_gridBoard != null)
@@ -72,10 +77,10 @@ public class IncomeZoneBonusSystem : MonoBehaviour
     private void RecalculateBonuses()
     {
         if(_gridBoard == null) return;
-        int topLeft     = _gridBoard.GetZoneOccupiedCount(0); // 좌상단 → 공격속도
-        int topRight    = _gridBoard.GetZoneOccupiedCount(1); // 우상단 → 최대체력
-        int bottomLeft  = _gridBoard.GetZoneOccupiedCount(2); // 좌하단 → 수용량
-        int bottomRight = _gridBoard.GetZoneOccupiedCount(3); // 우하단 → 자원생산력
+        int topLeft     = _gridBoard.GetZoneOccupiedCount(AttackSpeedZoneIndex); // 좌상단 → 공격속도
+        int topRight    = _gridBoard.GetZoneOccupiedCount(MaxHpZoneIndex); // 우상단 → 최대체력
+        int bottomLeft  = _gridBoard.GetZoneOccupiedCount(CapacityZoneIndex); // 좌하단 → 수용량
+        int bottomRight = _gridBoard.GetZoneOccupiedCount(ProductionZoneIndex); // 우하단 → 자원생산력
 
         ApplyAttackSpeedBonus(topLeft * _attackSpeedBonusPerCell);
         ApplyMaxHpBonus(topRight * _maxHpBonusPerCell);
@@ -89,9 +94,21 @@ public class IncomeZoneBonusSystem : MonoBehaviour
     private void ApplyAttackSpeedBonus(float newBonus)
     {
         if(Mathf.Approximately(_appliedAttackSpeedBonus, newBonus)) return;
+        float previousBonus = _appliedAttackSpeedBonus;
         _appliedAttackSpeedBonus = newBonus;
         ApplyAttackSpeedToAllUnits(newBonus);
-        Debug.Log($"[ZoneBonus][좌상단] 공격속도 보너스 변경 → +{newBonus * 100f:F0}% (셀 {_gridBoard.GetZoneOccupiedCount(0)}칸)");
+
+        int occupiedCells = GetZoneOccupiedCountSafe(AttackSpeedZoneIndex);
+        GameCsvLogger.Instance?.RecordIncomeZoneBonusChanged(
+            "AttackSpeedPercent",
+            AttackSpeedZoneIndex,
+            "TopLeft",
+            occupiedCells,
+            previousBonus,
+            newBonus,
+            _attackSpeedBonusPerCell);
+
+        Debug.Log($"[ZoneBonus][좌상단] 공격속도 보너스 변경 → +{newBonus * 100f:F0}% (셀 {occupiedCells}칸)");
     }
 
     private void ApplyAttackSpeedToAllUnits(float bonus)
@@ -116,27 +133,68 @@ public class IncomeZoneBonusSystem : MonoBehaviour
     private void ApplyMaxHpBonus(int newBonus)
     {
         if(_appliedMaxHpBonus == newBonus) return;
+        int previousBonus = _appliedMaxHpBonus;
         _appliedMaxHpBonus = newBonus;
         _playerGrid?.SetMaxHpBonus(newBonus);
-        Debug.Log($"[ZoneBonus][우상단] 최대체력 보너스 변경 → +{newBonus} HP (셀 {_gridBoard.GetZoneOccupiedCount(1)}칸)");
+
+        int occupiedCells = GetZoneOccupiedCountSafe(MaxHpZoneIndex);
+        GameCsvLogger.Instance?.RecordIncomeZoneBonusChanged(
+            "MaxHpFlat",
+            MaxHpZoneIndex,
+            "TopRight",
+            occupiedCells,
+            previousBonus,
+            newBonus,
+            _maxHpBonusPerCell);
+
+        Debug.Log($"[ZoneBonus][우상단] 최대체력 보너스 변경 → +{newBonus} HP (셀 {occupiedCells}칸)");
     }
 
     // 최대 수용량 증가 보너스
     private void ApplyCapacityBonus(int newBonus)
     {
         if(_appliedCapacityBonus == newBonus) return;
+        int previousBonus = _appliedCapacityBonus;
         _appliedCapacityBonus = newBonus;
         _playerGrid?.SetCapacityBonus(newBonus);
-        Debug.Log($"[ZoneBonus][좌하단] 수용량 보너스 변경 → +{newBonus} (셀 {_gridBoard.GetZoneOccupiedCount(2)}칸)");
+
+        int occupiedCells = GetZoneOccupiedCountSafe(CapacityZoneIndex);
+        GameCsvLogger.Instance?.RecordIncomeZoneBonusChanged(
+            "CapacityFlat",
+            CapacityZoneIndex,
+            "BottomLeft",
+            occupiedCells,
+            previousBonus,
+            newBonus,
+            _capacityBonusPerCell);
+
+        Debug.Log($"[ZoneBonus][좌하단] 수용량 보너스 변경 → +{newBonus} (셀 {occupiedCells}칸)");
     }
 
     // 최대 자원 생산량 증가 보너스
     private void ApplyProductionBonus(int newBonus)
     {
         if(_appliedProductionBonus == newBonus) return;
+        int previousBonus = _appliedProductionBonus;
         _appliedProductionBonus = newBonus;
         _producer?.SetProductionBonus(newBonus);
-        Debug.Log($"[ZoneBonus][우하단] 자원생산력 보너스 변경 → +{newBonus} (셀 {_gridBoard.GetZoneOccupiedCount(3)}칸)");
+
+        int occupiedCells = GetZoneOccupiedCountSafe(ProductionZoneIndex);
+        GameCsvLogger.Instance?.RecordIncomeZoneBonusChanged(
+            "ProductionFlat",
+            ProductionZoneIndex,
+            "BottomRight",
+            occupiedCells,
+            previousBonus,
+            newBonus,
+            _productionBonusPerCell);
+
+        Debug.Log($"[ZoneBonus][우하단] 자원생산력 보너스 변경 → +{newBonus} (셀 {occupiedCells}칸)");
+    }
+
+    private int GetZoneOccupiedCountSafe(int zoneIndex)
+    {
+        return _gridBoard != null ? _gridBoard.GetZoneOccupiedCount(zoneIndex) : 0;
     }
 
     private void ResetAllBonuses()
