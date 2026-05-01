@@ -32,6 +32,7 @@ public struct SiegeCollisionResolvedEvent {
     public float FinalDamage;
 }
 public struct SiegeChargeStartedEvent { }
+public struct SiegeChargeEndedEvent { }
 public struct SiegeImpactStartedEvent {
     public float PlayerCP;
     public float EnemyCP;

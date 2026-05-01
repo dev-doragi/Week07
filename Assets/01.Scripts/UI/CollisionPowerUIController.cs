@@ -14,19 +14,18 @@ public class CollisionPowerUIController : MonoBehaviour
     [SerializeField] private GameObject _subtractImage;
     [SerializeField, Min(0f)] private float _gatherDuration = 0.35f;
     [SerializeField, Min(0f)] private float _scaleDuration = 0.2f;
-    [SerializeField, Min(0f)] private float _subtractRevealDelay = 0.1f;
     [SerializeField] private float _calculationScale = 1.5f;
 
-    [Header("Result Impact Animation")]
-    [SerializeField] private RectTransform _resultRoot;
-    [SerializeField] private TextMeshProUGUI _resultText;
+    [Header("Collision Impact Animation")]
     [SerializeField] private GameObject _emphasisImage;
-    [SerializeField] private RectTransform _resultRevealPoint;
     [SerializeField] private RectTransform _impactTargetPoint;
-    [SerializeField, Min(0f)] private float _resultRevealDuration = 0.25f;
-    [SerializeField, Min(0f)] private float _flyDuration = 0.45f;
-    [SerializeField] private float _resultPopScale = 1.25f;
-    [SerializeField] private float _impactScale = 1.2f;
+    [SerializeField, Min(0f)] private float _clashStartDelay = 0.15f;
+    [SerializeField, Min(0.05f)] private float _minClashMoveDuration = 0.2f;
+    [SerializeField, Min(0f)] private float _loserFlyDuration = 0.65f;
+    [SerializeField, Min(0f)] private float _loserFlyDistance = 1400f;
+    [SerializeField] private float _loserSpinDegrees = 540f;
+    [SerializeField] private float _winnerImpactScale = 1.2f;
+    [SerializeField, Min(0f)] private float _impactShakeDuration = 0.15f;
 
     private Sequence _calculationSequence;
     private Sequence _impactSequence;
@@ -35,10 +34,10 @@ public class CollisionPowerUIController : MonoBehaviour
     private Canvas _canvas;
     private Vector2 _playerOriginalPosition;
     private Vector2 _enemyOriginalPosition;
-    private Vector2 _resultOriginalPosition;
     private Vector3 _playerOriginalScale;
     private Vector3 _enemyOriginalScale;
-    private Vector3 _resultOriginalScale;
+    private Vector3 _playerOriginalRotation;
+    private Vector3 _enemyOriginalRotation;
     private bool _hasOriginalState;
     private bool _isStageEnding;
 
@@ -53,6 +52,7 @@ public class CollisionPowerUIController : MonoBehaviour
     {
         EventBus.Instance?.Subscribe<CollisionPowerUpdatedEvent>(OnCollisionPowerUpdated);
         EventBus.Instance?.Subscribe<SiegeChargeStartedEvent>(OnSiegeChargeStarted);
+        EventBus.Instance?.Subscribe<SiegeChargeEndedEvent>(OnSiegeChargeEnded);
         EventBus.Instance?.Subscribe<SiegeImpactStartedEvent>(OnSiegeImpactStarted);
         EventBus.Instance?.Subscribe<WaveStartedEvent>(OnWaveStarted);
         EventBus.Instance?.Subscribe<WaveEndedEvent>(OnWaveEnded);
@@ -64,6 +64,7 @@ public class CollisionPowerUIController : MonoBehaviour
     {
         EventBus.Instance?.Unsubscribe<CollisionPowerUpdatedEvent>(OnCollisionPowerUpdated);
         EventBus.Instance?.Unsubscribe<SiegeChargeStartedEvent>(OnSiegeChargeStarted);
+        EventBus.Instance?.Unsubscribe<SiegeChargeEndedEvent>(OnSiegeChargeEnded);
         EventBus.Instance?.Unsubscribe<SiegeImpactStartedEvent>(OnSiegeImpactStarted);
         EventBus.Instance?.Unsubscribe<WaveStartedEvent>(OnWaveStarted);
         EventBus.Instance?.Unsubscribe<WaveEndedEvent>(OnWaveEnded);
@@ -97,6 +98,11 @@ public class CollisionPowerUIController : MonoBehaviour
     {
         if (_isStageEnding) return;
         PlayImpactAnimation(e);
+    }
+
+    private void OnSiegeChargeEnded(SiegeChargeEndedEvent _)
+    {
+        ResetAnimationState();
     }
 
     private void OnWaveStarted(WaveStartedEvent _)
@@ -143,45 +149,32 @@ public class CollisionPowerUIController : MonoBehaviour
             .Join(_playerCPRect.DOAnchorPos(playerTarget, _gatherDuration).SetEase(Ease.OutCubic))
             .Join(_enemyCPRect.DOAnchorPos(enemyTarget, _gatherDuration).SetEase(Ease.OutCubic))
             .Join(_playerCPRect.DOScale(_playerOriginalScale * _calculationScale, _scaleDuration).SetEase(Ease.OutBack))
-            .Join(_enemyCPRect.DOScale(_enemyOriginalScale * _calculationScale, _scaleDuration).SetEase(Ease.OutBack))
-            .AppendInterval(_subtractRevealDelay)
-            .AppendCallback(() => SetActive(_subtractImage, true));
+            .Join(_enemyCPRect.DOScale(_enemyOriginalScale * _calculationScale, _scaleDuration).SetEase(Ease.OutBack));
     }
 
     private void PlayImpactAnimation(SiegeImpactStartedEvent e)
     {
-        if (_resultRoot == null && _resultText != null)
-            _resultRoot = _resultText.rectTransform;
-
-        if (_resultRoot == null) return;
+        if (_playerCPRect == null || _enemyCPRect == null) return;
 
         _impactSequence?.Kill();
 
-        if (_resultText != null)
-            _resultText.text = $"{e.FinalDamage:F1}";
-
-        SetActive(_resultRoot.gameObject, true);
-
-        Vector2 revealPosition = GetTargetAnchoredPosition(_resultRoot, _resultRevealPoint, new Vector2(0f, 170f));
-        Vector2 impactPosition = GetTargetAnchoredPosition(_resultRoot, _impactTargetPoint, new Vector2(0f, -120f));
-
-        _resultRoot.anchoredPosition = revealPosition;
-        _resultRoot.localScale = Vector3.zero;
+        Vector2 playerClashPoint = GetClashAnchoredPosition(_playerCPRect);
+        Vector2 enemyClashPoint = GetClashAnchoredPosition(_enemyCPRect);
+        float moveStartDelay = Mathf.Min(
+            Mathf.Max(0f, _gatherDuration + _clashStartDelay),
+            Mathf.Max(0f, e.DelayUntilImpact - _minClashMoveDuration));
+        float clashMoveDuration = Mathf.Max(_minClashMoveDuration, e.DelayUntilImpact - moveStartDelay);
 
         _impactSequence = DOTween.Sequence()
             .SetUpdate(true)
             .SetLink(gameObject, LinkBehaviour.KillOnDestroy);
 
-        float startDelay = Mathf.Max(0f, e.DelayUntilImpact - _resultRevealDuration - _flyDuration);
-
         _impactSequence
-            .AppendInterval(startDelay)
-            .AppendCallback(() => SetActive(_emphasisImage, true))
-            .Append(_resultRoot.DOScale(_resultOriginalScale * _resultPopScale, _resultRevealDuration).SetEase(Ease.OutBack))
-            .Append(_resultRoot.DOAnchorPos(impactPosition, _flyDuration).SetEase(Ease.InCubic))
-            .Join(_resultRoot.DOScale(_resultOriginalScale * _impactScale, _flyDuration).SetEase(Ease.InCubic))
-            .Append(_resultRoot.DOShakeAnchorPos(0.15f, new Vector2(20f, 12f), 12, 80f, false, true).SetUpdate(true))
-            .AppendCallback(ResetAnimationState);
+            .AppendInterval(moveStartDelay)
+            .Append(_playerCPRect.DOAnchorPos(playerClashPoint, clashMoveDuration).SetEase(Ease.InExpo))
+            .Join(_enemyCPRect.DOAnchorPos(enemyClashPoint, clashMoveDuration).SetEase(Ease.InExpo));
+
+        AppendPostImpactAnimation(e, playerClashPoint, enemyClashPoint);
     }
 
     private void CacheReferences()
@@ -191,9 +184,6 @@ public class CollisionPowerUIController : MonoBehaviour
 
         if (_enemyCPText != null)
             _enemyCPRect = _enemyCPText.rectTransform;
-
-        if (_resultRoot == null && _resultText != null)
-            _resultRoot = _resultText.rectTransform;
 
         _canvas = GetComponentInParent<Canvas>();
     }
@@ -208,18 +198,14 @@ public class CollisionPowerUIController : MonoBehaviour
         {
             _playerOriginalPosition = _playerCPRect.anchoredPosition;
             _playerOriginalScale = _playerCPRect.localScale;
+            _playerOriginalRotation = _playerCPRect.localEulerAngles;
         }
 
         if (_enemyCPRect != null)
         {
             _enemyOriginalPosition = _enemyCPRect.anchoredPosition;
             _enemyOriginalScale = _enemyCPRect.localScale;
-        }
-
-        if (_resultRoot != null)
-        {
-            _resultOriginalPosition = _resultRoot.anchoredPosition;
-            _resultOriginalScale = _resultRoot.localScale;
+            _enemyOriginalRotation = _enemyCPRect.localEulerAngles;
         }
 
         _hasOriginalState = true;
@@ -236,18 +222,14 @@ public class CollisionPowerUIController : MonoBehaviour
         {
             _playerCPRect.anchoredPosition = _playerOriginalPosition;
             _playerCPRect.localScale = _playerOriginalScale;
+            _playerCPRect.localEulerAngles = _playerOriginalRotation;
         }
 
         if (_enemyCPRect != null)
         {
             _enemyCPRect.anchoredPosition = _enemyOriginalPosition;
             _enemyCPRect.localScale = _enemyOriginalScale;
-        }
-
-        if (_resultRoot != null)
-        {
-            _resultRoot.anchoredPosition = _resultOriginalPosition;
-            _resultRoot.localScale = _resultOriginalScale;
+            _enemyCPRect.localEulerAngles = _enemyOriginalRotation;
         }
 
         ResetVisualObjects();
@@ -257,9 +239,39 @@ public class CollisionPowerUIController : MonoBehaviour
     {
         SetActive(_subtractImage, false);
         SetActive(_emphasisImage, false);
+    }
 
-        if (_resultRoot != null)
-            SetActive(_resultRoot.gameObject, false);
+    private void AppendPostImpactAnimation(SiegeImpactStartedEvent e, Vector2 playerClashPoint, Vector2 enemyClashPoint)
+    {
+        if (e.Delta <= 0f)
+        {
+            AppendTieImpact();
+            return;
+        }
+
+        RectTransform loser = e.IsPlayerLosing ? _playerCPRect : _enemyCPRect;
+        RectTransform winner = e.IsPlayerLosing ? _enemyCPRect : _playerCPRect;
+        Vector2 loserClashPoint = e.IsPlayerLosing ? playerClashPoint : enemyClashPoint;
+        Vector2 flyDirection = e.IsPlayerLosing ? new Vector2(-1f, 0.35f) : new Vector2(1f, 0.35f);
+        Vector2 flyTarget = loserClashPoint + flyDirection.normalized * _loserFlyDistance;
+        float spinDirection = e.IsPlayerLosing ? 1f : -1f;
+
+        _impactSequence
+            .AppendCallback(() => SetActive(_emphasisImage, true))
+            .Append(loser.DOAnchorPos(flyTarget, _loserFlyDuration).SetEase(Ease.OutCubic))
+            .Join(loser.DOLocalRotate(new Vector3(0f, 0f, _loserSpinDegrees * spinDirection), _loserFlyDuration, RotateMode.FastBeyond360).SetEase(Ease.OutCubic))
+            .Join(winner.DOScale(winner.localScale * _winnerImpactScale, _impactShakeDuration).SetLoops(2, LoopType.Yoyo).SetEase(Ease.OutQuad))
+            .Join(winner.DOShakeAnchorPos(_impactShakeDuration, new Vector2(18f, 8f), 10, 80f, false, true))
+            .Join(_playerCPRect.DOShakeAnchorPos(_impactShakeDuration, new Vector2(12f, 6f), 8, 70f, false, true))
+            .Join(_enemyCPRect.DOShakeAnchorPos(_impactShakeDuration, new Vector2(12f, 6f), 8, 70f, false, true));
+    }
+
+    private void AppendTieImpact()
+    {
+        _impactSequence
+            .AppendCallback(() => SetActive(_emphasisImage, true))
+            .Append(_playerCPRect.DOShakeAnchorPos(_impactShakeDuration, new Vector2(18f, 8f), 10, 80f, false, true))
+            .Join(_enemyCPRect.DOShakeAnchorPos(_impactShakeDuration, new Vector2(18f, 8f), 10, 80f, false, true));
     }
 
     private void KillSequences()
@@ -285,6 +297,35 @@ public class CollisionPowerUIController : MonoBehaviour
             camera = _canvas.worldCamera;
 
         Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(camera, targetRect.position);
+        return RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRect, screenPoint, camera, out Vector2 localPoint)
+            ? localPoint
+            : fallback;
+    }
+
+    private Vector2 GetClashAnchoredPosition(RectTransform movingRect)
+    {
+        if (_impactTargetPoint != null)
+            return GetTargetAnchoredPosition(movingRect, _impactTargetPoint, Vector2.zero);
+
+        if (_playerCalculationPoint == null || _enemyCalculationPoint == null)
+            return Vector2.zero;
+
+        Vector3 midpoint = (_playerCalculationPoint.position + _enemyCalculationPoint.position) * 0.5f;
+        return WorldPointToAnchoredPosition(movingRect, midpoint, Vector2.zero);
+    }
+
+    private Vector2 WorldPointToAnchoredPosition(RectTransform movingRect, Vector3 worldPosition, Vector2 fallback)
+    {
+        if (movingRect == null) return fallback;
+
+        RectTransform parentRect = movingRect.parent as RectTransform;
+        if (parentRect == null) return fallback;
+
+        Camera camera = null;
+        if (_canvas != null && _canvas.renderMode != RenderMode.ScreenSpaceOverlay)
+            camera = _canvas.worldCamera;
+
+        Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(camera, worldPosition);
         return RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRect, screenPoint, camera, out Vector2 localPoint)
             ? localPoint
             : fallback;

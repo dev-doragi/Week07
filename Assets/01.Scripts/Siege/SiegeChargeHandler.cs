@@ -143,6 +143,7 @@ public class SiegeChargeHandler : MonoBehaviour
     {
         _isCrashing = false;
         OnCrashEnd?.Invoke();
+        EventBus.Instance?.Publish(new SiegeChargeEndedEvent());
     }
 
     // ─────────────────────────────────────────────
