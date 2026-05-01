@@ -151,6 +151,7 @@ public class GaugeController : MonoBehaviour
 
         if (_button != null) _button.interactable = false;
 
+        EventBus.Instance?.Publish(new SiegeChargeStartedEvent());
         OnChargeActivated?.Invoke();
         EventBus.Instance?.Publish(new TutorialAccelerationButtonUsedEvent());
     }

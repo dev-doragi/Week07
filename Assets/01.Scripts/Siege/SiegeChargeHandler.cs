@@ -53,6 +53,9 @@ public class SiegeChargeHandler : MonoBehaviour
         EventBus.Instance?.Subscribe<PlayerGridChangedEvent>(OnGridChanged);
         EventBus.Instance?.Subscribe<EnemyGridChangedEvent>(OnGridChanged);
         EventBus.Instance?.Subscribe<WaveStartedEvent>(OnWaveStarted);
+        EventBus.Instance?.Subscribe<WaveEndedEvent>(OnWaveEnded);
+        EventBus.Instance?.Subscribe<StageClearedEvent>(OnStageCleared);
+        EventBus.Instance?.Subscribe<StageCleanedUpEvent>(OnStageCleanedUp);
     }
 
     private void OnDisable()
@@ -60,6 +63,9 @@ public class SiegeChargeHandler : MonoBehaviour
         EventBus.Instance?.Unsubscribe<PlayerGridChangedEvent>(OnGridChanged);
         EventBus.Instance?.Unsubscribe<EnemyGridChangedEvent>(OnGridChanged);
         EventBus.Instance?.Unsubscribe<WaveStartedEvent>(OnWaveStarted);
+        EventBus.Instance?.Unsubscribe<WaveEndedEvent>(OnWaveEnded);
+        EventBus.Instance?.Unsubscribe<StageClearedEvent>(OnStageCleared);
+        EventBus.Instance?.Unsubscribe<StageCleanedUpEvent>(OnStageCleanedUp);
     }
 
     private void OnGridChanged<T>(T _) => RefreshCollisionPowerUI();
@@ -165,20 +171,27 @@ public class SiegeChargeHandler : MonoBehaviour
     {
         float delta          = Mathf.Abs(playerCP - enemyCP);
         bool  isPlayerLosing = playerCP < enemyCP;
-        float finalDamage    = delta;
+        float finalDamage    = isPlayerLosing ? delta : delta * (1f + Mathf.Max(0f, _doctrineBonusDamagePercent));
 
         Debug.Log($"[Collision] PlayerCP: {playerCP} | EnemyCP: {enemyCP} | Delta: {delta}");
+
+        EventBus.Instance?.Publish(new SiegeImpactStartedEvent
+        {
+            PlayerCP       = playerCP,
+            EnemyCP        = enemyCP,
+            Delta          = delta,
+            IsPlayerLosing = isPlayerLosing,
+            FinalDamage    = finalDamage
+        });
 
         if (delta > 0f)
         {
             if (isPlayerLosing)
             {
-                finalDamage = delta;
                 DistributeDamage(_grid.GetAllLivingUnits(), finalDamage, TeamType.Enemy, "Player");
             }
             else
             {
-                finalDamage = delta * (1f + Mathf.Max(0f, _doctrineBonusDamagePercent));
                 DistributeDamage(enemyGrid.GetAllLivingUnits(), finalDamage, TeamType.Player, "Enemy");
             }
         }
@@ -289,5 +302,25 @@ public class SiegeChargeHandler : MonoBehaviour
     }
 
     private void OnWaveStarted(WaveStartedEvent evt) => RefreshCollisionPowerUI();
+
+    private void OnWaveEnded(WaveEndedEvent evt) => StopCrashSequence();
+
+    private void OnStageCleared(StageClearedEvent evt) => StopCrashSequence();
+
+    private void OnStageCleanedUp(StageCleanedUpEvent evt) => StopCrashSequence();
+
+    private void StopCrashSequence()
+    {
+        _sequence?.Kill();
+        _sequence = null;
+
+        if (_grid != null)
+            _grid.transform.position = _startPosition;
+
+        if (!_isCrashing) return;
+
+        _isCrashing = false;
+        OnCrashEnd?.Invoke();
+    }
 }
 

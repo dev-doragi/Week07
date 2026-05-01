@@ -31,6 +31,14 @@ public struct SiegeCollisionResolvedEvent {
     public bool IsPlayerLosing;
     public float FinalDamage;
 }
+public struct SiegeChargeStartedEvent { }
+public struct SiegeImpactStartedEvent {
+    public float PlayerCP;
+    public float EnemyCP;
+    public float Delta;
+    public bool IsPlayerLosing;
+    public float FinalDamage;
+}
 public struct EnemyHitEvent { public TeamType AttackerTeam; }
 public struct CollisionPowerUpdatedEvent { public float PlayerCP; public float EnemyCP; }
 public struct PlayerGridChangedEvent { }
