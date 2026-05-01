@@ -11507,6 +11507,26 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1815692530}
+    - target: {fileID: 548508985852453512, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_fontSize
+      value: 75
+      objectReference: {fileID: 0}
+    - target: {fileID: 548508985852453512, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_fontColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 548508985852453512, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_fontColor.g
+      value: 0.31117582
+      objectReference: {fileID: 0}
+    - target: {fileID: 548508985852453512, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_fontColor.r
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 548508985852453512, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 75
+      objectReference: {fileID: 0}
     - target: {fileID: 575178730942400517, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -11731,6 +11751,10 @@ PrefabInstance:
       propertyPath: _ritualSystem
       value: 
       objectReference: {fileID: 1815692530}
+    - target: {fileID: 4434203174804606556, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_margin.z
+      value: -76.83374
+      objectReference: {fileID: 0}
     - target: {fileID: 5254301697450586130, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -11742,6 +11766,26 @@ PrefabInstance:
     - target: {fileID: 5648098865941523202, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5832222160641355193, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: _damageResultPopScale
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5875019604495438405, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 378.1298
+      objectReference: {fileID: 0}
+    - target: {fileID: 5875019604495438405, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 114.8921
+      objectReference: {fileID: 0}
+    - target: {fileID: 5875019604495438405, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 52.0219
+      objectReference: {fileID: 0}
+    - target: {fileID: 5875019604495438405, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -14.9572935
       objectReference: {fileID: 0}
     - target: {fileID: 6129702662900236002, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: m_AnchorMax.x
@@ -11779,6 +11823,10 @@ PrefabInstance:
       propertyPath: _gridController
       value: 
       objectReference: {fileID: 1331035396}
+    - target: {fileID: 8177813127618885960, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_margin.z
+      value: -78.86377
+      objectReference: {fileID: 0}
     - target: {fileID: 8256107909042647259, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: m_text
       value: 
