@@ -97,7 +97,7 @@ public class IncomeInventory : MonoBehaviour
     {
         for(int i = 0; i < _spawnedPieces.Count; i++)
         {
-            if(_spawnedPieces[i] != null) continue;
+            if(_spawnedPieces[i] == null) continue;
             if(_fixedPieces.Contains(_spawnedPieces[i])) continue;    
             _spawnedPieces[i].SetInteractionLocked(locked);
         }

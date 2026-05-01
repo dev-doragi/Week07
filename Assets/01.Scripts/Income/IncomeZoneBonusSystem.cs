@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Newtonsoft.Json.Serialization;
 using UnityEngine;
 
 public class IncomeZoneBonusSystem : MonoBehaviour
@@ -46,6 +45,11 @@ public class IncomeZoneBonusSystem : MonoBehaviour
         EventBus.Instance?.Unsubscribe<InGameStateChangedEvent>(OnInGameStateChanged);
 
         ResetAllBonuses();
+    }
+
+    private void Start()
+    {
+        Debug.Log($"[ZoneBonus] 시작 | gridBoard={_gridBoard != null} | producer={_producer != null} | playerGrid={_playerGrid != null} | inventory={_inventory != null}");
     }
 
     private void OnPlayerGridChanged(PlayerGridChangedEvent evt)
