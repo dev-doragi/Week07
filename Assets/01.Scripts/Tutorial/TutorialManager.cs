@@ -26,6 +26,12 @@ public class TutorialManager : Singleton<TutorialManager>
     private int _currentStepIndex = 0;
     private bool _moveNextClicked = false;
     private bool _isPlaying = false;
+    private bool _isTutorialCompleted = false;
+
+    // 튜토리얼 중에 미리 격파된 적 추적 (Early Enemy Defeat 대응)
+    private static int _pregrindEnemiesDefeated = 0;
+
+    public bool IsTutorialCompleted => _isTutorialCompleted;
 
     private void OnEnable()
     {
@@ -37,6 +43,7 @@ public class TutorialManager : Singleton<TutorialManager>
 
         EventBus.Instance.Subscribe<StageLoadedEvent>(OnStageLoaded);
         EventBus.Instance.Subscribe<TutorialNextRequestedEvent>(OnNextRequested);
+        EventBus.Instance.Subscribe<TutorialEnemyDefeatedEvent>(OnPregrindEnemyDefeated);
     }
 
     private void OnDisable()
@@ -45,33 +52,89 @@ public class TutorialManager : Singleton<TutorialManager>
         {
             EventBus.Instance.Unsubscribe<StageLoadedEvent>(OnStageLoaded);
             EventBus.Instance.Unsubscribe<TutorialNextRequestedEvent>(OnNextRequested);
+            EventBus.Instance.Unsubscribe<TutorialEnemyDefeatedEvent>(OnPregrindEnemyDefeated);
         }
     }
 
     private void Start()
     {
-        if (!StageLoadContext.HasValue)
-        {
-            StageLoadContext.SetStageTutorial();
+    if (!StageLoadContext.HasValue)
+    {
+        StageLoadContext.SetStageTutorial();
 
-            Debug.Log("현재 스테이지는 튜토리얼 전용 스테이지가 되었습니다.");
-        }
-
-        if (_startOnAwake)
-        {
-            TryStartTutorial();
-        }
+        Debug.Log("현재 스테이지는 튜토리얼 전용 스테이지가 되었습니다.");
     }
 
-    private void OnStageLoaded(StageLoadedEvent evt)
+    if (_startOnAwake)
     {
-        if (_isPlaying || _steps == null || _steps.Length == 0) return;
         TryStartTutorial();
     }
+}
 
-    private void OnNextRequested(TutorialNextRequestedEvent evt)
+private void OnStageLoaded(StageLoadedEvent evt)
+{
+    if (_isPlaying || _steps == null || _steps.Length == 0) return;
+    TryStartTutorial();
+}
+
+private void OnNextRequested(TutorialNextRequestedEvent evt)
+{
+    _moveNextClicked = true;
+}
+
+/**
+ * 튜토리얼 적 격파 이벤트를 미리 추적 (Early Defeat 대응)
+ */
+ private void OnPregrindEnemyDefeated(TutorialEnemyDefeatedEvent evt)
+ {
+     if (!_isPlaying || _steps == null)
+         return;
+
+     // 현재 또는 이후 스텝 중에서 EnemyDefeated 조건을 찾기
+     for (int i = _currentStepIndex; i < _steps.Length; i++)
+     {
+         TutorialStep step = _steps[i];
+         if (step.Condition == TutorialCondition.EnemyDefeated && 
+             step.EnemyDefeatedConfig != null)
+         {
+             // 이 스텝의 필터 기준으로 검증
+             if (IsCountableForDefeatTarget(evt, step.EnemyDefeatedConfig.Target))
+             {
+                 _pregrindEnemiesDefeated++;
+                 Debug.Log($"[TutorialManager] Early Enemy Defeat 카운팅: {_pregrindEnemiesDefeated}");
+             }
+             // 첫 번째 매칭하는 스텝만 카운팅
+             break;
+         }
+     }
+ }
+
+    /// <summary>
+    /// 격파 대상이 필터 기준을 만족하는지 확인
+    /// </summary>
+    private bool IsCountableForDefeatTarget(TutorialEnemyDefeatedEvent evt, TutorialEnemyDefeatTarget target)
     {
-        _moveNextClicked = true;
+        switch (target)
+        {
+            case TutorialEnemyDefeatTarget.CoreOnly:
+                return evt.Category == UnitCategory.Core;
+
+            case TutorialEnemyDefeatTarget.NonCoreOnly:
+                return evt.Category != UnitCategory.Core;
+
+            default: // Any
+                return true;
+        }
+    }
+
+    /// <summary>
+    /// 미리 격파된 적의 수를 조회하고 초기화
+    /// </summary>
+    public static int GetAndResetPregrindsEnemyCount()
+    {
+        int count = _pregrindEnemiesDefeated;
+        _pregrindEnemiesDefeated = 0;
+        return count;
     }
 
     public void OnNextButtonClicked()
@@ -96,6 +159,16 @@ public class TutorialManager : Singleton<TutorialManager>
     {
         if (_isPlaying) return;
 
+        // 튜토리얼 재시작 시 글로벌 상태 초기화
+        Time.timeScale = 1f;
+        if (InputReader.Instance != null)
+        {
+            InputReader.Instance.SetInputBlocked(false);
+        }
+
+        // 튜토리얼 플래그 초기화
+        _isTutorialCompleted = false;
+
         if (ProgressManager.Instance != null)
         {
             ProgressManager.Instance.ClearAllProgress();
@@ -106,6 +179,7 @@ public class TutorialManager : Singleton<TutorialManager>
         }
 
         _isPlaying = true;
+        _pregrindEnemiesDefeated = 0;
 
         if (_steps != null && _steps.Length > 0)
         {
@@ -119,7 +193,6 @@ public class TutorialManager : Singleton<TutorialManager>
     {
         yield return null;
 
-        // 튜토리얼 단계 루프 등 필요한 최소한의 로직만 남김
         var stepRunner = new TutorialStepRunner(_dialoguePresenter, () => _moveNextClicked, _ignoreConditionsForPlaytest, this, _highlighter);
         for (_currentStepIndex = 0; _currentStepIndex < _steps.Length; _currentStepIndex++)
         {
@@ -127,6 +200,8 @@ public class TutorialManager : Singleton<TutorialManager>
             _moveNextClicked = false;
             yield return stepRunner.RunStep(_steps[_currentStepIndex], _currentStepIndex, _steps.Length);
         }
+
+        _isTutorialCompleted = true;
         CleanupTutorial();
         EventBus.Instance?.Publish(new TutorialCompletedEvent { RewardStageIndex = 0 });
     }
@@ -176,11 +251,16 @@ public class TutorialManager : Singleton<TutorialManager>
         StopAllCoroutines();
         CleanupTutorial();
         EventBus.Instance?.Publish(new TutorialCompletedEvent { RewardStageIndex = 0 });
+
+        // TODO: 이후 로딩 없이 바로 플레이 가능하도록 변경
+        // SceneLoader.Instance.LoadScene("Main");
     }
 
     private void CleanupTutorial()
     {
         _isPlaying = false;
+        // _isTutorialCompleted는 초기화하지 않음 (튜토리얼 완료 상태 유지)
+        _pregrindEnemiesDefeated = 0;
         if (InputReader.Instance != null) InputReader.Instance.SetInputBlocked(false);
         Time.timeScale = 1f;
         SetActive(_blockPanel, false);

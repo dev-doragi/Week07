@@ -11,4 +11,9 @@ public class EnemyDefeatedModuleConfig
 
     [SerializeField]
     public TutorialEnemyDefeatTarget Target = TutorialEnemyDefeatTarget.Any;
+
+    [Header("Display")]
+    [SerializeField]
+    [Tooltip("적 처치 진행도 표시 라벨 (비워두면 기본값 사용)")]
+    public string DefeatLabel = "";
 }

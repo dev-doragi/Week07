@@ -72,7 +72,11 @@ public class InputReader : Singleton<InputReader>
                 PublishIfAllowed(new ScrollEvent { Delta = scrollValue });
         };
 
-        _pauseAction.performed += _ => EventBus.Instance.Publish(new PausePressedEvent());
+        _pauseAction.performed += _ =>
+        {
+            if (_isInputBlocked) return;
+            EventBus.Instance.Publish(new PausePressedEvent());
+        };
     }
 
     private void PublishIfAllowed<T>(T evt) where T : struct

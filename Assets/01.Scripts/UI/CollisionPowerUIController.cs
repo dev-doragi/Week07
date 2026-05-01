@@ -165,7 +165,7 @@ public class CollisionPowerUIController : MonoBehaviour
         Vector2 enemyTarget = GetTargetAnchoredPosition(_enemyCPRect, _enemyCalculationPoint, new Vector2(120f, 250f));
 
         _calculationSequence = DOTween.Sequence()
-            .SetUpdate(true)
+            .SetUpdate(UpdateType.Normal, false)
             .SetLink(gameObject, LinkBehaviour.KillOnDestroy);
 
         _calculationSequence
@@ -189,7 +189,7 @@ public class CollisionPowerUIController : MonoBehaviour
         float clashMoveDuration = Mathf.Max(_minClashMoveDuration, e.DelayUntilImpact - moveStartDelay);
 
         _impactSequence = DOTween.Sequence()
-            .SetUpdate(true)
+            .SetUpdate(UpdateType.Normal, false)
             .SetLink(gameObject, LinkBehaviour.KillOnDestroy);
 
         _impactSequence
@@ -317,7 +317,7 @@ public class CollisionPowerUIController : MonoBehaviour
         SetActive(_emphasisImage, true);
 
         _damageResultSequence = DOTween.Sequence()
-            .SetUpdate(true)
+            .SetUpdate(UpdateType.Normal, false)
             .SetLink(gameObject, LinkBehaviour.KillOnDestroy);
 
         _damageResultSequence

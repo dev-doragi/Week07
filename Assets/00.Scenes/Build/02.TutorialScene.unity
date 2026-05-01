@@ -262,6 +262,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PauseManager
       objectReference: {fileID: 0}
+    - target: {fileID: 7195630024278004065, guid: c312c8e6d5e9b4342bf4536a553f7c56, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3120,6 +3124,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 284887922}
     m_Modifications:
+    - target: {fileID: 596326778444841623, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -0.00002207
+      objectReference: {fileID: 0}
+    - target: {fileID: 596326778444841623, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 350
+      objectReference: {fileID: 0}
     - target: {fileID: 1442253882853090380, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -3237,56 +3249,92 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 849164741}
     - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
-      propertyPath: _steps.Array.data[7].HighlightConfig.PulseScale
-      value: 1.2
+      propertyPath: _steps.Array.data[0].AutoAdvanceConfig.AutoAdvanceDelay
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
-      propertyPath: _steps.Array.data[9].HighlightConfig.PulseScale
-      value: 1.2
+      propertyPath: _steps.Array.data[1].AutoAdvanceConfig.AutoAdvanceDelay
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
-      propertyPath: _steps.Array.data[10].HighlightConfig.PulseScale
-      value: 1.2
+      propertyPath: _steps.Array.data[2].AutoAdvanceConfig.AutoAdvanceDelay
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
-      propertyPath: _steps.Array.data[7].HighlightConfig.TrackingMode
-      value: 1
+      propertyPath: _steps.Array.data[3].AutoAdvanceConfig.AutoAdvanceDelay
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
-      propertyPath: _steps.Array.data[9].HighlightConfig.TrackingMode
-      value: 1
+      propertyPath: _steps.Array.data[4].AutoAdvanceConfig.AutoAdvanceDelay
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
-      propertyPath: _steps.Array.data[10].HighlightConfig.TrackingMode
-      value: 1
+      propertyPath: _steps.Array.data[5].AutoAdvanceConfig.AutoAdvanceDelay
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
-      propertyPath: _steps.Array.data[22].UIStateConfig.OverrideUIState
-      value: 1
+      propertyPath: _steps.Array.data[6].AutoAdvanceConfig.AutoAdvanceDelay
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
-      propertyPath: _steps.Array.data[23].UIStateConfig.ShowWaveStartButton
-      value: 0
+      propertyPath: _steps.Array.data[8].AutoAdvanceConfig.AutoAdvanceDelay
+      value: 3
       objectReference: {fileID: 0}
-    - target: {fileID: 3060046913063947211, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
-      propertyPath: m_IsActive
-      value: 0
+    - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
+      propertyPath: _steps.Array.data[10].AutoAdvanceConfig.AutoAdvanceDelay
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
+      propertyPath: _steps.Array.data[11].AutoAdvanceConfig.AutoAdvanceDelay
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
+      propertyPath: _steps.Array.data[12].AutoAdvanceConfig.AutoAdvanceDelay
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
+      propertyPath: _steps.Array.data[13].AutoAdvanceConfig.AutoAdvanceDelay
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
+      propertyPath: _steps.Array.data[15].AutoAdvanceConfig.AutoAdvanceDelay
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
+      propertyPath: _steps.Array.data[16].AutoAdvanceConfig.AutoAdvanceDelay
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
+      propertyPath: _steps.Array.data[17].AutoAdvanceConfig.AutoAdvanceDelay
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
+      propertyPath: _steps.Array.data[18].AutoAdvanceConfig.AutoAdvanceDelay
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
+      propertyPath: _steps.Array.data[19].AutoAdvanceConfig.AutoAdvanceDelay
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
+      propertyPath: _steps.Array.data[20].AutoAdvanceConfig.AutoAdvanceDelay
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
+      propertyPath: _steps.Array.data[22].AutoAdvanceConfig.AutoAdvanceDelay
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
+      propertyPath: _steps.Array.data[23].AutoAdvanceConfig.AutoAdvanceDelay
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7692762135819565366, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 950188572}
-    - target: {fileID: 7692762135819565366, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: LoadStage
-      objectReference: {fileID: 0}
     - target: {fileID: 8161377643539104782, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
       propertyPath: m_Name
       value: TutorialPanel
-      objectReference: {fileID: 0}
-    - target: {fileID: 8318967606368130318, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -10120,6 +10168,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1353873239621591679, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1391721297177306574, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -10300,6 +10352,10 @@ PrefabInstance:
       propertyPath: _dragRoot
       value: 
       objectReference: {fileID: 284887922}
+    - target: {fileID: 3371378457181839393, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3751038647795392333, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: _ritualSystem
       value: 
@@ -10308,6 +10364,14 @@ PrefabInstance:
       propertyPath: _ritualSystem
       value: 
       objectReference: {fileID: 1815692530}
+    - target: {fileID: 4494011676556705334, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_margin.x
+      value: 1.6763306
+      objectReference: {fileID: 0}
+    - target: {fileID: 4494011676556705334, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_margin.z
+      value: 1.3895264
+      objectReference: {fileID: 0}
     - target: {fileID: 5254301697450586130, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -10352,6 +10416,10 @@ PrefabInstance:
       propertyPath: m_text
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 8352156733561819712, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8800759617891440508, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -10362,6 +10430,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8800759617891440508, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9135846984315680420, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 463.33
+      objectReference: {fileID: 0}
+    - target: {fileID: 9135846984315680420, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_AnchoredPosition.x
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

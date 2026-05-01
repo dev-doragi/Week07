@@ -7,6 +7,7 @@ using UnityEngine;
 /// - 일정 시간 후 자동 진행 (delay > 0)
 /// - 사용자 클릭 대기 (delay <= 0)
 /// - 플레이테스트 모드에서는 조건 무시
+/// - 게임이 일시정지 중이면 대기
 /// </summary>
 public class AutoAdvanceModule : ITutorialModule
 {
@@ -39,17 +40,25 @@ public class AutoAdvanceModule : ITutorialModule
         if (_config.AutoAdvanceDelay > 0f)
         {
             // 자동 진행: 딜레이 또는 클릭 중 먼저 발생하는 것
+            // 게임이 일시정지 중일 때는 시간을 계산하지 않음
             float elapsed = 0f;
-            while (!_nextClickedChecker?.Invoke() ?? false && elapsed < _config.AutoAdvanceDelay)
+            while (elapsed < _config.AutoAdvanceDelay && !(_nextClickedChecker?.Invoke() ?? false))
             {
-                elapsed += Time.unscaledDeltaTime;
+                // 게임이 일시정지 중이면 대기
+                if (GameManager.Instance != null && GameManager.Instance.CurrentState == GameState.Paused)
+                {
+                    yield return null;
+                    continue;
+                }
+
+                elapsed += Time.deltaTime;
                 yield return null;
             }
         }
         else
         {
             // 클릭 대기
-            while (!_nextClickedChecker?.Invoke() ?? false)
+            while (!(_nextClickedChecker?.Invoke() ?? false))
             {
                 yield return null;
             }

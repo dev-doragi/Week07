@@ -34,6 +34,7 @@ public class UIManager : Singleton<UIManager>
         {
             EventBus.Instance.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
             EventBus.Instance.Subscribe<InGameStateChangedEvent>(OnInGameStateChanged);
+            EventBus.Instance.Subscribe<TutorialCompletedEvent>(OnTutorialCompleted);
         }
     }
 
@@ -43,6 +44,7 @@ public class UIManager : Singleton<UIManager>
         {
             EventBus.Instance.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
             EventBus.Instance.Unsubscribe<InGameStateChangedEvent>(OnInGameStateChanged);
+            EventBus.Instance.Unsubscribe<TutorialCompletedEvent>(OnTutorialCompleted);
         }
     }
 
@@ -153,6 +155,7 @@ public class UIManager : Singleton<UIManager>
     public void OnRetryClicked()
     {
         GameCsvLogger.Instance.LogEvent(GameLogEventType.ButtonClicked, actor: gameObject, metadata: new System.Collections.Generic.Dictionary<string, object> { { "button", "Retry" } });
+        HideAllPanels();  // 패널 먼저 닫기
         SiegeCache.Clear();
         SceneLoader.Instance.ReloadCurrentScene();
     }
@@ -172,6 +175,16 @@ public class UIManager : Singleton<UIManager>
         GameCsvLogger.Instance.LogEvent(GameLogEventType.ButtonClicked, actor: gameObject, metadata: new System.Collections.Generic.Dictionary<string, object> { { "button", "GoToStageSelect" } });
         HideAllPanels();
         SceneLoader.Instance.GoToStageSelect();
+    }
+
+    private void OnTutorialCompleted(TutorialCompletedEvent evt)
+    {
+        HideAllPanels();
+        //ShowClearPanel(isAllGameClear: false); 
+        if (_resumeButton != null) _resumeButton.SetActive(false);
+
+        Time.timeScale = 0f;
+        if (InputReader.Instance != null) InputReader.Instance.SetInputBlocked(true);
     }
 
     protected override void OnBootstrap()

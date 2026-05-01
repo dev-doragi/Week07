@@ -36,6 +36,12 @@ public class PauseManager : Singleton<PauseManager>
 
     private void OnPausePressed(PausePressedEvent evt)
     {
+        // StageLoadContext 의존 제거: 튜토리얼 완료 플래그만으로 차단
+        if (TutorialManager.Instance != null && TutorialManager.Instance.IsTutorialCompleted)
+        {
+            return;
+        }
+
         if (StageMapController.IsMapVisible())
             return;
 

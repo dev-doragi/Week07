@@ -109,8 +109,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 584.7804, y: -440.06}
-  m_SizeDelta: {x: 680.9191, y: 269.88}
+  m_AnchoredPosition: {x: 440.28, y: -440.06}
+  m_SizeDelta: {x: 391.93, y: 269.88}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7907860303954329496
 CanvasRenderer:
@@ -1104,7 +1104,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.000061035156, y: -402.5}
+  m_AnchoredPosition: {x: 0, y: -402.5}
   m_SizeDelta: {x: -43.065, y: -856.99}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4979356498112640229
@@ -1418,7 +1418,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &321073711573102817
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1511,7 +1511,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.0001, y: 440}
+  m_AnchoredPosition: {x: -0.00002207, y: 558}
   m_SizeDelta: {x: 762.1616, y: 83.9968}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4495590776649191647
@@ -2800,12 +2800,14 @@ MonoBehaviour:
     EnemyDefeatedConfig:
       RequiredEnemyCount: 1
       Target: 0
+      DefeatLabel: 
     InteractionConfig:
       InteractionId: 
       RequiredCount: 1
       ProgressLabel: "\uC0C1\uD638\uC791\uC6A9"
     HighlightConfig:
       TargetUI: {fileID: 0}
+      TrackingMode: 0
       PulseScale: 1.1
       PulseSpeed: 4
     AutoAdvanceConfig:
@@ -2854,12 +2856,14 @@ MonoBehaviour:
     EnemyDefeatedConfig:
       RequiredEnemyCount: 1
       Target: 0
+      DefeatLabel: 
     InteractionConfig:
       InteractionId: 
       RequiredCount: 1
       ProgressLabel: "\uC0C1\uD638\uC791\uC6A9"
     HighlightConfig:
       TargetUI: {fileID: 0}
+      TrackingMode: 0
       PulseScale: 1.1
       PulseSpeed: 4
     AutoAdvanceConfig:
@@ -2910,12 +2914,14 @@ MonoBehaviour:
     EnemyDefeatedConfig:
       RequiredEnemyCount: 0
       Target: 0
+      DefeatLabel: 
     InteractionConfig:
       InteractionId: 
       RequiredCount: 1
       ProgressLabel: "\uC0C1\uD638\uC791\uC6A9"
     HighlightConfig:
       TargetUI: {fileID: 6491091956350355758}
+      TrackingMode: 0
       PulseScale: 1.05
       PulseSpeed: 4
     AutoAdvanceConfig:
@@ -2931,13 +2937,14 @@ MonoBehaviour:
       ShowWaveStartButton: 0
       ShowChargeButton: 0
     PauseConfig:
-      ShouldPause: 0
+      ShouldPause: 1
       BlockInput: 0
     DialogueConfig:
       _inlineDialogue:
         _speakerName: "\uC950\uC2E0\uAD00\uCA29"
         _message: "\uC774\uACF3\uC5D0 \uC704\uCE58\uD55C \uC0DD\uC0B0 \uC2DC\uC124\uC744
-          \uADF8\uB9AC\uB4DC\uC5D0 \uC62E\uACA8\uC11C \uC2E0\uB3C4\uB4E4\uC744 \uC0DD\uC0B0\uD558\uC138\uC694!"
+          \uADF8\uB9AC\uB4DC\uC5D0 \uC62E\uACA8\uC11C \uC2E0\uB3C4\uB4E4\uC744 \uC0DD\uC0B0\uD560
+          \uC218 \uC788\uC2B5\uB2C8\uB2E4!"
         _portraitSprite: {fileID: 21300000, guid: e37bae4aaa7e5504f976e3425f937749, type: 3}
       _dialogueDataSO: {fileID: 0}
       _enablePortraitMove: 1
@@ -2965,12 +2972,14 @@ MonoBehaviour:
     EnemyDefeatedConfig:
       RequiredEnemyCount: 0
       Target: 0
+      DefeatLabel: 
     InteractionConfig:
       InteractionId: 
       RequiredCount: 1
       ProgressLabel: "\uC0C1\uD638\uC791\uC6A9"
     HighlightConfig:
       TargetUI: {fileID: 5917001947995672328}
+      TrackingMode: 0
       PulseScale: 1.05
       PulseSpeed: 4
     AutoAdvanceConfig:
@@ -2986,7 +2995,7 @@ MonoBehaviour:
       ShowWaveStartButton: 0
       ShowChargeButton: 0
     PauseConfig:
-      ShouldPause: 0
+      ShouldPause: 1
       BlockInput: 0
     DialogueConfig:
       _inlineDialogue:
@@ -3020,12 +3029,14 @@ MonoBehaviour:
     EnemyDefeatedConfig:
       RequiredEnemyCount: 0
       Target: 0
+      DefeatLabel: 
     InteractionConfig:
       InteractionId: 
       RequiredCount: 0
       ProgressLabel: 
     HighlightConfig:
       TargetUI: {fileID: 5917001947995672328}
+      TrackingMode: 0
       PulseScale: 1.05
       PulseSpeed: 4
     AutoAdvanceConfig:
@@ -3041,7 +3052,7 @@ MonoBehaviour:
       ShowWaveStartButton: 0
       ShowChargeButton: 0
     PauseConfig:
-      ShouldPause: 0
+      ShouldPause: 1
       BlockInput: 0
     DialogueConfig:
       _inlineDialogue:
@@ -3077,12 +3088,14 @@ MonoBehaviour:
     EnemyDefeatedConfig:
       RequiredEnemyCount: 0
       Target: 0
+      DefeatLabel: 
     InteractionConfig:
       InteractionId: 
       RequiredCount: 0
       ProgressLabel: 
     HighlightConfig:
       TargetUI: {fileID: 0}
+      TrackingMode: 0
       PulseScale: 0
       PulseSpeed: 0
     AutoAdvanceConfig:
@@ -3098,7 +3111,7 @@ MonoBehaviour:
       ShowWaveStartButton: 0
       ShowChargeButton: 0
     PauseConfig:
-      ShouldPause: 0
+      ShouldPause: 1
       BlockInput: 0
     DialogueConfig:
       _inlineDialogue:
@@ -3133,12 +3146,14 @@ MonoBehaviour:
     EnemyDefeatedConfig:
       RequiredEnemyCount: 0
       Target: 0
+      DefeatLabel: 
     InteractionConfig:
       InteractionId: 
       RequiredCount: 0
       ProgressLabel: 
     HighlightConfig:
       TargetUI: {fileID: 0}
+      TrackingMode: 0
       PulseScale: 0
       PulseSpeed: 0
     AutoAdvanceConfig:
@@ -3188,13 +3203,15 @@ MonoBehaviour:
     EnemyDefeatedConfig:
       RequiredEnemyCount: 0
       Target: 0
+      DefeatLabel: 
     InteractionConfig:
       InteractionId: 
       RequiredCount: 0
       ProgressLabel: 
     HighlightConfig:
-      TargetUI: {fileID: 255604084205943565}
-      PulseScale: 1.1
+      TargetUI: {fileID: 0}
+      TrackingMode: 1
+      PulseScale: 1.2
       PulseSpeed: 4
     AutoAdvanceConfig:
       AutoAdvanceDelay: 0
@@ -3242,12 +3259,14 @@ MonoBehaviour:
     EnemyDefeatedConfig:
       RequiredEnemyCount: 0
       Target: 0
+      DefeatLabel: 
     InteractionConfig:
       InteractionId: 
       RequiredCount: 0
       ProgressLabel: 
     HighlightConfig:
       TargetUI: {fileID: 0}
+      TrackingMode: 0
       PulseScale: 0
       PulseSpeed: 0
     AutoAdvanceConfig:
@@ -3297,13 +3316,15 @@ MonoBehaviour:
     EnemyDefeatedConfig:
       RequiredEnemyCount: 0
       Target: 0
+      DefeatLabel: 
     InteractionConfig:
       InteractionId: 
       RequiredCount: 0
       ProgressLabel: 
     HighlightConfig:
-      TargetUI: {fileID: 507113195504626307}
-      PulseScale: 1.1
+      TargetUI: {fileID: 0}
+      TrackingMode: 1
+      PulseScale: 1.2
       PulseSpeed: 4
     AutoAdvanceConfig:
       AutoAdvanceDelay: 0
@@ -3318,7 +3339,7 @@ MonoBehaviour:
       ShowWaveStartButton: 0
       ShowChargeButton: 0
     PauseConfig:
-      ShouldPause: 0
+      ShouldPause: 1
       BlockInput: 0
     DialogueConfig:
       _inlineDialogue:
@@ -3353,13 +3374,15 @@ MonoBehaviour:
     EnemyDefeatedConfig:
       RequiredEnemyCount: 0
       Target: 0
+      DefeatLabel: 
     InteractionConfig:
       InteractionId: 
       RequiredCount: 0
       ProgressLabel: 
     HighlightConfig:
-      TargetUI: {fileID: 405224111575878242}
-      PulseScale: 1.1
+      TargetUI: {fileID: 0}
+      TrackingMode: 1
+      PulseScale: 1.2
       PulseSpeed: 4
     AutoAdvanceConfig:
       AutoAdvanceDelay: 0
@@ -3408,12 +3431,14 @@ MonoBehaviour:
     EnemyDefeatedConfig:
       RequiredEnemyCount: 0
       Target: 0
+      DefeatLabel: 
     InteractionConfig:
       InteractionId: 
       RequiredCount: 0
       ProgressLabel: 
     HighlightConfig:
       TargetUI: {fileID: 0}
+      TrackingMode: 0
       PulseScale: 0
       PulseSpeed: 0
     AutoAdvanceConfig:
@@ -3463,12 +3488,14 @@ MonoBehaviour:
     EnemyDefeatedConfig:
       RequiredEnemyCount: 0
       Target: 0
+      DefeatLabel: 
     InteractionConfig:
       InteractionId: 
       RequiredCount: 0
       ProgressLabel: 
     HighlightConfig:
       TargetUI: {fileID: 0}
+      TrackingMode: 0
       PulseScale: 0.1
       PulseSpeed: 0.1
     AutoAdvanceConfig:
@@ -3520,12 +3547,14 @@ MonoBehaviour:
     EnemyDefeatedConfig:
       RequiredEnemyCount: 0
       Target: 0
+      DefeatLabel: 
     InteractionConfig:
       InteractionId: 
       RequiredCount: 0
       ProgressLabel: 
     HighlightConfig:
       TargetUI: {fileID: 0}
+      TrackingMode: 0
       PulseScale: 0.1
       PulseSpeed: 0.1
     AutoAdvanceConfig:
@@ -3536,10 +3565,10 @@ MonoBehaviour:
       OverrideUIState: 1
       ShowInGamePanel: 1
       ShowBlockPanel: 0
-      ShowShopButtonGroup: 1
+      ShowShopButtonGroup: 0
       ShowProductionGrid: 1
       ShowWaveStartButton: 1
-      ShowChargeButton: 1
+      ShowChargeButton: 0
     PauseConfig:
       ShouldPause: 0
       BlockInput: 0
@@ -3574,12 +3603,14 @@ MonoBehaviour:
     EnemyDefeatedConfig:
       RequiredEnemyCount: 1
       Target: 1
+      DefeatLabel: 
     InteractionConfig:
       InteractionId: WaveStartButton
       RequiredCount: 1
       ProgressLabel: 
     HighlightConfig:
       TargetUI: {fileID: 7888557912169610051}
+      TrackingMode: 0
       PulseScale: 1.05
       PulseSpeed: 4
     AutoAdvanceConfig:
@@ -3629,16 +3660,18 @@ MonoBehaviour:
     EnemyDefeatedConfig:
       RequiredEnemyCount: 0
       Target: 0
+      DefeatLabel: 
     InteractionConfig:
       InteractionId: 
       RequiredCount: 0
       ProgressLabel: 
     HighlightConfig:
       TargetUI: {fileID: 6149680221526314953}
+      TrackingMode: 0
       PulseScale: 1.05
       PulseSpeed: 4
     AutoAdvanceConfig:
-      AutoAdvanceDelay: 0
+      AutoAdvanceDelay: 3
     Condition: 0
   - StepName: 
     UIStateConfig:
@@ -3650,7 +3683,7 @@ MonoBehaviour:
       ShowWaveStartButton: 0
       ShowChargeButton: 1
     PauseConfig:
-      ShouldPause: 0
+      ShouldPause: 1
       BlockInput: 0
     DialogueConfig:
       _inlineDialogue:
@@ -3685,12 +3718,14 @@ MonoBehaviour:
     EnemyDefeatedConfig:
       RequiredEnemyCount: 0
       Target: 0
+      DefeatLabel: 
     InteractionConfig:
       InteractionId: 
       RequiredCount: 0
       ProgressLabel: 
     HighlightConfig:
       TargetUI: {fileID: 6149680221526314953}
+      TrackingMode: 0
       PulseScale: 1.05
       PulseSpeed: 4
     AutoAdvanceConfig:
@@ -3706,7 +3741,7 @@ MonoBehaviour:
       ShowWaveStartButton: 0
       ShowChargeButton: 0
     PauseConfig:
-      ShouldPause: 0
+      ShouldPause: 1
       BlockInput: 0
     DialogueConfig:
       _inlineDialogue:
@@ -3741,12 +3776,14 @@ MonoBehaviour:
     EnemyDefeatedConfig:
       RequiredEnemyCount: 0
       Target: 0
+      DefeatLabel: 
     InteractionConfig:
       InteractionId: 
       RequiredCount: 0
       ProgressLabel: 
     HighlightConfig:
       TargetUI: {fileID: 0}
+      TrackingMode: 0
       PulseScale: 0
       PulseSpeed: 0
     AutoAdvanceConfig:
@@ -3762,7 +3799,7 @@ MonoBehaviour:
       ShowWaveStartButton: 0
       ShowChargeButton: 1
     PauseConfig:
-      ShouldPause: 0
+      ShouldPause: 1
       BlockInput: 0
     DialogueConfig:
       _inlineDialogue:
@@ -3796,12 +3833,14 @@ MonoBehaviour:
     EnemyDefeatedConfig:
       RequiredEnemyCount: 0
       Target: 0
+      DefeatLabel: 
     InteractionConfig:
       InteractionId: 
       RequiredCount: 0
       ProgressLabel: 
     HighlightConfig:
       TargetUI: {fileID: 3635614961665841245}
+      TrackingMode: 0
       PulseScale: 1.05
       PulseSpeed: 4
     AutoAdvanceConfig:
@@ -3817,7 +3856,7 @@ MonoBehaviour:
       ShowWaveStartButton: 0
       ShowChargeButton: 1
     PauseConfig:
-      ShouldPause: 0
+      ShouldPause: 1
       BlockInput: 0
     DialogueConfig:
       _inlineDialogue:
@@ -3852,12 +3891,14 @@ MonoBehaviour:
     EnemyDefeatedConfig:
       RequiredEnemyCount: 0
       Target: 0
+      DefeatLabel: 
     InteractionConfig:
       InteractionId: 
       RequiredCount: 0
       ProgressLabel: 
     HighlightConfig:
       TargetUI: {fileID: 0}
+      TrackingMode: 0
       PulseScale: 0
       PulseSpeed: 0
     AutoAdvanceConfig:
@@ -3873,7 +3914,7 @@ MonoBehaviour:
       ShowWaveStartButton: 0
       ShowChargeButton: 1
     PauseConfig:
-      ShouldPause: 0
+      ShouldPause: 1
       BlockInput: 0
     DialogueConfig:
       _inlineDialogue:
@@ -3908,12 +3949,14 @@ MonoBehaviour:
     EnemyDefeatedConfig:
       RequiredEnemyCount: 0
       Target: 0
+      DefeatLabel: 
     InteractionConfig:
       InteractionId: 
       RequiredCount: 0
       ProgressLabel: 
     HighlightConfig:
       TargetUI: {fileID: 0}
+      TrackingMode: 0
       PulseScale: 0
       PulseSpeed: 0
     AutoAdvanceConfig:
@@ -3962,12 +4005,14 @@ MonoBehaviour:
     EnemyDefeatedConfig:
       RequiredEnemyCount: 1
       Target: 1
+      DefeatLabel: 
     InteractionConfig:
       InteractionId: 
       RequiredCount: 0
       ProgressLabel: 
     HighlightConfig:
       TargetUI: {fileID: 0}
+      TrackingMode: 0
       PulseScale: 0
       PulseSpeed: 0
     AutoAdvanceConfig:
@@ -3975,7 +4020,7 @@ MonoBehaviour:
     Condition: 3
   - StepName: 
     UIStateConfig:
-      OverrideUIState: 0
+      OverrideUIState: 1
       ShowInGamePanel: 1
       ShowBlockPanel: 1
       ShowShopButtonGroup: 1
@@ -4016,12 +4061,14 @@ MonoBehaviour:
     EnemyDefeatedConfig:
       RequiredEnemyCount: 0
       Target: 0
+      DefeatLabel: 
     InteractionConfig:
       InteractionId: 
       RequiredCount: 0
       ProgressLabel: 
     HighlightConfig:
       TargetUI: {fileID: 0}
+      TrackingMode: 0
       PulseScale: 0
       PulseSpeed: 0
     AutoAdvanceConfig:
@@ -4034,7 +4081,7 @@ MonoBehaviour:
       ShowBlockPanel: 1
       ShowShopButtonGroup: 1
       ShowProductionGrid: 1
-      ShowWaveStartButton: 1
+      ShowWaveStartButton: 0
       ShowChargeButton: 1
     PauseConfig:
       ShouldPause: 0
@@ -4071,12 +4118,14 @@ MonoBehaviour:
     EnemyDefeatedConfig:
       RequiredEnemyCount: 0
       Target: 0
+      DefeatLabel: 
     InteractionConfig:
       InteractionId: 
       RequiredCount: 0
       ProgressLabel: 
     HighlightConfig:
       TargetUI: {fileID: 0}
+      TrackingMode: 0
       PulseScale: 0
       PulseSpeed: 0
     AutoAdvanceConfig:
