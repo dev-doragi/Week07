@@ -184,6 +184,28 @@ public class GameCsvLogger : MonoBehaviour
         }
     }
 
+    public void RecordIncomeZoneBonusChanged(
+        string bonusType,
+        int zoneIndex,
+        string zoneName,
+        int occupiedCells,
+        float previousBonus,
+        float newBonus,
+        float bonusPerCell)
+    {
+        LogEvent(GameLogEventType.IncomeZoneBonusChanged, value: newBonus, metadata: new Dictionary<string, object>
+        {
+            { "bonusType", bonusType },
+            { "zoneIndex", zoneIndex },
+            { "zoneName", zoneName },
+            { "occupiedCells", occupiedCells },
+            { "previousBonus", previousBonus },
+            { "newBonus", newBonus },
+            { "delta", newBonus - previousBonus },
+            { "bonusPerCell", bonusPerCell }
+        });
+    }
+
     public void Flush()
     {
         lock (_sync)
@@ -376,6 +398,7 @@ public class GameCsvLogger : MonoBehaviour
             case GameLogEventType.ResourceSpend:
             case GameLogEventType.SacrificeGain:
             case GameLogEventType.SacrificeSpend:
+            case GameLogEventType.IncomeZoneBonusChanged:
                 return enableResourceLog;
 
             case GameLogEventType.UnitPlaced:
