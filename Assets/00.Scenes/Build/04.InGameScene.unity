@@ -10897,10 +10897,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 15990870}
     - target: {fileID: 5832222160641355193, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
-      propertyPath: _flyDuration
-      value: 0.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5832222160641355193, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: _impactScale
       value: 1.2
       objectReference: {fileID: 0}
