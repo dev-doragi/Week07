@@ -14,6 +14,10 @@ public struct StageMapRewardAppliedEvent
     public int Amount;
     public string DisplayName;
     public Sprite Icon;
+    public string ChoiceSource;
+    public int ChoiceIndex;
+    public string ChoiceKey;
+    public string ChoiceLabel;
 }
 
 public struct StageMapVisibilityChangedEvent

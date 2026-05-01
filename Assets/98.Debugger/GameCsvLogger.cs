@@ -371,13 +371,27 @@ public class GameCsvLogger : MonoBehaviour
 
     private void OnStageMapRewardApplied(StageMapRewardAppliedEvent evt)
     {
-        LogEvent(GameLogEventType.RewardSelected, value: evt.Amount, metadata: new Dictionary<string, object>
+        var metadata = new Dictionary<string, object>
         {
             { "nodeId", evt.NodeId },
             { "rewardType", evt.RewardType.ToString() },
             { "rewardId", evt.RewardId },
             { "displayName", evt.DisplayName }
-        });
+        };
+
+        if (!string.IsNullOrWhiteSpace(evt.ChoiceSource))
+            metadata.Add("choiceSource", evt.ChoiceSource);
+
+        if (evt.ChoiceIndex >= 0)
+            metadata.Add("choiceIndex", evt.ChoiceIndex);
+
+        if (!string.IsNullOrWhiteSpace(evt.ChoiceKey))
+            metadata.Add("choiceKey", evt.ChoiceKey);
+
+        if (!string.IsNullOrWhiteSpace(evt.ChoiceLabel))
+            metadata.Add("choiceLabel", evt.ChoiceLabel);
+
+        LogEvent(GameLogEventType.RewardSelected, value: evt.Amount, metadata: metadata);
     }
 
     private bool IsEventEnabled(GameLogEventType eventType)

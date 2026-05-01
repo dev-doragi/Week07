@@ -3,7 +3,14 @@ using System.Collections.Generic;
 
 public class StageMapRewardApplier : MonoBehaviour
 {
-    public void Apply(string nodeId, StageMapReward reward, int ritualPoints)
+    public void Apply(
+        string nodeId,
+        StageMapReward reward,
+        int ritualPoints,
+        string choiceSource = null,
+        int choiceIndex = -1,
+        string choiceKey = null,
+        string choiceLabel = null)
     {
         if (ritualPoints > 0)
             AddDoctrinePoint(ritualPoints);
@@ -36,7 +43,11 @@ public class StageMapRewardApplier : MonoBehaviour
             RewardId = reward.RewardId,
             Amount = reward.Amount,
             DisplayName = displayName,
-            Icon = displayIcon
+            Icon = displayIcon,
+            ChoiceSource = choiceSource,
+            ChoiceIndex = choiceIndex,
+            ChoiceKey = choiceKey,
+            ChoiceLabel = choiceLabel
         });
     }
 

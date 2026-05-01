@@ -965,7 +965,14 @@ public class StageMapController : MonoBehaviour
         _productionChoiceButton.onClick.RemoveAllListeners();
         _productionChoiceButton.onClick.AddListener(() =>
         {
-            _rewardApplier?.Apply(clearedNode.NodeId, StageMapReward.ProductionFacility(1, _productionRewardIcon), 0);
+            _rewardApplier?.Apply(
+                clearedNode.NodeId,
+                StageMapReward.ProductionFacility(1, _productionRewardIcon),
+                0,
+                "ChoiceRewardPanel",
+                0,
+                "ProductionFacility",
+                _productionChoiceLabel != null ? _productionChoiceLabel.text : "생산 시설 블록 추가 획득");
             if (_choiceRewardPanelRoot != null)
                 _choiceRewardPanelRoot.gameObject.SetActive(false);
             StartNextLinearStage(clearedNode);
@@ -996,7 +1003,14 @@ public class StageMapController : MonoBehaviour
         _unitChoiceButton.onClick.RemoveAllListeners();
         _unitChoiceButton.onClick.AddListener(() =>
         {
-            _rewardApplier?.Apply(clearedNode.NodeId, StageMapReward.RatTowerUnlock(unit), 0);
+            _rewardApplier?.Apply(
+                clearedNode.NodeId,
+                StageMapReward.RatTowerUnlock(unit),
+                0,
+                "ChoiceRewardPanel",
+                1,
+                "RatTowerUnlock",
+                _unitChoiceLabel != null ? _unitChoiceLabel.text : "쥐 해금");
             if (_choiceRewardPanelRoot != null)
                 _choiceRewardPanelRoot.gameObject.SetActive(false);
             StartNextLinearStage(clearedNode);
