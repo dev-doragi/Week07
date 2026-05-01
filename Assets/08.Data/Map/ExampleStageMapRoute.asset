@@ -135,7 +135,6 @@ MonoBehaviour:
     _choiceUnitUnlock: {fileID: 0}
     _nextNodeIds: []
   _waveStartDelay: 20
-  _ritualPointsPerClear: 0
   _unlockableRatUnits:
   - {fileID: 11400000, guid: 67e1321594bd8034783162a4c27fcbd3, type: 2}
   - {fileID: 11400000, guid: c1c51b752c581ff48857766478134efa, type: 2}

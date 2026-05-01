@@ -41,11 +41,9 @@ public class StageMapController : MonoBehaviour
     [SerializeField] private bool _refreshExistingMapVisuals = true;
     [SerializeField] private bool _useHierarchyNodePositions = true;
     [SerializeField] private bool _saveHierarchyNodePositions = true;
-    [SerializeField] private bool _allowManualNodeSelection = false;
     [SerializeField] private List<StageMapNodeLayoutOverride> _nodeLayoutOverrides = new List<StageMapNodeLayoutOverride>();
 
     [Header("Random Route")]
-    [SerializeField] private bool _randomizeRewardOnStart = true;
     [SerializeField] private bool _randomizePathOnStart = true;
     [SerializeField, HideInInspector] private bool _randomizeOnStart = true; // Legacy field migration.
     [SerializeField, HideInInspector] private bool _randomizeSettingsInitialized;
@@ -70,7 +68,6 @@ public class StageMapController : MonoBehaviour
     private readonly Dictionary<string, RuntimeNode> _runtimeNodes = new Dictionary<string, RuntimeNode>();
     private readonly List<RuntimeNode> _runtimeNodeList = new List<RuntimeNode>();
     private string _currentNodeId;
-    private string _selectedNodeId;
     private RuntimeNode _pendingClearedNode;
     private bool _waitingForDoctrineSelection;
     private bool _isInitialized;
@@ -177,7 +174,6 @@ public class StageMapController : MonoBehaviour
             return;
 
         _currentNodeId = clearedNode.NodeId;
-        _selectedNodeId = null;
         _pendingClearedNode = clearedNode;
 
         ApplyClearRewards(clearedNode);
@@ -253,14 +249,11 @@ public class StageMapController : MonoBehaviour
         if (_routeData == null)
             return false;
 
-        string nextPosition = !string.IsNullOrEmpty(_selectedNodeId) ? _selectedNodeId : _currentNodeId;
-        if (string.IsNullOrEmpty(nextPosition))
-            nextPosition = _routeData.StartNodeId;
-
-        if (nextPosition == _routeData.FinalNodeId)
+        string currentPosition = string.IsNullOrEmpty(_currentNodeId) ? _routeData.StartNodeId : _currentNodeId;
+        if (currentPosition == _routeData.FinalNodeId)
             return false;
 
-        RuntimeNode node = GetRuntimeNode(nextPosition);
+        RuntimeNode node = GetRuntimeNode(currentPosition);
         return node != null && node.NextNodeIds.Count > 0;
     }
 
@@ -302,7 +295,6 @@ public class StageMapController : MonoBehaviour
             return;
         }
 
-        _selectedNodeId = nextNode.NodeId;
         _currentNodeId = nextNode.NodeId;
         HideMap();
 
@@ -510,62 +502,6 @@ public class StageMapController : MonoBehaviour
             NodeId = nodeId,
             AnchoredPosition = anchoredPosition
         });
-    }
-
-    private void RandomizeRewards()
-    {
-        var rewardPool = new List<StageMapReward>();
-        for (int i = 0; i < _runtimeNodeList.Count; i++)
-        {
-            RuntimeNode node = _runtimeNodeList[i];
-            if (IsEndpoint(node.NodeId) || node.Reward == null || node.Reward.Type == StageMapRewardType.None)
-                continue;
-
-            rewardPool.Add(node.Reward);
-        }
-
-        Shuffle(rewardPool);
-
-        int rewardIndex = 0;
-        for (int i = 0; i < _runtimeNodeList.Count; i++)
-        {
-            RuntimeNode node = _runtimeNodeList[i];
-            if (IsEndpoint(node.NodeId) || node.Reward == null || node.Reward.Type == StageMapRewardType.None)
-                continue;
-
-            node.Reward = rewardPool[rewardIndex++];
-        }
-    }
-
-    private void AssignRouteRewardPool()
-    {
-        var rewardNodes = new List<RuntimeNode>();
-        for (int i = 0; i < _runtimeNodeList.Count; i++)
-        {
-            RuntimeNode node = _runtimeNodeList[i];
-            if (!IsEndpoint(node.NodeId))
-                rewardNodes.Add(node);
-        }
-
-        Shuffle(rewardNodes);
-
-        var rewardPool = new List<StageMapReward>();
-        IReadOnlyList<UnitDataSO> unlockUnits = _routeData.UnlockableRatUnits;
-        for (int i = 0; i < unlockUnits.Count; i++)
-        {
-            UnitDataSO unit = unlockUnits[i];
-            if (unit != null)
-                rewardPool.Add(StageMapReward.RatTowerUnlock(unit));
-        }
-
-        while (rewardPool.Count < rewardNodes.Count)
-            rewardPool.Add(StageMapReward.ProductionFacility());
-
-        Shuffle(rewardPool);
-
-        int count = Mathf.Min(rewardNodes.Count, rewardPool.Count);
-        for (int i = 0; i < count; i++)
-            rewardNodes[i].Reward = rewardPool[i];
     }
 
     private void RandomizePositionsAndConnections()
@@ -874,9 +810,8 @@ public class StageMapController : MonoBehaviour
 
         Button button = obj.AddComponent<Button>();
         button.transition = Selectable.Transition.ColorTint;
-        string capturedNodeId = node.NodeId;
-        button.onClick.AddListener(() => SelectNode(capturedNodeId));
-        _buttons[capturedNodeId] = button;
+        button.interactable = false;
+        _buttons[node.NodeId] = button;
 
         Sprite rewardIcon = ResolveRewardIcon(node.Reward);
         if (rewardIcon != null)
@@ -893,39 +828,6 @@ public class StageMapController : MonoBehaviour
         }
     }
 
-    private void SelectNode(string nodeId)
-    {
-        if (!_allowManualNodeSelection)
-            return;
-
-        if (_routeData == null || !CanMove(_currentNodeId, nodeId))
-            return;
-
-        RuntimeNode node = GetRuntimeNode(nodeId);
-        if (node == null)
-            return;
-
-        _selectedNodeId = node.NodeId;
-        HideMap();
-
-        if (UIManager.Instance != null)
-            UIManager.Instance.ShowInGamePanel();
-
-        EventBus.Instance?.Publish(new StageMapNodeSelectedEvent
-        {
-            NodeId = node.NodeId,
-            StageIndex = node.StageIndex
-        });
-
-        if (StageManager.Instance == null)
-        {
-            Debug.LogError("[StageMap] StageManager.Instance not found.");
-            return;
-        }
-
-        StageManager.Instance.StartStageFromMapNode(node.StageIndex, _routeData.WaveStartDelay);
-    }
-
     private void RefreshNodeStates()
     {
         foreach (var pair in _buttons)
@@ -935,7 +837,7 @@ public class StageMapController : MonoBehaviour
             bool isCurrent = pair.Key == _currentNodeId;
             bool canMove = CanMove(_currentNodeId, pair.Key);
 
-            button.interactable = _allowManualNodeSelection && canMove;
+            button.interactable = false;
 
             Image image = button.GetComponent<Image>();
             if (image == null || node == null) continue;
@@ -1552,7 +1454,6 @@ public class StageMapController : MonoBehaviour
         if (_randomizeSettingsInitialized)
             return;
 
-        _randomizeRewardOnStart = _randomizeOnStart;
         _randomizePathOnStart = _randomizeOnStart;
         _randomizeSettingsInitialized = true;
     }
