@@ -12,8 +12,6 @@ public class StageMapRouteData : ScriptableObject
     [Header("Stage Flow")]
     [Min(0f)]
     [SerializeField] private float _waveStartDelay = 15f;
-    [Min(0)]
-    [SerializeField] private int _ritualPointsPerClear = 1;
 
     [Header("Unlock Rewards")]
     [SerializeField] private List<UnitDataSO> _unlockableRatUnits = new List<UnitDataSO>();
@@ -23,7 +21,6 @@ public class StageMapRouteData : ScriptableObject
     public string FinalNodeId => _finalNodeId;
     public IReadOnlyList<StageMapNodeData> Nodes => _nodes;
     public float WaveStartDelay => _waveStartDelay;
-    public int RitualPointsPerClear => _ritualPointsPerClear;
     public IReadOnlyList<UnitDataSO> UnlockableRatUnits => _unlockableRatUnits;
     public IReadOnlyList<StageSkillUnlockData> SkillUnlocks => _skillUnlocks;
 
