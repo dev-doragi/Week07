@@ -31,6 +31,7 @@ public class CollisionPowerUIController : MonoBehaviour
     [SerializeField] private RectTransform _damageResultRoot;
     [SerializeField] private TextMeshProUGUI _damageResultText;
     [SerializeField] private RectTransform _damageResultPoint;
+    [SerializeField] private RectTransform _ourDamageResultPoint;
     [SerializeField, Min(0f)] private float _damageResultDuration = 1.2f;
     [SerializeField, Min(0f)] private float _damageResultPopDuration = 0.2f;
     [SerializeField] private float _damageResultPopScale = 1.15f;
@@ -50,6 +51,8 @@ public class CollisionPowerUIController : MonoBehaviour
     private Vector3 _playerOriginalRotation;
     private Vector3 _enemyOriginalRotation;
     private Vector3 _damageResultOriginalRotation;
+    private bool _playerOriginalActive;
+    private bool _enemyOriginalActive;
     private bool _hasOriginalState;
     private bool _isStageEnding;
 
@@ -222,6 +225,7 @@ public class CollisionPowerUIController : MonoBehaviour
             _playerOriginalPosition = _playerCPRect.anchoredPosition;
             _playerOriginalScale = _playerCPRect.localScale;
             _playerOriginalRotation = _playerCPRect.localEulerAngles;
+            _playerOriginalActive = _playerCPRect.gameObject.activeSelf;
         }
 
         if (_enemyCPRect != null)
@@ -229,6 +233,7 @@ public class CollisionPowerUIController : MonoBehaviour
             _enemyOriginalPosition = _enemyCPRect.anchoredPosition;
             _enemyOriginalScale = _enemyCPRect.localScale;
             _enemyOriginalRotation = _enemyCPRect.localEulerAngles;
+            _enemyOriginalActive = _enemyCPRect.gameObject.activeSelf;
         }
 
         if (_damageResultRoot != null)
@@ -253,6 +258,7 @@ public class CollisionPowerUIController : MonoBehaviour
             _playerCPRect.anchoredPosition = _playerOriginalPosition;
             _playerCPRect.localScale = _playerOriginalScale;
             _playerCPRect.localEulerAngles = _playerOriginalRotation;
+            SetActive(_playerCPRect.gameObject, _playerOriginalActive);
         }
 
         if (_enemyCPRect != null)
@@ -260,6 +266,7 @@ public class CollisionPowerUIController : MonoBehaviour
             _enemyCPRect.anchoredPosition = _enemyOriginalPosition;
             _enemyCPRect.localScale = _enemyOriginalScale;
             _enemyCPRect.localEulerAngles = _enemyOriginalRotation;
+            SetActive(_enemyCPRect.gameObject, _enemyOriginalActive);
         }
 
         if (_damageResultRoot != null)
@@ -290,10 +297,18 @@ public class CollisionPowerUIController : MonoBehaviour
 
         _damageResultSequence?.Kill();
 
-        if (_damageResultText != null)
-            _damageResultText.text = $"{e.FinalDamage:F1}";
+        float displayDamage = e.IsPlayerLosing ? -e.FinalDamage : e.FinalDamage;
 
-        Vector2 displayPosition = GetTargetAnchoredPosition(_damageResultRoot, _damageResultPoint, _damageResultOriginalPosition);
+        if (_damageResultText != null)
+        {
+            int roundedDamage = Mathf.RoundToInt(displayDamage);
+            _damageResultText.text = roundedDamage > 0 ? $"+{roundedDamage}" : roundedDamage.ToString();
+        }
+
+        RectTransform resultPoint = displayDamage < 0f && _ourDamageResultPoint != null
+            ? _ourDamageResultPoint
+            : _damageResultPoint;
+        Vector2 displayPosition = GetTargetAnchoredPosition(_damageResultRoot, resultPoint, _damageResultOriginalPosition);
 
         _damageResultRoot.anchoredPosition = displayPosition;
         _damageResultRoot.localEulerAngles = _damageResultOriginalRotation;
@@ -334,11 +349,12 @@ public class CollisionPowerUIController : MonoBehaviour
         RectTransform loser = e.IsPlayerLosing ? _playerCPRect : _enemyCPRect;
         RectTransform winner = e.IsPlayerLosing ? _enemyCPRect : _playerCPRect;
         Vector2 loserClashPoint = e.IsPlayerLosing ? playerClashPoint : enemyClashPoint;
-        Vector2 flyDirection = e.IsPlayerLosing ? new Vector2(-1f, 0.35f) : new Vector2(1f, 0.35f);
+        Vector2 flyDirection = e.IsPlayerLosing ? new Vector2(-0.45f, -1f) : new Vector2(0.45f, -1f);
         Vector2 flyTarget = loserClashPoint + flyDirection.normalized * _loserFlyDistance;
         float spinDirection = e.IsPlayerLosing ? 1f : -1f;
 
         _impactSequence
+            .AppendCallback(() => SetActive(winner.gameObject, false))
             .Append(loser.DOAnchorPos(flyTarget, _loserFlyDuration).SetEase(Ease.OutCubic))
             .Join(loser.DOLocalRotate(new Vector3(0f, 0f, _loserSpinDegrees * spinDirection), _loserFlyDuration, RotateMode.FastBeyond360).SetEase(Ease.OutCubic))
             .Join(winner.DOScale(winner.localScale * _winnerImpactScale, _impactShakeDuration).SetLoops(2, LoopType.Yoyo).SetEase(Ease.OutQuad))

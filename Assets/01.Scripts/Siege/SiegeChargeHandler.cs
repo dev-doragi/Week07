@@ -95,8 +95,11 @@ public class SiegeChargeHandler : MonoBehaviour
         PlayCrashSequence();
     }
 
-    public void SetDoctrineEnemyCollisionPowerReductionPercent(float percent) =>
+    public void SetDoctrineEnemyCollisionPowerReductionPercent(float percent)
+    {
         _doctrineEnemyCollisionPowerReductionPercent = Mathf.Clamp01(percent);
+        RefreshCollisionPowerUI();
+    }
 
     public void SetDoctrineBonusDamagePercent(float percent) =>
         _doctrineBonusDamagePercent = Mathf.Max(0f, percent);
@@ -163,8 +166,8 @@ public class SiegeChargeHandler : MonoBehaviour
 
         _enemyGrid.RegisterExistingUnitsFromChildren();
 
-        float playerCP = _grid != null ? _grid.CalculateTotalCollisionPower() : 0f;
-        float enemyCP  = _enemyGrid.CalculateTotalCollisionPower() * (1f - _doctrineEnemyCollisionPowerReductionPercent);
+        float playerCP = GetPlayerCollisionPower();
+        float enemyCP  = GetAdjustedEnemyCollisionPower();
 
         ResolveCollision(playerCP, enemyCP, _enemyGrid);
     }
@@ -242,11 +245,11 @@ public class SiegeChargeHandler : MonoBehaviour
 
     public void RefreshCollisionPowerUI()
     {
-        float playerCP = _grid != null ? _grid.CalculateTotalCollisionPower() : 0f;
+        float playerCP = GetPlayerCollisionPower();
 
         if (_enemyGrid == null) _enemyGrid = ResolveEnemyGrid();
 
-        float enemyCP = _enemyGrid != null ? _enemyGrid.CalculateTotalCollisionPower() : 0f;
+        float enemyCP = GetAdjustedEnemyCollisionPower();
 
         EventBus.Instance?.Publish(new CollisionPowerUpdatedEvent { PlayerCP = playerCP, EnemyCP = enemyCP });
     }
@@ -258,8 +261,8 @@ public class SiegeChargeHandler : MonoBehaviour
 
         _enemyGrid.RegisterExistingUnitsFromChildren();
 
-        float playerCP = _grid != null ? _grid.CalculateTotalCollisionPower() : 0f;
-        float enemyCP  = _enemyGrid.CalculateTotalCollisionPower() * (1f - _doctrineEnemyCollisionPowerReductionPercent);
+        float playerCP = GetPlayerCollisionPower();
+        float enemyCP  = GetAdjustedEnemyCollisionPower();
         float delta    = Mathf.Abs(playerCP - enemyCP);
         bool isPlayerLosing = playerCP < enemyCP;
         float finalDamage = isPlayerLosing ? delta : delta * (1f + Mathf.Max(0f, _doctrineBonusDamagePercent));
@@ -273,6 +276,19 @@ public class SiegeChargeHandler : MonoBehaviour
             FinalDamage       = finalDamage,
             DelayUntilImpact  = Mathf.Max(0f, delayUntilImpact)
         });
+    }
+
+    private float GetPlayerCollisionPower()
+    {
+        return _grid != null ? _grid.CalculateTotalCollisionPower() : 0f;
+    }
+
+    private float GetAdjustedEnemyCollisionPower()
+    {
+        if (_enemyGrid == null) return 0f;
+
+        float enemyCP = _enemyGrid.CalculateTotalCollisionPower();
+        return Mathf.Ceil(enemyCP * (1f - _doctrineEnemyCollisionPowerReductionPercent));
     }
 
     private EnemyGridManager ResolveEnemyGrid()
@@ -340,4 +356,3 @@ public class SiegeChargeHandler : MonoBehaviour
         OnCrashEnd?.Invoke();
     }
 }
-
