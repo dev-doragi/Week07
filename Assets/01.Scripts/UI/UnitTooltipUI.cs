@@ -12,6 +12,7 @@ public class UnitTooltipUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _hpText;
     [SerializeField] private TextMeshProUGUI _attackDmgText;
     [SerializeField] private TextMeshProUGUI _attackSpdText;
+    [SerializeField] private TextMeshProUGUI _attackTypeText;
     [SerializeField] private TextMeshProUGUI _collisionPowerText;   //방어 유닛 전용
     [SerializeField] private TextMeshProUGUI _buffDescText;         //지원 유닛 전용
     [SerializeField] private float _xOffset = 10f;
@@ -41,6 +42,7 @@ public class UnitTooltipUI : MonoBehaviour
                 {
                     SetField(_attackDmgText, $"공격력: {data.Attack.Damage}");
                     SetField(_attackSpdText, $"공격속도: {data.Attack.Speed:F1}");
+                    SetField(_attackTypeText, $"공격방식: {GetAttackTypeLabel(data.Attack.Area)}");
                 }
                 SetField(_descText, data.Description);
                 break;
@@ -89,8 +91,24 @@ public class UnitTooltipUI : MonoBehaviour
         SetHide(_descText);
         SetHide(_attackDmgText);
         SetHide(_attackSpdText);
+        SetHide(_attackTypeText);
         SetHide(_collisionPowerText);
         SetHide(_buffDescText);
+    }
+
+    private string GetAttackTypeLabel(AreaType areaType)
+    {
+        switch (areaType)
+        {
+            case AreaType.Single:
+                return "단일형";
+            case AreaType.Splash:
+                return "광역";
+            case AreaType.Piercing:
+                return "관통";
+            default:
+                return areaType.ToString();
+        }
     }
 
     private void SetField(TextMeshProUGUI field, string text)
