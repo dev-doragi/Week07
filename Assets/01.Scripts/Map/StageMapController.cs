@@ -1185,7 +1185,7 @@ public class StageMapController : MonoBehaviour
             detailText.fontSize = 18f;
             detailText.color = Color.white;
             detailText.raycastTarget = false;
-            detailText.enableWordWrapping = true;
+            detailText.textWrappingMode = TextWrappingModes.Normal;
             if (_titleFontAsset != null)
                 detailText.font = _titleFontAsset;
         }
