@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,6 +13,9 @@ public class StageMapRewardToastUI : MonoBehaviour
     [SerializeField] private RectTransform _toastRoot;
     [SerializeField] private Image _iconImage;
     [SerializeField] private TextMeshProUGUI _messageText;
+    [SerializeField] private RectTransform _rewardRowsRoot;
+    [SerializeField] private List<Image> _rewardIconImages = new List<Image>();
+    [SerializeField] private List<TextMeshProUGUI> _rewardMessageTexts = new List<TextMeshProUGUI>();
     [SerializeField] private TMP_FontAsset _messageFont;
     [SerializeField] private float _visibleDuration = 2.2f;
     [Header("Default Toast Layout")]
@@ -23,7 +27,7 @@ public class StageMapRewardToastUI : MonoBehaviour
     [SerializeField] private float _messageFontSize = 28f;
     [SerializeField] private Color _messageColor = Color.white;
 
-    private StageMapRewardAppliedEvent? _pendingReward;
+    private readonly System.Collections.Generic.List<StageMapRewardAppliedEvent> _pendingRewards = new System.Collections.Generic.List<StageMapRewardAppliedEvent>();
     private Coroutine _showRoutine;
 
     private void Awake()
@@ -37,7 +41,7 @@ public class StageMapRewardToastUI : MonoBehaviour
         if (EventBus.Instance != null)
         {
             EventBus.Instance.Subscribe<StageMapRewardAppliedEvent>(OnRewardApplied);
-            EventBus.Instance.Subscribe<StageMapNodeSelectedEvent>(OnMapNodeSelected);
+            EventBus.Instance.Subscribe<StageLoadedEvent>(OnStageLoaded);
         }
     }
 
@@ -46,49 +50,65 @@ public class StageMapRewardToastUI : MonoBehaviour
         if (EventBus.Instance != null)
         {
             EventBus.Instance.Unsubscribe<StageMapRewardAppliedEvent>(OnRewardApplied);
-            EventBus.Instance.Unsubscribe<StageMapNodeSelectedEvent>(OnMapNodeSelected);
+            EventBus.Instance.Unsubscribe<StageLoadedEvent>(OnStageLoaded);
         }
     }
 
     private void OnRewardApplied(StageMapRewardAppliedEvent evt)
     {
-        _pendingReward = evt;
+        if (!string.IsNullOrEmpty(evt.DisplayName))
+            _pendingRewards.Add(evt);
     }
 
-    private void OnMapNodeSelected(StageMapNodeSelectedEvent evt)
+    private void OnStageLoaded(StageLoadedEvent evt)
     {
-        if (!_pendingReward.HasValue)
+        if (_pendingRewards.Count == 0)
             return;
 
-        StageMapRewardAppliedEvent reward = _pendingReward.Value;
-        _pendingReward = null;
-
-        if (string.IsNullOrEmpty(reward.DisplayName))
-            return;
-
-        Show(reward);
+        Show(_pendingRewards);
+        _pendingRewards.Clear();
     }
 
-    private void Show(StageMapRewardAppliedEvent reward)
+    private void Show(System.Collections.Generic.List<StageMapRewardAppliedEvent> rewards)
     {
         EnsureToast();
         ApplyFontIfNeeded();
 
-        if (_toastRoot == null || _messageText == null)
+        if (_toastRoot == null)
             return;
 
         if (_showRoutine != null)
             StopCoroutine(_showRoutine);
 
-        if (_iconImage != null)
-        {
-            _iconImage.sprite = reward.Icon;
-            _iconImage.enabled = reward.Icon != null;
-        }
-
-        _messageText.text = reward.DisplayName;
+        _toastRoot.sizeDelta = new Vector2(_toastSize.x, _toastSize.y + Mathf.Max(0, rewards.Count - 1) * 80f);
+        EnsureRewardRows(rewards.Count);
+        ApplyRewardsToRows(rewards);
         _toastRoot.gameObject.SetActive(true);
         _showRoutine = StartCoroutine(HideAfterDelay());
+    }
+
+    private void ApplyRewardsToRows(System.Collections.Generic.List<StageMapRewardAppliedEvent> rewards)
+    {
+        for (int i = 0; i < _rewardMessageTexts.Count; i++)
+        {
+            bool hasReward = i < rewards.Count;
+            Transform row = _rewardMessageTexts[i] != null ? _rewardMessageTexts[i].transform.parent : null;
+            if (row != null)
+                row.gameObject.SetActive(hasReward);
+
+            if (_rewardMessageTexts[i] != null)
+            {
+                _rewardMessageTexts[i].text = hasReward ? rewards[i].DisplayName : string.Empty;
+                _rewardMessageTexts[i].gameObject.SetActive(hasReward);
+            }
+
+            if (i < _rewardIconImages.Count && _rewardIconImages[i] != null)
+            {
+                _rewardIconImages[i].sprite = hasReward ? rewards[i].Icon : null;
+                _rewardIconImages[i].enabled = hasReward && rewards[i].Icon != null;
+                _rewardIconImages[i].gameObject.SetActive(hasReward);
+            }
+        }
     }
 
     [ContextMenu("Build Reward Toast UI")]
@@ -97,6 +117,7 @@ public class StageMapRewardToastUI : MonoBehaviour
         EnsureCanvas();
         EnsureToast();
         ApplyFontIfNeeded();
+        EnsureRewardRows(2);
 
         if (_toastRoot != null && !Application.isPlaying)
             _toastRoot.gameObject.SetActive(true);
@@ -117,6 +138,7 @@ public class StageMapRewardToastUI : MonoBehaviour
         if (_toastRoot != null)
         {
             ResolveToastReferences();
+            EnsureRewardRows(2);
             return;
         }
 
@@ -145,36 +167,43 @@ public class StageMapRewardToastUI : MonoBehaviour
         background.color = _backgroundColor;
         background.raycastTarget = false;
 
-        GameObject iconObj = new GameObject("Icon", typeof(RectTransform), typeof(Image));
-        RectTransform iconRect = iconObj.GetComponent<RectTransform>();
-        iconRect.SetParent(_toastRoot, false);
-        iconRect.anchorMin = new Vector2(0f, 0.5f);
-        iconRect.anchorMax = new Vector2(0f, 0.5f);
-        iconRect.pivot = new Vector2(0.5f, 0.5f);
-        iconRect.sizeDelta = _iconSize;
-        iconRect.anchoredPosition = _iconPosition;
-        _iconImage = iconObj.GetComponent<Image>();
-        _iconImage.preserveAspect = true;
-        _iconImage.raycastTarget = false;
+        GameObject rowsObj = new GameObject("RewardRows", typeof(RectTransform));
+        _rewardRowsRoot = rowsObj.GetComponent<RectTransform>();
+        _rewardRowsRoot.SetParent(_toastRoot, false);
+        _rewardRowsRoot.anchorMin = Vector2.zero;
+        _rewardRowsRoot.anchorMax = Vector2.one;
+        _rewardRowsRoot.offsetMin = Vector2.zero;
+        _rewardRowsRoot.offsetMax = Vector2.zero;
 
-        GameObject textObj = new GameObject("Message", typeof(RectTransform), typeof(TextMeshProUGUI));
-        RectTransform textRect = textObj.GetComponent<RectTransform>();
-        textRect.SetParent(_toastRoot, false);
-        textRect.anchorMin = new Vector2(0f, 0f);
-        textRect.anchorMax = new Vector2(1f, 1f);
-        textRect.offsetMin = new Vector2(_messagePadding.x, _messagePadding.w);
-        textRect.offsetMax = new Vector2(-_messagePadding.z, -_messagePadding.y);
-        _messageText = textObj.GetComponent<TextMeshProUGUI>();
-        _messageText.fontSize = _messageFontSize;
-        _messageText.alignment = TextAlignmentOptions.MidlineLeft;
-        _messageText.color = _messageColor;
-        _messageText.raycastTarget = false;
+        EnsureRewardRows(2);
         ApplyFontIfNeeded();
 
         _toastRoot.gameObject.SetActive(false);
     }
 
     private void ResolveToastReferences()
+    {
+        if (_toastRoot == null)
+            return;
+
+        if (_rewardRowsRoot == null)
+        {
+            Transform rows = _toastRoot.Find("RewardRows");
+            if (rows != null)
+                _rewardRowsRoot = rows as RectTransform;
+        }
+
+        ResolveLegacyReferences();
+        ResolveRewardRowReferences();
+
+        if (_iconImage != null)
+            _iconImage.gameObject.SetActive(false);
+
+        if (_messageText != null)
+            _messageText.gameObject.SetActive(false);
+    }
+
+    private void ResolveLegacyReferences()
     {
         if (_toastRoot == null)
             return;
@@ -194,14 +223,117 @@ public class StageMapRewardToastUI : MonoBehaviour
         }
     }
 
-    private void ApplyFontIfNeeded()
+    private void ResolveRewardRowReferences()
     {
-        if (_messageText == null)
+        if (_rewardRowsRoot == null)
             return;
 
+        _rewardIconImages.Clear();
+        _rewardMessageTexts.Clear();
+
+        for (int i = 0; i < _rewardRowsRoot.childCount; i++)
+        {
+            Transform row = _rewardRowsRoot.GetChild(i);
+            Transform icon = row.Find("Icon");
+            Transform message = row.Find("Message");
+
+            if (icon != null && icon.TryGetComponent(out Image iconImage) && !_rewardIconImages.Contains(iconImage))
+                _rewardIconImages.Add(iconImage);
+
+            if (message != null && message.TryGetComponent(out TextMeshProUGUI messageText) && !_rewardMessageTexts.Contains(messageText))
+                _rewardMessageTexts.Add(messageText);
+        }
+    }
+
+    private void EnsureRewardRows(int count)
+    {
+        if (_toastRoot == null)
+            return;
+
+        if (_rewardRowsRoot == null)
+        {
+            Transform rows = _toastRoot.Find("RewardRows");
+            if (rows != null)
+                _rewardRowsRoot = rows as RectTransform;
+        }
+
+        if (_rewardRowsRoot == null)
+        {
+            GameObject rowsObj = new GameObject("RewardRows", typeof(RectTransform));
+            _rewardRowsRoot = rowsObj.GetComponent<RectTransform>();
+            _rewardRowsRoot.SetParent(_toastRoot, false);
+            _rewardRowsRoot.anchorMin = Vector2.zero;
+            _rewardRowsRoot.anchorMax = Vector2.one;
+            _rewardRowsRoot.offsetMin = Vector2.zero;
+            _rewardRowsRoot.offsetMax = Vector2.zero;
+        }
+
+        ResolveRewardRowReferences();
+        for (int i = _rewardMessageTexts.Count; i < count; i++)
+            CreateRewardRow(i);
+
+        ApplyFontIfNeeded();
+    }
+
+    private void CreateRewardRow(int index)
+    {
+        float rowHeight = 72f;
+        float spacing = 8f;
+        float y = (rowHeight + spacing) * (0.5f - index);
+
+        GameObject rowObj = new GameObject($"RewardRow{index}", typeof(RectTransform));
+        RectTransform rowRect = rowObj.GetComponent<RectTransform>();
+        rowRect.SetParent(_rewardRowsRoot, false);
+        rowRect.anchorMin = new Vector2(0f, 0.5f);
+        rowRect.anchorMax = new Vector2(1f, 0.5f);
+        rowRect.pivot = new Vector2(0.5f, 0.5f);
+        rowRect.sizeDelta = new Vector2(0f, rowHeight);
+        rowRect.anchoredPosition = new Vector2(0f, y);
+
+        GameObject iconObj = new GameObject("Icon", typeof(RectTransform), typeof(Image));
+        RectTransform iconRect = iconObj.GetComponent<RectTransform>();
+        iconRect.SetParent(rowRect, false);
+        iconRect.anchorMin = new Vector2(0f, 0.5f);
+        iconRect.anchorMax = new Vector2(0f, 0.5f);
+        iconRect.pivot = new Vector2(0.5f, 0.5f);
+        iconRect.sizeDelta = _iconSize;
+        iconRect.anchoredPosition = _iconPosition;
+
+        Image icon = iconObj.GetComponent<Image>();
+        icon.preserveAspect = true;
+        icon.raycastTarget = false;
+        _rewardIconImages.Add(icon);
+
+        GameObject textObj = new GameObject("Message", typeof(RectTransform), typeof(TextMeshProUGUI));
+        RectTransform textRect = textObj.GetComponent<RectTransform>();
+        textRect.SetParent(rowRect, false);
+        textRect.anchorMin = new Vector2(0f, 0f);
+        textRect.anchorMax = new Vector2(1f, 1f);
+        textRect.offsetMin = new Vector2(_messagePadding.x, _messagePadding.w);
+        textRect.offsetMax = new Vector2(-_messagePadding.z, -_messagePadding.y);
+
+        TextMeshProUGUI message = textObj.GetComponent<TextMeshProUGUI>();
+        message.fontSize = _messageFontSize;
+        message.alignment = TextAlignmentOptions.MidlineLeft;
+        message.color = _messageColor;
+        message.raycastTarget = false;
+        message.enableWordWrapping = true;
+        _rewardMessageTexts.Add(message);
+    }
+
+    private void ApplyFontIfNeeded()
+    {
         EnsureDefaultFont();
-        if (_messageFont != null && ShouldReplaceFont(_messageText.font))
+
+        if (_messageText != null && _messageFont != null && ShouldReplaceFont(_messageText.font))
             _messageText.font = _messageFont;
+
+        for (int i = 0; i < _rewardMessageTexts.Count; i++)
+        {
+            TextMeshProUGUI text = _rewardMessageTexts[i];
+            if (text != null && _messageFont != null && ShouldReplaceFont(text.font))
+                text.font = _messageFont;
+        }
     }
 
     private static bool ShouldReplaceFont(TMP_FontAsset currentFont)

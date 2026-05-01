@@ -4022,7 +4022,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68e4894e45aefb04abafaef451cc9d84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DoctrineManager
-  doctrinePoint: 1
+  doctrinePoint: 0
   currentRowIndex: 0
   allNodes:
   - {fileID: 568039814231216002}

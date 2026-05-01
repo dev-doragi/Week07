@@ -258,8 +258,14 @@ public class ResourceManager : Singleton<ResourceManager>
 
     private void OnWaveStarted(WaveStartedEvent evt)
     {
-        if (_waveWaitDisplayText != null)
-            _waveWaitDisplayText.gameObject.SetActive(false);
+        EnsureWaveWaitDisplay();
+
+        if (_waveWaitDisplayText == null)
+            return;
+
+        int displayStageNumber = Mathf.Max(1, evt.StageIndex + 1);
+        _waveWaitDisplayText.text = $"STAGE {displayStageNumber}";
+        _waveWaitDisplayText.gameObject.SetActive(true);
     }
 
     [ContextMenu("Build Wave Wait UI")]

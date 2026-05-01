@@ -54,7 +54,7 @@ MonoBehaviour:
   _doctrinePanelPrefab: {fileID: 5490949279417827644, guid: 6377a14270baffa40ab9119cfe91a22b, type: 3}
   _doctrinePanelRoot: {fileID: 0}
   _mapSize: {x: 1280, y: 600}
-  _randomizeOnStart: 1
+  _randomizeOnStart: 0
   _randomYRange: {x: 0.22, y: 0.78}
   _minConnectionsPerNode: 1
   _maxConnectionsPerNode: 2

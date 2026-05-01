@@ -26,11 +26,22 @@ public class StageMapController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _titleText;
     [SerializeField] private GameObject _doctrinePanelPrefab;
     [SerializeField] private RectTransform _doctrinePanelRoot;
+    [Header("Reward Choice UI")]
+    [SerializeField] private RectTransform _choiceRewardPanelRoot;
+    [SerializeField] private Button _productionChoiceButton;
+    [SerializeField] private Image _productionChoiceIcon;
+    [SerializeField] private TextMeshProUGUI _productionChoiceLabel;
+    [SerializeField] private TextMeshProUGUI _productionChoiceDetail;
+    [SerializeField] private Button _unitChoiceButton;
+    [SerializeField] private Image _unitChoiceIcon;
+    [SerializeField] private TextMeshProUGUI _unitChoiceLabel;
+    [SerializeField] private TextMeshProUGUI _unitChoiceDetail;
     [SerializeField] private Vector2 _mapSize = new Vector2(1280f, 600f);
     [SerializeField] private bool _autoCreateMapHierarchy = true;
     [SerializeField] private bool _refreshExistingMapVisuals = true;
     [SerializeField] private bool _useHierarchyNodePositions = true;
     [SerializeField] private bool _saveHierarchyNodePositions = true;
+    [SerializeField] private bool _allowManualNodeSelection = false;
     [SerializeField] private List<StageMapNodeLayoutOverride> _nodeLayoutOverrides = new List<StageMapNodeLayoutOverride>();
 
     [Header("Random Route")]
@@ -60,6 +71,8 @@ public class StageMapController : MonoBehaviour
     private readonly List<RuntimeNode> _runtimeNodeList = new List<RuntimeNode>();
     private string _currentNodeId;
     private string _selectedNodeId;
+    private RuntimeNode _pendingClearedNode;
+    private bool _waitingForDoctrineSelection;
     private bool _isInitialized;
     private bool _isMapVisible;
     private bool _hasPausedTimeScale;
@@ -79,6 +92,7 @@ public class StageMapController : MonoBehaviour
         public int StageIndex;
         public Vector2 Position;
         public StageMapReward Reward;
+        public UnitDataSO ChoiceUnitUnlock;
         public readonly List<string> NextNodeIds = new List<string>();
     }
 
@@ -112,7 +126,10 @@ public class StageMapController : MonoBehaviour
         _activeController = this;
 
         if (EventBus.Instance != null)
+        {
             EventBus.Instance.Subscribe<StageClearedEvent>(OnStageCleared);
+            EventBus.Instance.Subscribe<DoctrineSelectionConfirmedEvent>(OnDoctrineSelectionConfirmed);
+        }
     }
 
     private void OnDisable()
@@ -123,7 +140,10 @@ public class StageMapController : MonoBehaviour
             _activeController = null;
 
         if (EventBus.Instance != null)
+        {
             EventBus.Instance.Unsubscribe<StageClearedEvent>(OnStageCleared);
+            EventBus.Instance.Unsubscribe<DoctrineSelectionConfirmedEvent>(OnDoctrineSelectionConfirmed);
+        }
     }
 
     public static bool ShouldSuppressStageClearScreen()
@@ -149,17 +169,18 @@ public class StageMapController : MonoBehaviour
         if (_routeData == null)
             return;
 
-        if (!string.IsNullOrEmpty(_selectedNodeId))
-        {
-            RuntimeNode selectedNode = GetRuntimeNode(_selectedNodeId);
-            _rewardApplier?.Apply(_selectedNodeId, selectedNode?.Reward, _routeData.RitualPointsPerClear);
-            _currentNodeId = _selectedNodeId;
-            _selectedNodeId = null;
-        }
-        else if (string.IsNullOrEmpty(_currentNodeId))
-        {
-            _currentNodeId = _routeData.StartNodeId;
-        }
+        RuntimeNode clearedNode = FindRuntimeNodeByStageIndex(evt.StageIndex);
+        if (clearedNode == null)
+            clearedNode = GetRuntimeNode(_currentNodeId);
+
+        if (clearedNode == null)
+            return;
+
+        _currentNodeId = clearedNode.NodeId;
+        _selectedNodeId = null;
+        _pendingClearedNode = clearedNode;
+
+        ApplyClearRewards(clearedNode);
 
         UnlockManager unlockManager = FindFirstObjectByType<UnlockManager>(FindObjectsInactive.Include);
         unlockManager?.UnlockSkillsForClearedStage(evt.StageIndex);
@@ -177,7 +198,27 @@ public class StageMapController : MonoBehaviour
         if (UIManager.Instance != null)
             UIManager.Instance.HideAllPanels();
 
-        ShowMap();
+        if (ShouldGrantDoctrinePoint(clearedNode.StageIndex))
+        {
+            _rewardApplier?.AddDoctrinePoint(1);
+            if (ShowDoctrinePanelOnly())
+                return;
+
+            Debug.LogWarning("[StageMap] Doctrine panel is not available. Continuing without doctrine selection.");
+            ContinueAfterDoctrineStep();
+            return;
+        }
+
+        ContinueAfterDoctrineStep();
+    }
+
+    private void OnDoctrineSelectionConfirmed(DoctrineSelectionConfirmedEvent evt)
+    {
+        if (!_waitingForDoctrineSelection)
+            return;
+
+        _waitingForDoctrineSelection = false;
+        ContinueAfterDoctrineStep();
     }
 
     private void InitializeIfNeeded()
@@ -223,6 +264,101 @@ public class StageMapController : MonoBehaviour
         return node != null && node.NextNodeIds.Count > 0;
     }
 
+    private void ApplyClearRewards(RuntimeNode clearedNode)
+    {
+        if (clearedNode == null || clearedNode.StageIndex == 0 || IsFinalStageNode(clearedNode))
+            return;
+
+        _rewardApplier?.Apply(clearedNode.NodeId, StageMapReward.ProductionFacility(1, _productionRewardIcon), 0);
+    }
+
+    private void ContinueAfterDoctrineStep()
+    {
+        RuntimeNode clearedNode = _pendingClearedNode;
+        if (clearedNode == null)
+            return;
+
+        if (ShouldShowChoiceReward(clearedNode.StageIndex))
+        {
+            ShowChoiceRewardPanel(clearedNode);
+            return;
+        }
+
+        StartNextLinearStage(clearedNode);
+    }
+
+    private void StartNextLinearStage(RuntimeNode clearedNode)
+    {
+        if (clearedNode == null)
+            return;
+
+        RuntimeNode nextNode = GetNextLinearNode(clearedNode);
+        _pendingClearedNode = null;
+
+        if (nextNode == null)
+        {
+            HideMap();
+            Debug.LogWarning($"[StageMap] Next node not found after {clearedNode.NodeId}.");
+            return;
+        }
+
+        _selectedNodeId = nextNode.NodeId;
+        _currentNodeId = nextNode.NodeId;
+        HideMap();
+
+        if (UIManager.Instance != null)
+            UIManager.Instance.ShowInGamePanel();
+
+        EventBus.Instance?.Publish(new StageMapNodeSelectedEvent
+        {
+            NodeId = nextNode.NodeId,
+            StageIndex = nextNode.StageIndex
+        });
+
+        if (StageManager.Instance == null)
+        {
+            Debug.LogError("[StageMap] StageManager.Instance not found.");
+            return;
+        }
+
+        StageManager.Instance.StartStageFromMapNode(nextNode.StageIndex, _routeData.WaveStartDelay);
+    }
+
+    private RuntimeNode GetNextLinearNode(RuntimeNode node)
+    {
+        if (node == null || node.NextNodeIds.Count == 0)
+            return null;
+
+        return GetRuntimeNode(node.NextNodeIds[0]);
+    }
+
+    private RuntimeNode FindRuntimeNodeByStageIndex(int stageIndex)
+    {
+        for (int i = 0; i < _runtimeNodeList.Count; i++)
+        {
+            RuntimeNode node = _runtimeNodeList[i];
+            if (node != null && node.StageIndex == stageIndex)
+                return node;
+        }
+
+        return null;
+    }
+
+    private bool ShouldGrantDoctrinePoint(int stageIndex)
+    {
+        return stageIndex == 0 || stageIndex == 2 || stageIndex == 4 || stageIndex == 6 || stageIndex == 8;
+    }
+
+    private bool ShouldShowChoiceReward(int stageIndex)
+    {
+        return stageIndex == 3 || stageIndex == 6;
+    }
+
+    private bool IsFinalStageNode(RuntimeNode node)
+    {
+        return node != null && node.NodeId == _routeData.FinalNodeId;
+    }
+
     private void BuildRuntimeRoute(bool allowRandomize = true)
     {
         _runtimeNodes.Clear();
@@ -239,7 +375,8 @@ public class StageMapController : MonoBehaviour
                 NodeId = source.NodeId,
                 StageIndex = source.StageIndex,
                 Position = source.NormalizedPosition,
-                Reward = source.Reward
+                Reward = source.Reward,
+                ChoiceUnitUnlock = source.ChoiceUnitUnlock
             };
 
             for (int j = 0; j < source.NextNodeIds.Count; j++)
@@ -758,6 +895,9 @@ public class StageMapController : MonoBehaviour
 
     private void SelectNode(string nodeId)
     {
+        if (!_allowManualNodeSelection)
+            return;
+
         if (_routeData == null || !CanMove(_currentNodeId, nodeId))
             return;
 
@@ -795,7 +935,7 @@ public class StageMapController : MonoBehaviour
             bool isCurrent = pair.Key == _currentNodeId;
             bool canMove = CanMove(_currentNodeId, pair.Key);
 
-            button.interactable = canMove;
+            button.interactable = _allowManualNodeSelection && canMove;
 
             Image image = button.GetComponent<Image>();
             if (image == null || node == null) continue;
@@ -857,6 +997,331 @@ public class StageMapController : MonoBehaviour
         }
     }
 
+    private bool ShowDoctrinePanelOnly()
+    {
+        SetMapVisible(true);
+
+        if (_mapRoot != null)
+            _mapRoot.gameObject.SetActive(false);
+
+        EnsureDoctrinePanel();
+        if (_doctrinePanelRoot == null)
+            return false;
+
+        _waitingForDoctrineSelection = true;
+        _doctrinePanelRoot.gameObject.SetActive(true);
+        _doctrinePanelRoot.SetAsLastSibling();
+        return true;
+    }
+
+    private void ShowChoiceRewardPanel(RuntimeNode clearedNode)
+    {
+        SetMapVisible(true);
+
+        if (!EnsureChoiceRewardPanel())
+        {
+            Debug.LogWarning("[StageMap] Choice reward panel could not be created.");
+            StartNextLinearStage(clearedNode);
+            return;
+        }
+
+        ConfigureProductionChoice(clearedNode);
+        ConfigureUnitChoice(clearedNode);
+
+        _choiceRewardPanelRoot.gameObject.SetActive(true);
+        _choiceRewardPanelRoot.SetAsLastSibling();
+    }
+
+    [ContextMenu("Build Stage Map Choice Reward UI")]
+    public void BuildStageMapChoiceRewardUI()
+    {
+        EnsureCanvas();
+        EnsureChoiceRewardPanel();
+
+        if (_choiceRewardPanelRoot != null && !Application.isPlaying)
+            _choiceRewardPanelRoot.gameObject.SetActive(true);
+    }
+
+    private void ConfigureProductionChoice(RuntimeNode clearedNode)
+    {
+        if (_productionChoiceLabel != null)
+            _productionChoiceLabel.text = "생산 시설 블록 추가 획득";
+
+        if (_productionChoiceDetail != null)
+            _productionChoiceDetail.text = string.Empty;
+
+        if (_productionChoiceIcon != null)
+        {
+            _productionChoiceIcon.sprite = _productionRewardIcon;
+            _productionChoiceIcon.enabled = _productionRewardIcon != null;
+        }
+
+        if (_productionChoiceButton == null)
+            return;
+
+        _productionChoiceButton.interactable = true;
+        _productionChoiceButton.onClick.RemoveAllListeners();
+        _productionChoiceButton.onClick.AddListener(() =>
+        {
+            _rewardApplier?.Apply(clearedNode.NodeId, StageMapReward.ProductionFacility(1, _productionRewardIcon), 0);
+            if (_choiceRewardPanelRoot != null)
+                _choiceRewardPanelRoot.gameObject.SetActive(false);
+            StartNextLinearStage(clearedNode);
+        });
+    }
+
+    private void ConfigureUnitChoice(RuntimeNode clearedNode)
+    {
+        UnitDataSO unit = clearedNode.ChoiceUnitUnlock;
+
+        if (_unitChoiceLabel != null)
+            _unitChoiceLabel.text = unit != null ? $"{unit.UnitName} 해금" : "쥐 해금";
+
+        if (_unitChoiceDetail != null)
+            _unitChoiceDetail.text = BuildUnitRewardDescription(unit);
+
+        if (_unitChoiceIcon != null)
+        {
+            Sprite icon = unit != null && unit.Icon != null ? unit.Icon : _ratTowerRewardIcon;
+            _unitChoiceIcon.sprite = icon;
+            _unitChoiceIcon.enabled = icon != null;
+        }
+
+        if (_unitChoiceButton == null)
+            return;
+
+        _unitChoiceButton.interactable = unit != null;
+        _unitChoiceButton.onClick.RemoveAllListeners();
+        _unitChoiceButton.onClick.AddListener(() =>
+        {
+            _rewardApplier?.Apply(clearedNode.NodeId, StageMapReward.RatTowerUnlock(unit), 0);
+            if (_choiceRewardPanelRoot != null)
+                _choiceRewardPanelRoot.gameObject.SetActive(false);
+            StartNextLinearStage(clearedNode);
+        });
+    }
+
+    private bool EnsureChoiceRewardPanel()
+    {
+        if (_choiceRewardPanelRoot != null)
+        {
+            ResolveChoiceRewardReferences();
+            EnsureChoiceRewardChildren();
+            return true;
+        }
+
+        EnsureCanvas();
+        if (_targetCanvas == null)
+            return false;
+
+        Transform existing = _targetCanvas.transform.Find("StageMapChoiceRewardPanel");
+        if (existing != null && existing.TryGetComponent(out RectTransform existingRoot))
+        {
+            _choiceRewardPanelRoot = existingRoot;
+            ResolveChoiceRewardReferences();
+            EnsureChoiceRewardChildren();
+            return true;
+        }
+
+        GameObject panel = new GameObject("StageMapChoiceRewardPanel", typeof(RectTransform), typeof(Image));
+        _choiceRewardPanelRoot = panel.GetComponent<RectTransform>();
+        _choiceRewardPanelRoot.SetParent(_targetCanvas.transform, false);
+        _choiceRewardPanelRoot.anchorMin = Vector2.zero;
+        _choiceRewardPanelRoot.anchorMax = Vector2.one;
+        _choiceRewardPanelRoot.offsetMin = Vector2.zero;
+        _choiceRewardPanelRoot.offsetMax = Vector2.zero;
+
+        Image background = panel.GetComponent<Image>();
+        background.color = new Color(0f, 0f, 0f, 0.72f);
+        background.raycastTarget = true;
+
+        CreateChoiceButton(_choiceRewardPanelRoot, "ProductionChoiceButton", new Vector2(-180f, 0f), false);
+        CreateChoiceButton(_choiceRewardPanelRoot, "UnitChoiceButton", new Vector2(180f, 0f), true);
+
+        ResolveChoiceRewardReferences();
+        _choiceRewardPanelRoot.gameObject.SetActive(false);
+        MarkLayoutDirty();
+        return true;
+    }
+
+    private void EnsureChoiceRewardChildren()
+    {
+        if (_choiceRewardPanelRoot == null)
+            return;
+
+        if (_productionChoiceButton == null)
+        {
+            CreateChoiceButton(_choiceRewardPanelRoot, "ProductionChoiceButton", new Vector2(-180f, 0f), false);
+            ResolveChoiceRewardReferences();
+        }
+
+        if (_unitChoiceButton == null)
+        {
+            CreateChoiceButton(_choiceRewardPanelRoot, "UnitChoiceButton", new Vector2(180f, 0f), true);
+            ResolveChoiceRewardReferences();
+        }
+    }
+
+    private void ResolveChoiceRewardReferences()
+    {
+        if (_choiceRewardPanelRoot == null)
+            return;
+
+        ResolveChoiceButtonReferences(
+            _choiceRewardPanelRoot.Find("ProductionChoiceButton"),
+            ref _productionChoiceButton,
+            ref _productionChoiceIcon,
+            ref _productionChoiceLabel,
+            ref _productionChoiceDetail);
+
+        ResolveChoiceButtonReferences(
+            _choiceRewardPanelRoot.Find("UnitChoiceButton"),
+            ref _unitChoiceButton,
+            ref _unitChoiceIcon,
+            ref _unitChoiceLabel,
+            ref _unitChoiceDetail);
+
+        ApplyChoiceFont(_productionChoiceLabel);
+        ApplyChoiceFont(_productionChoiceDetail);
+        ApplyChoiceFont(_unitChoiceLabel);
+        ApplyChoiceFont(_unitChoiceDetail);
+    }
+
+    private static void ResolveChoiceButtonReferences(
+        Transform root,
+        ref Button button,
+        ref Image icon,
+        ref TextMeshProUGUI label,
+        ref TextMeshProUGUI detail)
+    {
+        if (root == null)
+            return;
+
+        if (button == null)
+            button = root.GetComponent<Button>();
+
+        if (icon == null)
+        {
+            Transform iconTransform = root.Find("Icon");
+            if (iconTransform != null)
+                icon = iconTransform.GetComponent<Image>();
+        }
+
+        if (label == null)
+        {
+            Transform labelTransform = root.Find("Label");
+            if (labelTransform != null)
+                label = labelTransform.GetComponent<TextMeshProUGUI>();
+        }
+
+        if (detail == null)
+        {
+            Transform detailTransform = root.Find("Detail");
+            if (detailTransform != null)
+                detail = detailTransform.GetComponent<TextMeshProUGUI>();
+        }
+    }
+
+    private void CreateChoiceButton(RectTransform parent, string objectName, Vector2 anchoredPosition, bool hasDetail)
+    {
+        GameObject obj = new GameObject(objectName, typeof(RectTransform), typeof(Image), typeof(Button));
+        RectTransform rect = obj.GetComponent<RectTransform>();
+        rect.SetParent(parent, false);
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.sizeDelta = new Vector2(320f, hasDetail ? 300f : 160f);
+        rect.anchoredPosition = anchoredPosition;
+
+        Image image = obj.GetComponent<Image>();
+        image.color = new Color(0.16f, 0.16f, 0.16f, 0.96f);
+
+        GameObject iconObj = new GameObject("Icon", typeof(RectTransform), typeof(Image));
+        RectTransform iconRect = iconObj.GetComponent<RectTransform>();
+        iconRect.SetParent(rect, false);
+        iconRect.anchorMin = new Vector2(0.5f, 0.5f);
+        iconRect.anchorMax = new Vector2(0.5f, 0.5f);
+        iconRect.sizeDelta = new Vector2(64f, 64f);
+        iconRect.anchoredPosition = new Vector2(0f, hasDetail ? 146f : 28f);
+
+        Image icon = iconObj.GetComponent<Image>();
+        icon.preserveAspect = true;
+        icon.raycastTarget = false;
+
+        GameObject textObj = new GameObject("Label", typeof(RectTransform), typeof(TextMeshProUGUI));
+        RectTransform textRect = textObj.GetComponent<RectTransform>();
+        textRect.SetParent(rect, false);
+        textRect.anchorMin = new Vector2(0f, 0f);
+        textRect.anchorMax = new Vector2(1f, 0f);
+        textRect.pivot = new Vector2(0.5f, 0f);
+        textRect.offsetMin = new Vector2(16f, hasDetail ? 216f : 20f);
+        textRect.offsetMax = new Vector2(-16f, hasDetail ? 270f : 72f);
+
+        TextMeshProUGUI text = textObj.GetComponent<TextMeshProUGUI>();
+        text.text = hasDetail ? "쥐 해금" : "생산 시설 블록 추가 획득";
+        text.alignment = TextAlignmentOptions.Center;
+        text.fontSize = 24f;
+        text.color = Color.white;
+        text.raycastTarget = false;
+        if (_titleFontAsset != null)
+            text.font = _titleFontAsset;
+
+        if (hasDetail)
+        {
+            GameObject detailObj = new GameObject("Detail", typeof(RectTransform), typeof(TextMeshProUGUI));
+            RectTransform detailRect = detailObj.GetComponent<RectTransform>();
+            detailRect.SetParent(rect, false);
+            detailRect.anchorMin = new Vector2(0f, 0f);
+            detailRect.anchorMax = new Vector2(1f, 0f);
+            detailRect.pivot = new Vector2(0.5f, 0f);
+            detailRect.offsetMin = new Vector2(18f, 18f);
+            detailRect.offsetMax = new Vector2(-18f, 136f);
+
+            TextMeshProUGUI detailText = detailObj.GetComponent<TextMeshProUGUI>();
+            detailText.text = string.Empty;
+            detailText.alignment = TextAlignmentOptions.TopLeft;
+            detailText.fontSize = 18f;
+            detailText.color = Color.white;
+            detailText.raycastTarget = false;
+            detailText.enableWordWrapping = true;
+            if (_titleFontAsset != null)
+                detailText.font = _titleFontAsset;
+        }
+    }
+
+    private void ApplyChoiceFont(TextMeshProUGUI text)
+    {
+        if (text == null || _titleFontAsset == null)
+            return;
+
+        text.font = _titleFontAsset;
+    }
+
+    private static string BuildUnitRewardDescription(UnitDataSO unit)
+    {
+        if (unit == null)
+            return string.Empty;
+
+        var builder = new System.Text.StringBuilder();
+        builder.AppendLine($"코스트: {unit.Cost}");
+        builder.AppendLine("수용량: 1");
+
+        if (!string.IsNullOrWhiteSpace(unit.Description))
+            builder.AppendLine(unit.Description);
+
+        if (unit.CanSupport && unit.Support.Effects != null && unit.Support.Effects.Count > 0)
+        {
+            for (int i = 0; i < unit.Support.Effects.Count; i++)
+            {
+                PartSupportEffectData effect = unit.Support.Effects[i];
+                if (effect != null)
+                    builder.AppendLine(effect.EffectDescription());
+            }
+        }
+
+        return builder.ToString().TrimEnd();
+    }
+
     private void HideMap()
     {
         if (_mapRoot != null)
@@ -864,6 +1329,9 @@ public class StageMapController : MonoBehaviour
 
         if (_doctrinePanelRoot != null)
             _doctrinePanelRoot.gameObject.SetActive(false);
+
+        if (_choiceRewardPanelRoot != null)
+            _choiceRewardPanelRoot.gameObject.SetActive(false);
 
         SetMapVisible(false);
     }
