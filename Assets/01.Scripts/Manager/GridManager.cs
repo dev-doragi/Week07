@@ -41,6 +41,8 @@ public class GridManager : Singleton<GridManager>
     private PlacedUnit[,] _cells;
     private Rigidbody2D _rb;
     private float _lastFailureFeedbackTime = -999f;
+    private int _maxHpBonus = 0;
+    private int _capacityBonus = 0;
 
     private readonly Vector2Int[] _fourDirections =
     {
@@ -49,7 +51,7 @@ public class GridManager : Singleton<GridManager>
 
     public int Width => _width;
     public event System.Action OnCapacityChanged;
-    public int MaxCapacity => SumWheelCapacities();
+    public int MaxCapacity => SumWheelCapacities() + _capacityBonus;
     public int CurrentUnitCount => CountPlacedUnits();
     public int Height => _height;
     public float CellSize => _cellSize;
@@ -91,6 +93,12 @@ public class GridManager : Singleton<GridManager>
         {
             StartCollapse(unit);
         }
+    }
+
+    public void SetCapacityBonus(int bonus)
+    {
+        _capacityBonus = bonus;
+        OnCapacityChanged?.Invoke();
     }
 
     // ==========================================
@@ -171,6 +179,16 @@ public class GridManager : Singleton<GridManager>
             PlacementRule.NeedsAdjacent => HasAnyAdjacent(data, origin),
             _ => false
         };
+    }
+
+    public void SetMaxHpBonus(int newBonus)
+    {
+        int delta = newBonus - _maxHpBonus;     //증가 감소 변화량 계산
+        _maxHpBonus = newBonus;
+        // 현재 살아있는 모든 Player 유닛에 반영
+        foreach(var unit in GetAllLivingUnits())
+            unit.ApplyMaxHpBonusDelta(delta);
+        OnCapacityChanged?.Invoke();
     }
 
     private bool HasFoundationBelow(UnitDataSO data, Vector2Int origin)

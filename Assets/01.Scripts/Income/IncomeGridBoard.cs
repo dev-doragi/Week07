@@ -19,6 +19,13 @@ public class IncomeGridBoard : MonoBehaviour
     [SerializeField] private Color _previewValidColor = new Color(0.25f, 1f, 0.25f, 0.4f);
     [SerializeField] private Color _previewInvalidColor = new Color(1f, 0.25f, 0.25f, 0.4f);
 
+    [Header("Zone Colors")]
+    [SerializeField] private Color _topLeftZoneColor = new Color(0.8f, 0.4f, 0.4f, 40f/255f); //좌상단
+    [SerializeField] private Color _topRightZoneColor = new Color(0.4f, 0.8f, 0.4f, 40f/255f); //우상단
+    [SerializeField] private Color _bottomLeftZoneColor = new Color(0.4f, 0.4f, 0.8f, 40f/255f); //좌하단
+    [SerializeField] private Color _bottomRightZoneColor = new Color(0.8f, 0.8f, 0.4f, 40f/255f); //우하단
+
+
     private IncomeBlockPiece[,] _occupied;
     private Image[,] _cellImages;
     private Image[,] _previewImages;
@@ -30,6 +37,7 @@ public class IncomeGridBoard : MonoBehaviour
     public int Width => _width;
     public int Height => _height;
     public bool AutoGenerateBaseCells => _autoGenerateBaseCells;
+    public event System.Action OnBoardChanged;
 
     private void Awake()
     {
@@ -37,6 +45,17 @@ public class IncomeGridBoard : MonoBehaviour
 
         if (_buildVisualCellsOnAwake)
             BuildVisualGrid();
+    }
+
+    private Color GetZoneEmptyColor(int x, int y)
+    {
+        int halfW = _width / 2;
+        int halfH = _height / 2;
+
+        if(x < halfW && y >= halfH) return _topLeftZoneColor;   //좌상단
+        if(x >= halfW && y >= halfH) return _topRightZoneColor; //우상단
+        if(x < halfW && y < halfH) return _bottomLeftZoneColor; //좌 하단
+        return _bottomRightZoneColor;       //우하단
     }
 
     [ContextMenu("Rebuild Grid Visual")]
@@ -117,7 +136,7 @@ public class IncomeGridBoard : MonoBehaviour
                         y * cellHeight + _cellPadding);
 
                     image.raycastTarget = false;
-                    image.color = _emptyCellColor;
+                    image.color = GetZoneEmptyColor(x, y);
 
                     _cellImages[x, y] = image;
                 }
@@ -210,6 +229,7 @@ public class IncomeGridBoard : MonoBehaviour
 
         _placements[piece] = placedCells;
         RefreshCellVisuals();
+        OnBoardChanged?.Invoke();
         return true;
     }
 
@@ -230,6 +250,32 @@ public class IncomeGridBoard : MonoBehaviour
         }
 
         return true;
+    }
+
+    public int GetZoneOccupiedCount(int zoneIndex)
+    {
+        int halfW = _width / 2;
+        int halfH = _height / 2;
+
+        int xMin, xMax, yMin, yMax;
+        switch(zoneIndex)
+        {
+            case 0: xMin=0; xMax = halfW; yMin = halfH; yMax = _height; break;  //좌상단
+            case 1: xMin = halfW; xMax = _width; yMin = halfH; yMax = _height; break;   //우상단
+            case 2: xMin = 0; xMax=halfW; yMin = 0; yMax = halfH; break;        //좌하단
+            default: xMin = halfW; xMax =_width; yMin =0; yMax=halfH; break;     //우하단
+        }
+
+        int count = 0;
+        for(int x = xMin; x < xMax; x++)
+        {
+            for(int y = yMin; y < yMax; y++)
+            {
+                if(_occupied[x, y] != null) count++;
+            }
+        }
+
+        return count;
     }
 
     public void ShowPlacementPreview(Vector2Int origin, IReadOnlyList<Vector2Int> shapeCells, bool canPlace)
@@ -326,7 +372,11 @@ public class IncomeGridBoard : MonoBehaviour
         _placements.Remove(piece);
 
         if (refresh)
+        {
             RefreshCellVisuals();
+            OnBoardChanged?.Invoke();
+        }
+            
     }
 
     private void RefreshCellVisuals()
@@ -343,7 +393,7 @@ public class IncomeGridBoard : MonoBehaviour
                     continue;
 
                 bool occupied = _occupied[x, y] != null;
-                image.color = occupied ? _occupiedCellColor : _emptyCellColor;
+                image.color = occupied ? _occupiedCellColor : GetZoneEmptyColor(x, y);
             }
         }
     }
@@ -443,4 +493,5 @@ public class IncomeGridBoard : MonoBehaviour
         }
 
     }
+
 }

@@ -74,7 +74,7 @@ public class IncomeInventory : MonoBehaviour
     private bool _layoutInitialized;
     private Vector2 _nextCursor;
     private float _currentRowMaxHeight;
-
+    private readonly List<IncomeBlockPiece> _fixedPieces = new();
     private void Awake()
     {
         if (_inventoryRoot == null)
@@ -91,6 +91,16 @@ public class IncomeInventory : MonoBehaviour
     {
         if (_spawnInitialOnStart)
             SpawnInitialBlock();
+    }
+
+    public void SetAllPiecesInteractionLocked(bool locked)
+    {
+        for(int i = 0; i < _spawnedPieces.Count; i++)
+        {
+            if(_spawnedPieces[i] != null) continue;
+            if(_fixedPieces.Contains(_spawnedPieces[i])) continue;    
+            _spawnedPieces[i].SetInteractionLocked(locked);
+        }
     }
 
     [ContextMenu("Spawn Initial Block")]
@@ -240,6 +250,7 @@ public class IncomeInventory : MonoBehaviour
         }
 
         piece.SetInteractionLocked(true);
+        _fixedPieces.Add(piece);
     }
 
     private IncomeBlockPiece ResolvePrefab(IncomeBlockType type)
