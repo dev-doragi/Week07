@@ -36,6 +36,9 @@ public class PauseManager : Singleton<PauseManager>
 
     private void OnPausePressed(PausePressedEvent evt)
     {
+        if (StageMapController.IsMapVisible())
+            return;
+
         GameState currentState = GameManager.Instance.CurrentState;
 
         if (currentState == GameState.Playing)

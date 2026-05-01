@@ -16,13 +16,14 @@ public class StageMapReward
     public Sprite Icon => _icon;
     public UnitDataSO UnitUnlock => _unitUnlock;
 
-    public static StageMapReward ProductionFacility(int amount = 1)
+    public static StageMapReward ProductionFacility(int amount = 1, Sprite icon = null)
     {
         return new StageMapReward
         {
             _type = StageMapRewardType.ProductionFacility,
             _rewardId = "ProductionFacility",
-            _amount = Mathf.Max(1, amount)
+            _amount = Mathf.Max(1, amount),
+            _icon = icon
         };
     }
 

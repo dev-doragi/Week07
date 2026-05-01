@@ -20,3 +20,9 @@ public struct StageMapVisibilityChangedEvent
 {
     public bool IsVisible;
 }
+
+public struct DoctrineSelectionConfirmedEvent
+{
+    public string NodeId;
+    public int RowIndex;
+}
