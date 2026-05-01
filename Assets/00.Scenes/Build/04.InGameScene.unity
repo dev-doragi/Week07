@@ -3891,6 +3891,7 @@ GameObject:
   - component: {fileID: 1024365162}
   - component: {fileID: 1024365161}
   - component: {fileID: 1024365160}
+  - component: {fileID: 1024365163}
   m_Layer: 0
   m_Name: IncomeSystem
   m_TagString: Untagged
@@ -3988,6 +3989,26 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1024365163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1024365159}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 565312fcdc358de44b57e4130a820b70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IncomeZoneBonusSystem
+  _gridBoard: {fileID: 980183234}
+  _producer: {fileID: 1024365160}
+  _playerGrid: {fileID: 1950871294}
+  _inventory: {fileID: 1572120415}
+  _attackSpeedBonusPerCell: 0.05
+  _maxHpBonusPerCell: 10
+  _capacityBonusPerCell: 1
+  _productionBonusPerCell: 1
 --- !u!1 &1028416504
 GameObject:
   m_ObjectHideFlags: 0
@@ -9758,6 +9779,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1192825544550540207, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1391721297177306574, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -9863,6 +9888,14 @@ PrefabInstance:
       value: InGamePanel
       objectReference: {fileID: 0}
     - target: {fileID: 2987505091822495725, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: _width
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2987505091822495725, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: _height
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2987505091822495725, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: _topLeftZoneColor.a
       value: 0.4
       objectReference: {fileID: 0}
@@ -9946,6 +9979,10 @@ PrefabInstance:
       propertyPath: _resourceManager
       value: 
       objectReference: {fileID: 113788105}
+    - target: {fileID: 5648098865941523202, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6129702662900236002, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
