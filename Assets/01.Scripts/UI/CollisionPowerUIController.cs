@@ -27,17 +27,29 @@ public class CollisionPowerUIController : MonoBehaviour
     [SerializeField] private float _winnerImpactScale = 1.2f;
     [SerializeField, Min(0f)] private float _impactShakeDuration = 0.15f;
 
+    [Header("Damage Result Display")]
+    [SerializeField] private RectTransform _damageResultRoot;
+    [SerializeField] private TextMeshProUGUI _damageResultText;
+    [SerializeField] private RectTransform _damageResultPoint;
+    [SerializeField, Min(0f)] private float _damageResultDuration = 1.2f;
+    [SerializeField, Min(0f)] private float _damageResultPopDuration = 0.2f;
+    [SerializeField] private float _damageResultPopScale = 1.15f;
+
     private Sequence _calculationSequence;
     private Sequence _impactSequence;
+    private Sequence _damageResultSequence;
     private RectTransform _playerCPRect;
     private RectTransform _enemyCPRect;
     private Canvas _canvas;
     private Vector2 _playerOriginalPosition;
     private Vector2 _enemyOriginalPosition;
+    private Vector2 _damageResultOriginalPosition;
     private Vector3 _playerOriginalScale;
     private Vector3 _enemyOriginalScale;
+    private Vector3 _damageResultOriginalScale;
     private Vector3 _playerOriginalRotation;
     private Vector3 _enemyOriginalRotation;
+    private Vector3 _damageResultOriginalRotation;
     private bool _hasOriginalState;
     private bool _isStageEnding;
 
@@ -54,6 +66,7 @@ public class CollisionPowerUIController : MonoBehaviour
         EventBus.Instance?.Subscribe<SiegeChargeStartedEvent>(OnSiegeChargeStarted);
         EventBus.Instance?.Subscribe<SiegeChargeEndedEvent>(OnSiegeChargeEnded);
         EventBus.Instance?.Subscribe<SiegeImpactStartedEvent>(OnSiegeImpactStarted);
+        EventBus.Instance?.Subscribe<SiegeCollisionResolvedEvent>(OnSiegeCollisionResolved);
         EventBus.Instance?.Subscribe<WaveStartedEvent>(OnWaveStarted);
         EventBus.Instance?.Subscribe<WaveEndedEvent>(OnWaveEnded);
         EventBus.Instance?.Subscribe<StageClearedEvent>(OnStageCleared);
@@ -66,6 +79,7 @@ public class CollisionPowerUIController : MonoBehaviour
         EventBus.Instance?.Unsubscribe<SiegeChargeStartedEvent>(OnSiegeChargeStarted);
         EventBus.Instance?.Unsubscribe<SiegeChargeEndedEvent>(OnSiegeChargeEnded);
         EventBus.Instance?.Unsubscribe<SiegeImpactStartedEvent>(OnSiegeImpactStarted);
+        EventBus.Instance?.Unsubscribe<SiegeCollisionResolvedEvent>(OnSiegeCollisionResolved);
         EventBus.Instance?.Unsubscribe<WaveStartedEvent>(OnWaveStarted);
         EventBus.Instance?.Unsubscribe<WaveEndedEvent>(OnWaveEnded);
         EventBus.Instance?.Unsubscribe<StageClearedEvent>(OnStageCleared);
@@ -103,6 +117,12 @@ public class CollisionPowerUIController : MonoBehaviour
     private void OnSiegeChargeEnded(SiegeChargeEndedEvent _)
     {
         ResetAnimationState();
+    }
+
+    private void OnSiegeCollisionResolved(SiegeCollisionResolvedEvent e)
+    {
+        if (_isStageEnding) return;
+        PlayDamageResultDisplay(e);
     }
 
     private void OnWaveStarted(WaveStartedEvent _)
@@ -185,6 +205,9 @@ public class CollisionPowerUIController : MonoBehaviour
         if (_enemyCPText != null)
             _enemyCPRect = _enemyCPText.rectTransform;
 
+        if (_damageResultRoot == null && _damageResultText != null)
+            _damageResultRoot = _damageResultText.rectTransform;
+
         _canvas = GetComponentInParent<Canvas>();
     }
 
@@ -206,6 +229,13 @@ public class CollisionPowerUIController : MonoBehaviour
             _enemyOriginalPosition = _enemyCPRect.anchoredPosition;
             _enemyOriginalScale = _enemyCPRect.localScale;
             _enemyOriginalRotation = _enemyCPRect.localEulerAngles;
+        }
+
+        if (_damageResultRoot != null)
+        {
+            _damageResultOriginalPosition = _damageResultRoot.anchoredPosition;
+            _damageResultOriginalScale = _damageResultRoot.localScale;
+            _damageResultOriginalRotation = _damageResultRoot.localEulerAngles;
         }
 
         _hasOriginalState = true;
@@ -232,6 +262,13 @@ public class CollisionPowerUIController : MonoBehaviour
             _enemyCPRect.localEulerAngles = _enemyOriginalRotation;
         }
 
+        if (_damageResultRoot != null)
+        {
+            _damageResultRoot.anchoredPosition = _damageResultOriginalPosition;
+            _damageResultRoot.localScale = _damageResultOriginalScale;
+            _damageResultRoot.localEulerAngles = _damageResultOriginalRotation;
+        }
+
         ResetVisualObjects();
     }
 
@@ -239,6 +276,51 @@ public class CollisionPowerUIController : MonoBehaviour
     {
         SetActive(_subtractImage, false);
         SetActive(_emphasisImage, false);
+
+        if (_damageResultRoot != null)
+            SetActive(_damageResultRoot.gameObject, false);
+    }
+
+    private void PlayDamageResultDisplay(SiegeCollisionResolvedEvent e)
+    {
+        if (_damageResultRoot == null && _damageResultText != null)
+            _damageResultRoot = _damageResultText.rectTransform;
+
+        if (_damageResultRoot == null) return;
+
+        _damageResultSequence?.Kill();
+
+        if (_damageResultText != null)
+            _damageResultText.text = $"{e.FinalDamage:F1}";
+
+        Vector2 displayPosition = GetTargetAnchoredPosition(_damageResultRoot, _damageResultPoint, _damageResultOriginalPosition);
+
+        _damageResultRoot.anchoredPosition = displayPosition;
+        _damageResultRoot.localEulerAngles = _damageResultOriginalRotation;
+        _damageResultRoot.localScale = Vector3.zero;
+        SetActive(_damageResultRoot.gameObject, true);
+        SetActive(_emphasisImage, true);
+
+        _damageResultSequence = DOTween.Sequence()
+            .SetUpdate(true)
+            .SetLink(gameObject, LinkBehaviour.KillOnDestroy);
+
+        _damageResultSequence
+            .Append(_damageResultRoot.DOScale(_damageResultOriginalScale * _damageResultPopScale, _damageResultPopDuration).SetEase(Ease.OutBack))
+            .Append(_damageResultRoot.DOScale(_damageResultOriginalScale, _damageResultPopDuration * 0.5f).SetEase(Ease.OutQuad))
+            .AppendInterval(_damageResultDuration)
+            .AppendCallback(() =>
+            {
+                if (_damageResultRoot != null)
+                {
+                    _damageResultRoot.anchoredPosition = _damageResultOriginalPosition;
+                    _damageResultRoot.localScale = _damageResultOriginalScale;
+                    _damageResultRoot.localEulerAngles = _damageResultOriginalRotation;
+                    SetActive(_damageResultRoot.gameObject, false);
+                }
+
+                SetActive(_emphasisImage, false);
+            });
     }
 
     private void AppendPostImpactAnimation(SiegeImpactStartedEvent e, Vector2 playerClashPoint, Vector2 enemyClashPoint)
@@ -257,7 +339,6 @@ public class CollisionPowerUIController : MonoBehaviour
         float spinDirection = e.IsPlayerLosing ? 1f : -1f;
 
         _impactSequence
-            .AppendCallback(() => SetActive(_emphasisImage, true))
             .Append(loser.DOAnchorPos(flyTarget, _loserFlyDuration).SetEase(Ease.OutCubic))
             .Join(loser.DOLocalRotate(new Vector3(0f, 0f, _loserSpinDegrees * spinDirection), _loserFlyDuration, RotateMode.FastBeyond360).SetEase(Ease.OutCubic))
             .Join(winner.DOScale(winner.localScale * _winnerImpactScale, _impactShakeDuration).SetLoops(2, LoopType.Yoyo).SetEase(Ease.OutQuad))
@@ -269,7 +350,6 @@ public class CollisionPowerUIController : MonoBehaviour
     private void AppendTieImpact()
     {
         _impactSequence
-            .AppendCallback(() => SetActive(_emphasisImage, true))
             .Append(_playerCPRect.DOShakeAnchorPos(_impactShakeDuration, new Vector2(18f, 8f), 10, 80f, false, true))
             .Join(_enemyCPRect.DOShakeAnchorPos(_impactShakeDuration, new Vector2(18f, 8f), 10, 80f, false, true));
     }
@@ -281,6 +361,9 @@ public class CollisionPowerUIController : MonoBehaviour
 
         _impactSequence?.Kill();
         _impactSequence = null;
+
+        _damageResultSequence?.Kill();
+        _damageResultSequence = null;
     }
 
     private Vector2 GetTargetAnchoredPosition(RectTransform movingRect, RectTransform targetRect, Vector2 fallback)
