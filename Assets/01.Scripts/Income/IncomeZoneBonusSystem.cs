@@ -21,6 +21,11 @@ public class IncomeZoneBonusSystem : MonoBehaviour
     [Header("우하단 — 자원생산력 (셀당)")]
     [SerializeField, Min(0)] private int _productionBonusPerCell = 1;
 
+    public float CurrentAttackSpeedBonus => _appliedAttackSpeedBonus;
+    public int CurrentMaxHpBonus => _appliedMaxHpBonus;
+    public int CurrentCapacityBonus => _appliedCapacityBonus;
+    public int CurrentProductionBonus => _appliedProductionBonus;
+
     // 이전 보너스 추적 (delta 계산으로 중복 방지)
     private float _appliedAttackSpeedBonus = 0f;
     private int   _appliedMaxHpBonus       = 0;
