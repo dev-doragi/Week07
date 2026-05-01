@@ -4051,7 +4051,7 @@ MonoBehaviour:
   _gridBoard: {fileID: 980183234}
   _resourceManager: {fileID: 113788105}
   _scanInterval: 2
-  _resourcePerCell: 2
+  _resourcePerCell: 1.5
   _useUnscaledTime: 0
   _logProduction: 1
   _productionGaugeSlider: {fileID: 1549840877}
@@ -10026,11 +10026,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2987505091822495725, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: _width
-      value: 6
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 2987505091822495725, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: _height
-      value: 6
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 2987505091822495725, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: _topLeftZoneColor.a

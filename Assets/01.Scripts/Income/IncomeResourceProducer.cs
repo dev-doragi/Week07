@@ -18,7 +18,7 @@ public class IncomeResourceProducer : MonoBehaviour
 
     [Header("Production")]
     [SerializeField] private float _scanInterval = 5f;
-    [SerializeField] private int _resourcePerCell = 1;
+    [SerializeField] private float _resourcePerCell = 1f;
     [SerializeField] private bool _useUnscaledTime;
     [SerializeField] private bool _logProduction = true;
 
@@ -55,8 +55,8 @@ public class IncomeResourceProducer : MonoBehaviour
 
     private void OnEnable()
     {
-        if (_resourcePerCell <= 1)
-            _resourcePerCell = 1;
+        if (_resourcePerCell <= 1f)
+            _resourcePerCell = 1f;
 
         if (EventBus.Instance != null)
             EventBus.Instance.Subscribe<StageMapVisibilityChangedEvent>(OnStageMapVisibilityChanged);
@@ -119,7 +119,7 @@ public class IncomeResourceProducer : MonoBehaviour
 
 
         int totalOccupied = _gridBoard.GetOccupiedCellCount();
-        int amount = (totalOccupied * Mathf.Max(1, _resourcePerCell)) + _productionBonus;
+        int amount = Mathf.FloorToInt(totalOccupied * Mathf.Max(1f, _resourcePerCell)) + _productionBonus;
 
         LastProduced = amount;
         if (amount <= 0)
@@ -148,9 +148,9 @@ public class IncomeResourceProducer : MonoBehaviour
 
         if (_logProduction)
         {
-            int baseAmount = totalOccupied * Mathf.Max(1, _resourcePerCell);
+            float baseAmount = totalOccupied * Mathf.Max(1f, _resourcePerCell);
             Debug.Log($"[IncomeResourceProducer] 생산 완료 | 총 {amount} " +
-              $"(전체칸: {totalOccupied} × {_resourcePerCell} = {baseAmount}" +
+              $"(전체칸: {totalOccupied} × {_resourcePerCell} = {baseAmount:F2}" +
               $" + 우하단보너스: {_productionBonus})");
         }
     }
@@ -165,7 +165,7 @@ public class IncomeResourceProducer : MonoBehaviour
             return 0;
 
         float interval = Mathf.Max(0.1f, _scanInterval);
-        int amount = Mathf.FloorToInt(occupied * Mathf.Max(1, _resourcePerCell) * Mathf.Max(0f, duration) / interval);
+        int amount = Mathf.FloorToInt(occupied * Mathf.Max(1f, _resourcePerCell) * Mathf.Max(0f, duration) / interval);
         if (amount <= 0)
             return 0;
 
@@ -576,7 +576,7 @@ public class IncomeResourceProducer : MonoBehaviour
 
         int occupied = _gridBoard.GetOccupiedCellCount();
         if (occupied <= 0) return 0;
-        return (occupied * Mathf.Max(1, _resourcePerCell)) + _productionBonus;
+        return Mathf.FloorToInt(occupied * Mathf.Max(1f, _resourcePerCell)) + _productionBonus;
     }
 
     private float GetPredictedAttackConsumptionPerCycle(float interval)

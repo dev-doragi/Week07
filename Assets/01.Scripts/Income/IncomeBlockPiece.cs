@@ -38,6 +38,9 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     [SerializeField] private Sprite _cellSprite;
     [SerializeField] private float _rotationTweenDuration = 0.15f; // 부드러운 회전 지속 시간
 
+    [Header("Core Block Sprites")]
+    [SerializeField] private CoreBlockSprites _coreBlockSprites;
+
     [Header("Drag Hint")]
     [SerializeField] private string _dragHintLabel = "R 회전";
     [SerializeField] private Vector2 _dragHintOffset = new Vector2(28f, 34f);
@@ -118,15 +121,13 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         RectTransform dragRoot,
         RectTransform homeParent,
         Vector2 homePosition,
-        Color blockColor,
-        Sprite cellSprite = null)
+        Color blockColor)
     {
         EnsureComponents();
 
         _gridBoard = gridBoard;
         _dragRoot = dragRoot;
         _blockColor = blockColor;
-        _cellSprite = cellSprite;
 
         _blockType = blockType;
         _baseCells = IncomeShapeLibrary.GetBaseCells(_blockType);
@@ -373,7 +374,9 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         EnsureCellVisualCount(_rotatedCells.Count);
 
         float cellSize = _gridBoard != null ? _gridBoard.CellSize : 72f;
-        float fillSize = Mathf.Max(2f, cellSize - (_cellPadding * 2f));
+        bool isCore = IsCoreBlockType(_blockType);
+        float effectivePadding = isCore ? 0f : _cellPadding;
+        float fillSize = Mathf.Max(2f, cellSize - (effectivePadding * 2f));
 
         int maxX = 0;
         int maxY = 0;
@@ -392,8 +395,8 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
             rootRect.pivot = Vector2.zero;
             rootRect.sizeDelta = new Vector2(fillSize, fillSize);
             rootRect.anchoredPosition = new Vector2(
-                offset.x * cellSize + _cellPadding,
-                offset.y * cellSize + _cellPadding);
+                offset.x * cellSize + effectivePadding,
+                offset.y * cellSize + effectivePadding);
             rootRect.gameObject.SetActive(true);
 
             var fillRect = fillImage.rectTransform;
@@ -403,31 +406,40 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
             fillRect.anchoredPosition = Vector2.zero;
             fillRect.sizeDelta = new Vector2(fillSize, fillSize);
 
-            fillImage.sprite = _cellSprite;
+            fillImage.sprite = ResolveCellSprite(offset);
             fillImage.type = Image.Type.Simple;
             fillImage.preserveAspect = false;
         }
 
         for (int i = _rotatedCells.Count; i < _cellRoots.Count; i++)
-        {
             _cellRoots[i].gameObject.SetActive(false);
-        }
 
         _rectTransform.sizeDelta = new Vector2((maxX + 1) * cellSize, (maxY + 1) * cellSize);
 
-        RebuildShapeOutline(cellSize, fillSize);
+        RebuildShapeOutline(cellSize, fillSize, effectivePadding);
         ApplyVisualState(_isDragging ? _draggingColor : _blockColor);
     }
 
-    private void RebuildShapeOutline(float cellSize, float fillSize)
+    private void RebuildShapeOutline(float cellSize, float fillSize, float padding)
     {
+        // 코어는 한 덩어리로 보여야 하므로 외곽선 비활성화
+        if (IsCoreBlockType(_blockType))
+        {
+            if (_outlineRoot != null)
+                _outlineRoot.gameObject.SetActive(false);
+
+            for (int i = 0; i < _outlineSegments.Count; i++)
+                _outlineSegments[i].gameObject.SetActive(false);
+
+            return;
+        }
+
         EnsureOutlineRoot();
+        _outlineRoot.gameObject.SetActive(true);
         _cellLookup.Clear();
 
         for (int i = 0; i < _rotatedCells.Count; i++)
-        {
             _cellLookup.Add(_rotatedCells[i]);
-        }
 
         int requiredSegments = CountRequiredOutlineSegments();
         EnsureOutlineSegmentCount(requiredSegments);
@@ -438,8 +450,8 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         for (int i = 0; i < _rotatedCells.Count; i++)
         {
             var cell = _rotatedCells[i];
-            float x = cell.x * cellSize + _cellPadding;
-            float y = cell.y * cellSize + _cellPadding;
+            float x = cell.x * cellSize + padding;
+            float y = cell.y * cellSize + padding;
 
             if (!HasCell(cell + Left)) ConfigureOutlineSegment(segmentIndex++, new Vector2(x - thickness, y - thickness), new Vector2(thickness, fillSize + thickness * 2f));
             if (!HasCell(cell + Right)) ConfigureOutlineSegment(segmentIndex++, new Vector2(x + fillSize, y - thickness), new Vector2(thickness, fillSize + thickness * 2f));
@@ -448,9 +460,7 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         }
 
         for (int i = segmentIndex; i < _outlineSegments.Count; i++)
-        {
             _outlineSegments[i].gameObject.SetActive(false);
-        }
     }
 
     private int CountRequiredOutlineSegments()
@@ -588,7 +598,9 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
             if (fill != null)
             {
                 fill.color = _cellFillColor;
-                fill.sprite = _cellSprite;
+
+                if (i < _rotatedCells.Count)
+                    fill.sprite = ResolveCellSprite(_rotatedCells[i]);
             }
         }
     }
@@ -715,6 +727,49 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         _rectTransform.pivot = Vector2.zero;
     }
 
+    private bool IsCoreBlockType(IncomeBlockType type)
+    {
+        return type == IncomeBlockType.CoreCross || type == IncomeBlockType.CoreSquare;
+    }
+
+    private Sprite ResolveCellSprite(Vector2Int position)
+    {
+        if (IsCoreBlockType(_blockType))
+        {
+            Sprite coreSprite = GetCoreBlockSpriteByPosition(position);
+            if (coreSprite != null)
+                return coreSprite;
+        }
+
+        return _cellSprite;
+    }
+
+    private Sprite GetCoreBlockSpriteByPosition(Vector2Int position)
+    {
+        if (_coreBlockSprites == null)
+            return null;
+
+        if (_blockType == IncomeBlockType.CoreSquare)
+        {
+            // 2x2: (0,0) ~ (1,1)
+            if (position.y == 1 && position.x == 0) return _coreBlockSprites.SquareTopLeft;
+            if (position.y == 1 && position.x == 1) return _coreBlockSprites.SquareTopRight;
+            if (position.y == 0 && position.x == 0) return _coreBlockSprites.SquareBottomLeft;
+            if (position.y == 0 && position.x == 1) return _coreBlockSprites.SquareBottomRight;
+        }
+        else if (_blockType == IncomeBlockType.CoreCross)
+        {
+            // 십자: 중앙(1,1), 위(1,2), 아래(1,0), 좌(0,1), 우(2,1)
+            if (position.x == 1 && position.y == 1) return _coreBlockSprites.CrossCenter;
+            if (position.x == 1 && position.y == 2) return _coreBlockSprites.CrossTop;
+            if (position.x == 1 && position.y == 0) return _coreBlockSprites.CrossBottom;
+            if (position.x == 0 && position.y == 1) return _coreBlockSprites.CrossLeft;
+            if (position.x == 2 && position.y == 1) return _coreBlockSprites.CrossRight;
+        }
+
+        return null;
+    }
+
     private bool TryGetPointerWorldPosition(Vector2 screenPoint, Camera eventCamera, out Vector3 worldPoint)
     {
         var plane = _rectTransform.parent as RectTransform;
@@ -796,19 +851,4 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         RefreshShapeVisual();
         _visualRoot.localEulerAngles = Vector3.zero;
     }
-
-#if UNITY_EDITOR
-    private void OnValidate()
-    {
-        if (_dragHintFontAsset == null)
-        {
-            string[] guids = AssetDatabase.FindAssets("Galmuri9 t:TMP_FontAsset");
-            if (guids != null && guids.Length > 0)
-            {
-                string path = AssetDatabase.GUIDToAssetPath(guids[0]);
-                _dragHintFontAsset = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(path);
-            }
-        }
-    }
-#endif
 }

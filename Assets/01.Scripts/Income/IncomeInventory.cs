@@ -14,12 +14,28 @@ public class IncomeBlockPrefabEntry
     public IncomeBlockPiece Prefab;
 }
 
+[Serializable]
+public class CoreBlockSprites
+{
+    [Header("CoreSquare: 2x2 (4개)")]
+    public Sprite SquareTopLeft;
+    public Sprite SquareTopRight;
+    public Sprite SquareBottomLeft;
+    public Sprite SquareBottomRight;
+
+    [Header("CoreCross: 십자 (5개)")]
+    public Sprite CrossCenter;
+    public Sprite CrossTop;
+    public Sprite CrossBottom;
+    public Sprite CrossLeft;
+    public Sprite CrossRight;
+}
+
 /// <summary>
 /// 인벤토리 내 블록 생성/배치(줄바꿈 포함)와 랜덤 획득 흐름을 담당한다.
 /// </summary>
 public class IncomeInventory : MonoBehaviour
 {
-    private const string DefaultGeneratorSpritePath = "Assets/04.Art/Generator/Generator_1.png";
     private const string DefaultBlockPrefabFolder = "Assets/02.Prefabs/Income/Blocks";
     private const string DefaultCoreCrossBlockPrefabPath = "Assets/02.Prefabs/Income/Blocks/Income_CoreCross.prefab";
     private const string DefaultCoreSquareBlockPrefabPath = "Assets/02.Prefabs/Income/Blocks/Income_CoreSquare.prefab";
@@ -56,9 +72,6 @@ public class IncomeInventory : MonoBehaviour
     [SerializeField] private IncomeBlockPiece _fallbackBlockPrefab;
     [SerializeField] private List<IncomeBlockPrefabEntry> _blockPrefabs = new();
 
-    [Header("Cell Sprite")]
-    [SerializeField] private Sprite _generatorCellSprite;
-
     [Header("Tetromino Outline Colors")]
     [SerializeField] private Color _iColor = new Color(0.35f, 0.95f, 0.95f, 0.95f);
     [SerializeField] private Color _jColor = new Color(0.35f, 0.55f, 0.95f, 0.95f);
@@ -75,6 +88,7 @@ public class IncomeInventory : MonoBehaviour
     private Vector2 _nextCursor;
     private float _currentRowMaxHeight;
     private readonly List<IncomeBlockPiece> _fixedPieces = new();
+    
     private void Awake()
     {
         if (_inventoryRoot == null)
@@ -219,8 +233,7 @@ public class IncomeInventory : MonoBehaviour
             return null;
 
         piece.name = $"Income_{type}";
-        // color는 내부 칸이 아닌 블록 외곽선 색상으로 사용된다.
-        piece.Initialize(type, _gridBoard, _dragRoot, spawnParent, homePosition, color, _generatorCellSprite);
+        piece.Initialize(type, _gridBoard, _dragRoot, spawnParent, homePosition, color);
 
         _spawnedPieces.Add(piece);
         return piece;
@@ -409,7 +422,8 @@ public class IncomeInventory : MonoBehaviour
 
     private IncomeBlockType ResolveCoreBlockTypeForGrid()
     {
-        if (_gridBoard != null && _gridBoard.Width == 6 && _gridBoard.Height == 6)
+        // 그리드 가로 길이가 짝수면 스퀘어, 홀수면 크로스
+        if (_gridBoard != null && _gridBoard.Width % 2 == 0)
             return IncomeBlockType.CoreSquare;
 
         return IncomeBlockType.CoreCross;
@@ -439,13 +453,6 @@ public class IncomeInventory : MonoBehaviour
 #if UNITY_EDITOR
     private void OnValidate()
     {
-        if (_generatorCellSprite == null)
-        {
-            var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(DefaultGeneratorSpritePath);
-            if (sprite != null)
-                _generatorCellSprite = sprite;
-        }
-
         if ((_blockPrefabs == null || _blockPrefabs.Count == 0) && AssetDatabase.IsValidFolder(DefaultBlockPrefabFolder))
         {
             _blockPrefabs = new List<IncomeBlockPrefabEntry>();
