@@ -9863,6 +9863,14 @@ PrefabInstance:
       value: InGamePanel
       objectReference: {fileID: 0}
     - target: {fileID: 2987505091822495725, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: _width
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2987505091822495725, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: _height
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2987505091822495725, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: _topLeftZoneColor.a
       value: 0.4
       objectReference: {fileID: 0}
@@ -9978,6 +9986,10 @@ PrefabInstance:
       propertyPath: _gridController
       value: 
       objectReference: {fileID: 1331035396}
+    - target: {fileID: 8256107909042647259, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_text
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 8800759617891440508, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -10035,6 +10047,7 @@ SceneRoots:
   - {fileID: 1187777830}
   - {fileID: 1018384668}
   - {fileID: 1024365162}
+  - {fileID: 334810732}
   - {fileID: 1073840656}
   - {fileID: 1842864015}
   - {fileID: 1950871295}
@@ -10043,4 +10056,3 @@ SceneRoots:
   - {fileID: 556531261}
   - {fileID: 1815692531}
   - {fileID: 1904706380}
-  - {fileID: 334810732}
