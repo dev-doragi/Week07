@@ -25,6 +25,11 @@ public class TutorialDialoguePresenter : MonoBehaviour
     [SerializeField] private float _pulseScale = 1.1f;
     [SerializeField] private float _pulseSpeed = 4.0f;
 
+    [Header("Portrait Talk Animation")]
+    [SerializeField] private Sprite _portraitIdleSprite;          // 기본(입 닫힘)
+    [SerializeField] private Sprite _portraitTalkingSprite;       // 말할 때(입 열림)
+    [SerializeField, Min(0.03f)] private float _portraitBlinkInterval = 0.12f;
+
     // State Flags & Cache
     private bool _isTyping = false;
     private bool _cancelTyping = false;
@@ -36,6 +41,7 @@ public class TutorialDialoguePresenter : MonoBehaviour
     private Coroutine _pulseCoroutine = null;
     private Coroutine _portraitMoveCoroutine = null;
     private Coroutine _dialogCameraCoroutine = null;
+    private Coroutine _portraitTalkCoroutine;
 
     // Original Position Cache
     private Vector2 _dialogOriginalAnchoredPos = Vector2.zero;
@@ -48,6 +54,7 @@ public class TutorialDialoguePresenter : MonoBehaviour
     private float _currentDialogOffset = 0f;
     private Vector2 _currentPortraitTargetPos = Vector2.zero;
     private bool _isPortraitMoved = false;
+    private Sprite _currentPortraitIdleSprite;
 
     private void Awake()
     {
@@ -104,6 +111,8 @@ public class TutorialDialoguePresenter : MonoBehaviour
             EventBus.Instance.Unsubscribe<TutorialStepCompletedEvent>(OnStepCompleted);
             EventBus.Instance.Unsubscribe<TutorialCompletedEvent>(OnTutorialCompleted);
         }
+
+        StopPortraitTalkAnimation();
     }
 
     private void Update()
@@ -278,14 +287,14 @@ public class TutorialDialoguePresenter : MonoBehaviour
 
         Vector2 buttonStart = Vector2.zero;
         Vector2 buttonTarget = Vector2.zero;
-        RectTransform cbRt = null;
+        RectTransform buttonTransform = null;
 
         if (_clickButton != null)
         {
-            cbRt = _clickButton.GetComponent<RectTransform>();
-            if (cbRt != null)
+            buttonTransform = _clickButton.GetComponent<RectTransform>();
+            if (buttonTransform != null)
             {
-                buttonStart = cbRt.anchoredPosition;
+                buttonStart = buttonTransform.anchoredPosition;
                 // Click Button도 원본 위치 대비 Y축 오프셋만큼만 이동
                 float yOffset = targetPos.y - _dialogOriginalAnchoredPos.y;
                 buttonTarget = _clickButtonOriginalAnchoredPos + new Vector2(0f, yOffset);
@@ -298,12 +307,12 @@ public class TutorialDialoguePresenter : MonoBehaviour
             elapsed += Time.unscaledDeltaTime;
             float t = Mathf.Clamp01(elapsed / duration);
             rt.anchoredPosition = Vector2.Lerp(start, targetPos, t);
-            if (cbRt != null) cbRt.anchoredPosition = Vector2.Lerp(buttonStart, buttonTarget, t);
+            if (buttonTransform != null) buttonTransform.anchoredPosition = Vector2.Lerp(buttonStart, buttonTarget, t);
             yield return null;
         }
 
         rt.anchoredPosition = targetPos;
-        if (cbRt != null) cbRt.anchoredPosition = buttonTarget;
+        if (buttonTransform != null) buttonTransform.anchoredPosition = buttonTarget;
     }
 
     private IEnumerator DialogCameraLockRoutine(float duration)
@@ -339,16 +348,23 @@ public class TutorialDialoguePresenter : MonoBehaviour
 
         if (_portraitImage != null)
         {
-            bool hasPortrait = portraitSprite != null;
+            bool hasPortrait = portraitSprite != null || _portraitIdleSprite != null;
             _portraitImage.gameObject.SetActive(hasPortrait);
-            if (hasPortrait) _portraitImage.sprite = portraitSprite;
+
+            if (hasPortrait)
+            {
+                _currentPortraitIdleSprite = portraitSprite != null ? portraitSprite : _portraitIdleSprite;
+                _portraitImage.sprite = _currentPortraitIdleSprite;
+            }
         }
 
         _fullTargetText = message ?? "";
         if (_typingCoroutine != null) StopCoroutine(_typingCoroutine);
         _typingCoroutine = StartCoroutine(TypingRoutine());
 
+        StartPortraitTalkAnimation();
         yield return new WaitUntil(() => !_isTyping);
+        StopPortraitTalkAnimation();
     }
 
     /// <summary>
@@ -469,5 +485,49 @@ public class TutorialDialoguePresenter : MonoBehaviour
         if (_pulseCoroutine != null) StopCoroutine(_pulseCoroutine);
         if (_portraitMoveCoroutine != null) StopCoroutine(_portraitMoveCoroutine);
         if (_dialogCameraCoroutine != null) StopCoroutine(_dialogCameraCoroutine);
+
+        // [4] 안전 정리: HideDialogue 마지막에 추가
+        StopPortraitTalkAnimation();
+    }
+
+    // [2] 메서드 추가 (클래스 내부 아무 곳)
+    private void StartPortraitTalkAnimation()
+    {
+        if (_portraitImage == null || !_portraitImage.gameObject.activeSelf) return;
+        if (_portraitTalkingSprite == null) return;
+
+        StopPortraitTalkAnimation();
+        _portraitTalkCoroutine = StartCoroutine(PortraitTalkRoutine());
+    }
+
+    private void StopPortraitTalkAnimation()
+    {
+        if (_portraitTalkCoroutine != null)
+        {
+            StopCoroutine(_portraitTalkCoroutine);
+            _portraitTalkCoroutine = null;
+        }
+
+        if (_portraitImage != null && _portraitImage.gameObject.activeSelf)
+        {
+            _portraitImage.sprite = _currentPortraitIdleSprite != null
+                ? _currentPortraitIdleSprite
+                : _portraitIdleSprite;
+        }
+    }
+
+    private IEnumerator PortraitTalkRoutine()
+    {
+        bool toggle = false;
+
+        while (_isTyping)
+        {
+            toggle = !toggle;
+            _portraitImage.sprite = toggle ? _portraitTalkingSprite : _currentPortraitIdleSprite;
+            yield return new WaitForSecondsRealtime(_portraitBlinkInterval);
+        }
+
+        _portraitImage.sprite = _currentPortraitIdleSprite;
+        _portraitTalkCoroutine = null;
     }
 }

@@ -1,10 +1,13 @@
 fileFormatVersion: 2
-guid: e37bae4aaa7e5504f976e3425f937749
+guid: 60f266acb3869a14ba62e3f4d5077414
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -704158218213166912
-    second: MouseGirl_Pixel-export_0
+      213: 8899148781485230619
+    second: RatBishopChan_0
+  - first:
+      213: 2396058389828874781
+    second: RatBishopChan_1
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -46,7 +49,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -100,23 +103,45 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: MouseGirl_Pixel-export_0
+      name: RatBishopChan_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 77
-        height: 116
+        width: 124
+        height: 167
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 0c07bb1d4d35a36f0800000000000000
-      internalID: -704158218213166912
+      spriteID: b1a07c3caa0208b70800000000000000
+      internalID: 8899148781485230619
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RatBishopChan_1
+      rect:
+        serializedVersion: 2
+        x: 124
+        y: 0
+        width: 124
+        height: 167
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d1238d22962804120800000000000000
+      internalID: 2396058389828874781
       vertices: []
       indices: 
       edges: []
@@ -125,7 +150,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 3672a2d486e3c794abaeadb88275afaa
     internalID: 0
     vertices: []
     indices: 
@@ -133,9 +158,12 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":124.0,"y":167.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      MouseGirl_Pixel-export_0: -704158218213166912
+      RatBishopChan_0: 8899148781485230619
+      RatBishopChan_1: 2396058389828874781
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
