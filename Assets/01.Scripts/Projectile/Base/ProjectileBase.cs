@@ -17,6 +17,8 @@ public abstract class ProjectileBase : MonoBehaviour
     protected int _remainingPiercing;
     private Coroutine _lifeTimeCoroutine;
 
+    public TeamType AttackerTeam => _attackerTeam;
+
     protected virtual void OnEnable()
     {
         EventBus.Instance.Subscribe<StageCleanedUpEvent>(HandleStageCleanedUp);

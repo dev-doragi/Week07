@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
@@ -10,6 +11,12 @@ using UnityEngine.UI;
 /// </summary>
 public class RitualSystem : MonoBehaviour
 {
+    [System.Serializable]
+    private class IntUnityEvent : UnityEvent<int> { }
+
+    [System.Serializable]
+    private class IntIntUnityEvent : UnityEvent<int, int> { }
+
     [Header("Doctrine Unlock")]
     [SerializeField] private bool _useDoctrineUnlockChecks = true;
     [SerializeField] private bool _unlockAllRitualSkillsAtStart = true;
@@ -30,6 +37,21 @@ public class RitualSystem : MonoBehaviour
     [SerializeField] private GameObject _wallObject;
     [SerializeField] private float _skill1Duration = 5f;
     [SerializeField] private float[] _skill1DurationBonusByLevel = new float[2];
+    [SerializeField, Range(0f, 1f)] private float _skill1HealPercentByLevel1 = 0.3f;
+    [SerializeField, Min(0.1f)] private float _skill1CounterProjectileDistance = 12f;
+    [SerializeField, Min(0f)] private float _skill1CounterProjectileSpeed = 16f;
+    [SerializeField, Min(0.01f)] private float _skill1CounterProjectileArcTravelTime = 0.8f;
+    [SerializeField, Min(0f)] private float _skill1CounterProjectileArcHeight = 2.5f;
+    [SerializeField, Min(0f)] private float _skill1CounterFanAngle = 70f;
+    [SerializeField, Min(0)] private int _skill1CounterMaxShotCount = 0;
+    [SerializeField] private string _skill1CounterProjectilePoolKey = "RatProjectile";
+    [SerializeField] private AttackTrajectoryType _skill1CounterProjectileTrajectory = AttackTrajectoryType.Direct;
+    [SerializeField] private AreaType _skill1CounterProjectileArea = AreaType.Single;
+    [SerializeField, Min(0f)] private float _skill1CounterProjectileDamage = 20f;
+    [SerializeField, Min(0f)] private float _skill1CounterProjectileSplashRadius = 1.5f;
+    [SerializeField, Min(0)] private int _skill1CounterProjectilePiercingCount = 0;
+    [SerializeField, Range(0f, 1f)] private float _skill1CounterProjectilePiercingDecay = 1f;
+    [SerializeField, Range(0f, 1f)] private float _skill1CounterProjectilePenetration = 0f;
 
     [Header("Skill 2 - Meteor")]
     [SerializeField] private string _meteorPoolKey  = "MeteorProjectile";
@@ -46,10 +68,11 @@ public class RitualSystem : MonoBehaviour
     [SerializeField] private float[] _meteorSplashRadiusBonusByLevel = new float[2];
     [SerializeField] private float[] _meteorTargetRadiusBonusByLevel = new float[2];
 
-    [Header("Skill 3 - RatHero")]
-    [SerializeField] private GameObject _ratHeroPrefab;
-    [SerializeField] private Transform _ratHeroSpawnPoint;
-    [SerializeField] private Vector3 _ratHeroSpawnOffset = Vector3.zero;
+    [Header("RatHero Notify (Inspector Optional)")]
+    [SerializeField] private IntUnityEvent _onSkill1CastToRatHero;
+    [SerializeField] private IntUnityEvent _onSkill2CastToRatHero;
+    [SerializeField] private IntUnityEvent _onSkill3CastToRatHero;
+    [SerializeField] private IntIntUnityEvent _onRitualSkillLevelChanged;
 
     [Header("Cooldown Gauges")]
     [SerializeField] private Image _skill1CooldownGauge;
@@ -60,6 +83,7 @@ public class RitualSystem : MonoBehaviour
     [SerializeField] private RitualCutinUI _ritualCutinUI;
 
     private Coroutine _wallRoutine;
+    private RitualWallHitCounter _wallHitCounter;
     private Unit _playerCore;
     private Unit _enemyCore;
 
@@ -137,6 +161,7 @@ public class RitualSystem : MonoBehaviour
         GameCsvLogger.Instance.LogEvent(GameLogEventType.SkillUsed, actor: gameObject, value: _skill1Cost, metadata: new System.Collections.Generic.Dictionary<string, object> { { "skillIndex", 1 }, { "skillName", "Wall" }, { "kind", "Ritual" } });
         GameCsvLogger.Instance.LogEvent(GameLogEventType.RitualUsed, actor: gameObject, value: _skill1Cost, metadata: new System.Collections.Generic.Dictionary<string, object> { { "skillIndex", 1 }, { "skillName", "Wall" } });
         ActivateWall();
+        NotifyRatHeroSkillCast(1);
         EventBus.Instance?.Publish(new TutorialSkillUsedEvent { SkillIndex = 1 });
         GameLogger.Instance?.RecordRitualSkillUsed(1, "Wall");
     }
@@ -153,6 +178,7 @@ public class RitualSystem : MonoBehaviour
         GameCsvLogger.Instance.LogEvent(GameLogEventType.SkillUsed, actor: gameObject, value: _skill2Cost, metadata: new System.Collections.Generic.Dictionary<string, object> { { "skillIndex", 2 }, { "skillName", "Meteor" }, { "kind", "Ritual" } });
         GameCsvLogger.Instance.LogEvent(GameLogEventType.RitualUsed, actor: gameObject, value: _skill2Cost, metadata: new System.Collections.Generic.Dictionary<string, object> { { "skillIndex", 2 }, { "skillName", "Meteor" } });
         OnSkill2();
+        NotifyRatHeroSkillCast(2);
         EventBus.Instance?.Publish(new TutorialSkillUsedEvent { SkillIndex = 2 });
         GameLogger.Instance?.RecordRitualSkillUsed(2, "Meteor");
     }
@@ -223,6 +249,8 @@ public class RitualSystem : MonoBehaviour
             return;
         }
 
+        EnsureWallHitCounter();
+
         if (_wallRoutine != null) StopCoroutine(_wallRoutine);
         _wallRoutine = StartCoroutine(WallRoutine());
     }
@@ -232,12 +260,33 @@ public class RitualSystem : MonoBehaviour
         _wallObject.SetActive(true);
         int level = GetSkillLevel(1);
         float duration = Mathf.Max(0.1f, _skill1Duration + GetLevelBonus(_skill1DurationBonusByLevel, level));
+        bool useCounterAttack = level >= 2;
+
+        if (level >= 1)
+        {
+            HealAllPlayerUnitsByPercent(_skill1HealPercentByLevel1);
+            Debug.Log($"[RitualSystem] 스킬 1 - 아군 회복 적용 ({_skill1HealPercentByLevel1 * 100f:0.#}%, 단계: {level})");
+        }
+
+        if (useCounterAttack && _wallHitCounter != null)
+        {
+            _wallHitCounter.BeginRecord();
+        }
+
         Debug.Log($"[RitualSystem] 스킬 1 - 벽 활성화 ({duration}초, 단계: {level})");
 
         yield return new WaitForSeconds(duration);
 
         _wallObject.SetActive(false);
         _wallRoutine = null;
+
+        if (useCounterAttack)
+        {
+            int blockedHitCount = _wallHitCounter != null ? _wallHitCounter.EndRecord() : 0;
+            FireSkill1CounterFan(blockedHitCount);
+            Debug.Log($"[RitualSystem] 스킬 1 - 반격 발동 | 피격 수: {blockedHitCount}");
+        }
+
         Debug.Log("[RitualSystem] 스킬 1 - 벽 비활성화");
     }
 
@@ -248,7 +297,178 @@ public class RitualSystem : MonoBehaviour
 
     private void OnSkill3()
     {
-        SummonRatHero();
+        NotifyRatHeroSkillCast(3);
+    }
+
+    private void EnsureWallHitCounter()
+    {
+        if (_wallObject == null)
+            return;
+
+        if (_wallHitCounter == null)
+            _wallHitCounter = _wallObject.GetComponent<RitualWallHitCounter>();
+
+        if (_wallHitCounter == null)
+            _wallHitCounter = _wallObject.AddComponent<RitualWallHitCounter>();
+    }
+
+    private void HealAllPlayerUnitsByPercent(float percent)
+    {
+        if (percent <= 0f)
+            return;
+
+        List<Unit> units = GridManager.Instance != null
+            ? GridManager.Instance.GetAllLivingUnits()
+            : new List<Unit>(FindObjectsByType<Unit>(FindObjectsSortMode.None));
+
+        for (int i = 0; i < units.Count; i++)
+        {
+            Unit unit = units[i];
+            if (unit == null || unit.IsDead || unit.Team != TeamType.Player || unit.Data == null)
+                continue;
+
+            unit.Heal(unit.Data.MaxHp * percent);
+        }
+    }
+
+    private void FireSkill1CounterFan(int blockedHitCount)
+    {
+        if (blockedHitCount <= 0)
+            return;
+
+        if (PoolManager.Instance == null)
+        {
+            Debug.LogWarning("[RitualSystem] 스킬 1 반격 실패: PoolManager 없음");
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(_skill1CounterProjectilePoolKey))
+        {
+            Debug.LogWarning("[RitualSystem] 스킬 1 반격 실패: 반격 투사체 키 미지정");
+            return;
+        }
+
+        int shotCount = blockedHitCount;
+        if (_skill1CounterMaxShotCount > 0)
+            shotCount = Mathf.Min(shotCount, _skill1CounterMaxShotCount);
+
+        if (shotCount <= 0)
+            return;
+
+        Vector3 spawnPos = _wallObject != null ? _wallObject.transform.position : transform.position;
+        Vector2 baseDirection = ResolveCounterBaseDirection(spawnPos);
+        AttackModule counterAttackData = BuildSkill1CounterAttackData();
+        float halfFanAngle = Mathf.Max(0f, _skill1CounterFanAngle) * 0.5f;
+        float distance = Mathf.Max(0.1f, _skill1CounterProjectileDistance);
+
+        for (int i = 0; i < shotCount; i++)
+        {
+            float t = shotCount <= 1 ? 0.5f : (float)i / (shotCount - 1);
+            float angle = Mathf.Lerp(-halfFanAngle, halfFanAngle, t);
+            Vector2 direction = (Quaternion.Euler(0f, 0f, angle) * baseDirection).normalized;
+            Vector3 targetPos = spawnPos + (Vector3)(direction * distance);
+
+            GameObject projectileObject = PoolManager.Instance.Spawn(_skill1CounterProjectilePoolKey, spawnPos, Quaternion.identity);
+            if (projectileObject == null)
+                continue;
+
+            if (!TryInitializeCounterProjectile(projectileObject, counterAttackData, spawnPos, targetPos))
+            {
+                PoolManager.Instance.Despawn(projectileObject);
+            }
+        }
+    }
+
+    private Vector2 ResolveCounterBaseDirection(Vector3 spawnPos)
+    {
+        if (_enemyCore != null && !_enemyCore.IsDead)
+        {
+            Vector2 toEnemyCore = _enemyCore.transform.position - spawnPos;
+            if (toEnemyCore.sqrMagnitude > 0.0001f)
+                return toEnemyCore.normalized;
+        }
+
+        Unit[] allUnits = FindObjectsByType<Unit>(FindObjectsSortMode.None);
+        Unit nearestEnemy = null;
+        float nearestDistSq = float.MaxValue;
+
+        for (int i = 0; i < allUnits.Length; i++)
+        {
+            Unit unit = allUnits[i];
+            if (unit == null || unit.IsDead || unit.Team != TeamType.Enemy)
+                continue;
+
+            float distSq = (unit.transform.position - spawnPos).sqrMagnitude;
+            if (distSq < nearestDistSq)
+            {
+                nearestDistSq = distSq;
+                nearestEnemy = unit;
+            }
+        }
+
+        if (nearestEnemy != null)
+        {
+            Vector2 toEnemy = nearestEnemy.transform.position - spawnPos;
+            if (toEnemy.sqrMagnitude > 0.0001f)
+                return toEnemy.normalized;
+        }
+
+        return Vector2.right;
+    }
+
+    private AttackModule BuildSkill1CounterAttackData()
+    {
+        return new AttackModule
+        {
+            Damage = Mathf.Max(0f, _skill1CounterProjectileDamage),
+            Speed = Mathf.Max(0f, _skill1CounterProjectileSpeed),
+            Distance = Mathf.Max(0.1f, _skill1CounterProjectileDistance),
+            AttackCost = 0,
+            Trajectory = _skill1CounterProjectileTrajectory,
+            Targeting = TargetingPolicy.Closest,
+            Area = _skill1CounterProjectileArea,
+            RangeRadius = Mathf.Max(0f, _skill1CounterProjectileSplashRadius),
+            PiercingCount = Mathf.Max(0, _skill1CounterProjectilePiercingCount),
+            Penetration = Mathf.Clamp01(_skill1CounterProjectilePenetration),
+            PiercingDecay = Mathf.Clamp01(_skill1CounterProjectilePiercingDecay),
+            ProjectilePrefab = null
+        };
+    }
+
+    private bool TryInitializeCounterProjectile(GameObject projectileObject, AttackModule attackData, Vector3 spawnPos, Vector3 targetPos)
+    {
+        if (projectileObject == null || attackData == null)
+            return false;
+
+        if (projectileObject.TryGetComponent(out RatProjectile ratDirect))
+        {
+            ratDirect.Initialize(attackData, TeamType.Player, spawnPos, targetPos, _skill1CounterProjectileSpeed, gameObject);
+            return true;
+        }
+
+        if (projectileObject.TryGetComponent(out DirectProjectile direct))
+        {
+            direct.Initialize(attackData, TeamType.Player, spawnPos, targetPos, _skill1CounterProjectileSpeed, gameObject);
+            return true;
+        }
+
+        float arcTravelTime = Mathf.Max(0.01f, _skill1CounterProjectileArcTravelTime);
+        float arcHeight = Mathf.Max(0f, _skill1CounterProjectileArcHeight);
+
+        if (projectileObject.TryGetComponent(out RatArcProjectile ratArc))
+        {
+            ratArc.Initialize(attackData, TeamType.Player, spawnPos, targetPos, arcTravelTime, arcHeight, gameObject);
+            return true;
+        }
+
+        if (projectileObject.TryGetComponent(out ArcProjectile arc))
+        {
+            arc.Initialize(attackData, TeamType.Player, spawnPos, targetPos, arcTravelTime, arcHeight, gameObject);
+            return true;
+        }
+
+        Debug.LogWarning($"[RitualSystem] 스킬 1 반격 실패: 지원되지 않는 투사체 타입 | {projectileObject.name}");
+        return false;
     }
 
     // ──────────────────────────────────────────────
@@ -448,6 +668,15 @@ public class RitualSystem : MonoBehaviour
 
         Debug.Log($"[RitualSystem] 교리 강화 적용 | effectId: {effectId} | Skill{skillIndex} 단계: {before} -> {after}");
         Debug.Log($"[RitualSystem] 스킬별 현재 강화 단계 | Wall:{GetSkillLevel(1)} Meteor:{GetSkillLevel(2)} RatHero:{GetSkillLevel(3)}");
+
+        EventBus.Instance?.Publish(new RitualSkillLevelChangedEvent
+        {
+            SkillIndex = skillIndex,
+            SkillLevel = after,
+            EffectId = effectId
+        });
+        _onRitualSkillLevelChanged?.Invoke(skillIndex, after);
+
         return after;
     }
 
@@ -475,42 +704,6 @@ public class RitualSystem : MonoBehaviour
         Debug.Log("[RitualSystem] 초기 의식 스킬 해금 등록 완료 (Skill1/2/3 사용 가능)");
     }
 
-    private void SummonRatHero()
-    {
-        if (_ratHeroPrefab == null)
-        {
-            Debug.LogWarning("[RitualSystem] 스킬 3(RatHero) 사용 실패: RatHero 프리팹 미지정");
-            return;
-        }
-
-        Vector3 spawnPos = _ratHeroSpawnPoint != null
-            ? _ratHeroSpawnPoint.position + _ratHeroSpawnOffset
-            : transform.position + _ratHeroSpawnOffset;
-
-        GameObject heroObject = Instantiate(_ratHeroPrefab, spawnPos, Quaternion.identity);
-        if (heroObject == null)
-        {
-            Debug.LogWarning("[RitualSystem] 스킬 3(RatHero) 사용 실패: 소환 생성 실패");
-            return;
-        }
-
-        if (!heroObject.TryGetComponent(out RatHeroUnit heroUnit))
-        {
-            heroUnit = heroObject.GetComponentInChildren<RatHeroUnit>();
-        }
-
-        if (heroUnit == null)
-        {
-            Debug.LogWarning("[RitualSystem] 스킬 3(RatHero) 사용 실패: RatHeroUnit 컴포넌트 없음");
-            Destroy(heroObject);
-            return;
-        }
-
-        int level = GetSkillLevel(3);
-        heroUnit.Initialize(level);
-        Debug.Log($"[RitualSystem] RatHero 소환 성공 | 단계: {level} | 위치: {spawnPos}");
-    }
-
     private bool CanCastSkill2()
     {
         bool hasEnemyCore = _enemyCore != null && !_enemyCore.IsDead;
@@ -523,11 +716,33 @@ public class RitualSystem : MonoBehaviour
 
     private bool CanCastSkill3()
     {
-        if (_ratHeroPrefab != null)
-            return true;
+        return true;
+    }
 
-        Debug.Log("[RitualSystem] 스킬 사용 실패 | Skill3 RatHero | RatHero 프리팹 미지정");
-        return false;
+    private void NotifyRatHeroSkillCast(int skillIndex)
+    {
+        int level = GetSkillLevel(skillIndex);
+
+        EventBus.Instance?.Publish(new RitualSkillCastEvent
+        {
+            SkillIndex = skillIndex,
+            SkillLevel = level
+        });
+
+        switch (skillIndex)
+        {
+            case 1:
+                _onSkill1CastToRatHero?.Invoke(level);
+                break;
+
+            case 2:
+                _onSkill2CastToRatHero?.Invoke(level);
+                break;
+
+            case 3:
+                _onSkill3CastToRatHero?.Invoke(level);
+                break;
+        }
     }
 
     private static int GetLevelBonus(int[] levelBonuses, int level)
@@ -597,7 +812,8 @@ public class RitualSystem : MonoBehaviour
 
             case "Ritual_Node_2":
                 UpgradeSkillLevelFromDoctrine(1, effectId, 1);
-                Debug.LogWarning("[RitualSystem] 로컬 디버그 적용에서는 Ritual wall heal(DoctrineEffectApplier 전용 모니터) 효과를 생략합니다.");
+                UpgradeSkillLevelFromDoctrine(2, effectId, 1);
+                UpgradeSkillLevelFromDoctrine(3, effectId, 1);
                 break;
 
             case "Ritual_Node_3":

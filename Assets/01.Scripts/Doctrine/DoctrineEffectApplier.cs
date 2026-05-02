@@ -130,8 +130,9 @@ public class DoctrineEffectApplier : MonoBehaviour
                 break;
 
             case "Ritual_Node_2":
-                EnableRitualWallHeal();
                 ApplyRitualSkillLevelUpgrade(1, effectId, 1);
+                ApplyRitualSkillLevelUpgrade(2, effectId, 1);
+                ApplyRitualSkillLevelUpgrade(3, effectId, 1);
                 break;
 
             case "Ritual_Node_3":

@@ -51,17 +51,17 @@ Material:
     m_Ints: []
     m_Floats:
     - _Brightness: 2
-    - _CorePower: 3
+    - _CorePower: 16.01
     - _CoreTightness: 8
     - _Fade: 1
-    - _NoisScale: 10
-    - _NoiseScale: 10
-    - _NoiseSpeed: 2
-    - _NoiseStrength: 0.2
-    - _OuterPower: 1.5
-    - _OuterTightness: 2
+    - _NoisScale: 9.67
+    - _NoiseScale: 1
+    - _NoiseSpeed: -2
+    - _NoiseStrength: 8.3
+    - _OuterPower: 0.8
+    - _OuterTightness: 2.52
     - _PulseAmount: 0.05
-    - _PulseSpeed: 4
+    - _PulseSpeed: 1
     m_Colors:
     - White: {r: 1, g: 1, b: 1, a: 1}
     - _CoreColor: {r: 0.9245283, g: 0.9027234, b: 0.9027234, a: 1}

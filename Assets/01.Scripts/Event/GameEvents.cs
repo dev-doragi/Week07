@@ -60,6 +60,17 @@ public struct PlaySFXEvent { public AudioClip Clip; public float Volume; }
 // [스킬/의식]
 // ============================================================================
 public struct RitualCostChangedEvnet { }
+public struct RitualSkillCastEvent
+{
+    public int SkillIndex;
+    public int SkillLevel;
+}
+public struct RitualSkillLevelChangedEvent
+{
+    public int SkillIndex;
+    public int SkillLevel;
+    public string EffectId;
+}
 
 // ============================================================================
 // [입력/조작]
