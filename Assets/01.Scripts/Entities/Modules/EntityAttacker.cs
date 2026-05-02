@@ -6,13 +6,15 @@ using UnityEngine;
 public class EntityAttacker : MonoBehaviour
 {
     private static float _doctrineDamageMultiplier = 1f;
+    [Header("Target Refresh")]
+    [SerializeField, Min(0.05f)] private float _retargetInterval = 0.3f;
 
     private IAttacker _arcPerformer;
     private IAttacker _directPerformer;
     private Unit _owner;
     private AttackModule _data;
-    private Unit _currentTarget;
-    private float _lastAttackTime;
+    private IDamageable _currentTarget;
+    private float _retargetTimer;
     private float _attackCooldown = 0f;
 
     public static void SetDoctrineDamageMultiplier(float multiplier)
@@ -64,6 +66,14 @@ public class EntityAttacker : MonoBehaviour
         if (_owner == null || _owner.IsDead || _owner.CurrentState != UnitState.Attack) return;
         
         _attackCooldown -= Time.deltaTime;
+        _retargetTimer -= Time.deltaTime;
+
+        if (_retargetTimer <= 0f)
+        {
+            RefreshTargetPeriodically();
+            _retargetTimer = _retargetInterval;
+        }
+
         ProcessAttackCycle();
     }
 
@@ -85,6 +95,15 @@ public class EntityAttacker : MonoBehaviour
         }
     }
 
+    private void RefreshTargetPeriodically()
+    {
+        IDamageable nextTarget = SearchBestTarget();
+        if (nextTarget == null || nextTarget == _currentTarget)
+            return;
+
+        _currentTarget = nextTarget;
+    }
+
     private void ExecuteAttack()
     {
         if (_owner.Team == TeamType.Player && ResourceManager.Instance != null)
@@ -101,12 +120,13 @@ public class EntityAttacker : MonoBehaviour
         if (performer != null)
         {
             AttackModule attackDataForShot = BuildAttackDataForShot();
-            if (performer.TryPerformAttack(_owner, _currentTarget, attackDataForShot))
+            Component targetComponent = _currentTarget as Component;
+            if (targetComponent != null && performer.TryPerformAttack(_owner, targetComponent, attackDataForShot))
             {
                 GameCsvLogger.Instance.LogEvent(
                     eventType: GameLogEventType.AttackStarted,
                     actor: _owner.gameObject,
-                    target: _currentTarget != null ? _currentTarget.gameObject : null,
+                    target: targetComponent.gameObject,
                     value: attackDataForShot.Damage,
                     metadata: new Dictionary<string, object>
                     {
@@ -128,7 +148,8 @@ public class EntityAttacker : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning($"[EntityAttacker] {_owner.name} 공격 실패 | Target: {_currentTarget.name}");
+                string targetName = targetComponent != null ? targetComponent.name : "null";
+                Debug.LogWarning($"[EntityAttacker] {_owner.name} 공격 실패 | Target: {targetName}");
             }
         }
         else
@@ -162,7 +183,7 @@ public class EntityAttacker : MonoBehaviour
         };
     }
 
-    private Unit SearchBestTarget()
+    private IDamageable SearchBestTarget()
     {
         int mask = (_owner.Team == TeamType.Player) ? LayerMask.GetMask("Enemy") : LayerMask.GetMask("Ally");
         Vector2 searchOrigin = transform.position;
@@ -172,9 +193,21 @@ public class EntityAttacker : MonoBehaviour
         if (hits.Length == 0) return null;
 
         var candidates = hits
-            .Select(h => h.GetComponentInParent<Unit>())
-            .Where(u => u != null && !u.IsDead && u.Category != UnitCategory.Wheel) // Wheel 제외
+            .Select(h => h.GetComponentInParent<IDamageable>())
+            .Where(t => t != null && !t.IsDead && t.Category != UnitCategory.Wheel) // Wheel 제외
             .Distinct()
+            .Select(t =>
+            {
+                Component c = t as Component;
+                Unit u = c != null ? c.GetComponent<Unit>() : null;
+                return new TargetCandidate
+                {
+                    Target = t,
+                    Component = c,
+                    Unit = u
+                };
+            })
+            .Where(x => x.Component != null)
             .ToList();
 
         if (candidates.Count == 0) return null;
@@ -182,23 +215,33 @@ public class EntityAttacker : MonoBehaviour
         return _data.Targeting switch
         {
             TargetingPolicy.Closest =>
-                candidates.OrderBy(u => Vector2.Distance(searchOrigin, u.transform.position))
+                candidates.OrderBy(x => Vector2.Distance(searchOrigin, x.Component.transform.position))
+                          .Select(x => x.Target)
                           .FirstOrDefault(),
 
             TargetingPolicy.TowardCore =>
-                candidates.OrderByDescending(u => u.Category == UnitCategory.Core)
-                          .ThenBy(u => _owner.Team == TeamType.Player
-                              ? -u.transform.position.y   // 아군: Y 큰 것(음수로 역순)
-                              : u.transform.position.y)   // 적: Y 작은 것(정순)
+                candidates.OrderByDescending(x => x.Target.Category == UnitCategory.Core)
+                          .ThenBy(x => _owner.Team == TeamType.Player
+                              ? -x.Component.transform.position.y   // 아군: Y 큰 것(음수로 역순)
+                              : x.Component.transform.position.y)   // 적: Y 작은 것(정순)
+                          .Select(x => x.Target)
                           .FirstOrDefault(),
 
             TargetingPolicy.PriorityAttacker =>
-                candidates.OrderByDescending(u => u.Data.CanAttack)
-                          .ThenBy(u => Vector2.Distance(searchOrigin, u.transform.position))
+                candidates.OrderByDescending(x => x.Unit != null && x.Unit.Data != null && x.Unit.Data.CanAttack)
+                          .ThenBy(x => Vector2.Distance(searchOrigin, x.Component.transform.position))
+                          .Select(x => x.Target)
                           .FirstOrDefault(),
 
-            _ => candidates.FirstOrDefault()
+            _ => candidates.Select(x => x.Target).FirstOrDefault()
         };
+    }
+
+    private struct TargetCandidate
+    {
+        public IDamageable Target;
+        public Component Component;
+        public Unit Unit;
     }
 
 #if UNITY_EDITOR
@@ -206,7 +249,7 @@ public class EntityAttacker : MonoBehaviour
     {
         if (_data == null) return;
 
-        bool hasTarget = _currentTarget != null && !_currentTarget.IsDead;
+        bool hasTarget = _currentTarget != null && !_currentTarget.IsDead && (_currentTarget as Component) != null;
         bool isAttacking = _owner != null && _owner.CurrentState == UnitState.Attack;
 
         if (isAttacking && hasTarget)
@@ -226,14 +269,17 @@ public class EntityAttacker : MonoBehaviour
 
         if (hasTarget)
         {
+            Component targetComponent = _currentTarget as Component;
             Gizmos.color = Color.red;
-            Gizmos.DrawLine(transform.position, _currentTarget.transform.position);
-            Gizmos.DrawWireSphere(_currentTarget.transform.position, 0.2f);
+            Gizmos.DrawLine(transform.position, targetComponent.transform.position);
+            Gizmos.DrawWireSphere(targetComponent.transform.position, 0.2f);
 
             string ownerState = _owner != null ? _owner.CurrentState.ToString() : "?";
-            string label = $"[{ownerState}] → {_currentTarget.name}\nHP:{_currentTarget.CurrentHp:F0}";
+            string label = $"[{ownerState}] → {targetComponent.name}";
+            if (_currentTarget is Unit targetUnit)
+                label += $"\nHP:{targetUnit.CurrentHp:F0}";
             UnityEditor.Handles.color = Color.white;
-            UnityEditor.Handles.Label(_currentTarget.transform.position + Vector3.up * 0.35f, label);
+            UnityEditor.Handles.Label(targetComponent.transform.position + Vector3.up * 0.35f, label);
         }
 
         if (_owner != null)

@@ -6,22 +6,23 @@ public class ArcAttacker : MonoBehaviour, IAttacker
     [SerializeField] private float _travelTime = 0.7f;
     [SerializeField] private Transform _spawnPoint;
 
-    public bool TryPerformAttack(Unit attacker, Unit target, AttackModule attackData)
+    public bool TryPerformAttack(Unit attacker, Component target, AttackModule attackData)
     {
-        if (attackData.ProjectilePrefab == null) return false;
+        if (attackData.ProjectilePrefab == null || target == null) return false;
 
         Vector3 startPos = _spawnPoint != null ? _spawnPoint.position : transform.position;
         GameObject obj = PoolManager.Instance.Spawn(attackData.ProjectilePrefab.name, startPos, Quaternion.identity);
+        Vector3 targetPos = target.transform.position;
 
         if (obj.TryGetComponent(out RatArcProjectile ratBomb))
         {
-            ratBomb.Initialize(attackData, attacker.Team, startPos, target.transform.position, _travelTime, _arcHeight, attacker.gameObject);
+            ratBomb.Initialize(attackData, attacker.Team, startPos, targetPos, _travelTime, _arcHeight, attacker.gameObject);
             return true;
         }
 
         if (obj.TryGetComponent(out ArcProjectile projectile))
         {
-            projectile.Initialize(attackData, attacker.Team, startPos, target.transform.position, _travelTime, _arcHeight, attacker.gameObject);
+            projectile.Initialize(attackData, attacker.Team, startPos, targetPos, _travelTime, _arcHeight, attacker.gameObject);
             return true;
         }
         return false;

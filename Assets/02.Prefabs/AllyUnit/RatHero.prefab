@@ -216,7 +216,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RatHeroUnit
   _duration: 10
-  _maxHp: 700
+  _maxHp: 999
   _defenseRate: 0
   _heroUnitData: {fileID: 11400000, guid: d1485c91c79596b4fac5f98e89a6cd68, type: 2}
   _projectileSpawnPoint: {fileID: 1119774218122314879}
