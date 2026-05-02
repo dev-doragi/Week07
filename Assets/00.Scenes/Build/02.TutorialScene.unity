@@ -3332,6 +3332,30 @@ PrefabInstance:
       propertyPath: m_RaycastTarget
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2279566124715259866, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 590.4762
+      objectReference: {fileID: 0}
+    - target: {fileID: 2279566124715259866, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 795.2381
+      objectReference: {fileID: 0}
+    - target: {fileID: 3074801695772211857, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 590.4762
+      objectReference: {fileID: 0}
+    - target: {fileID: 3074801695772211857, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 795.2381
+      objectReference: {fileID: 0}
+    - target: {fileID: 7348342623763710469, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
+      propertyPath: _portraitIdleSprite
+      value: 
+      objectReference: {fileID: 8899148781485230619, guid: 60f266acb3869a14ba62e3f4d5077414, type: 3}
+    - target: {fileID: 7348342623763710469, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
+      propertyPath: _portraitTalkingSprite
+      value: 
+      objectReference: {fileID: 2396058389828874781, guid: 60f266acb3869a14ba62e3f4d5077414, type: 3}
     - target: {fileID: 7692762135819565366, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -3339,6 +3363,14 @@ PrefabInstance:
     - target: {fileID: 8161377643539104782, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
       propertyPath: m_Name
       value: TutorialPanel
+      objectReference: {fileID: 0}
+    - target: {fileID: 9056698094391589131, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 590.4762
+      objectReference: {fileID: 0}
+    - target: {fileID: 9056698094391589131, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 795.2381
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
