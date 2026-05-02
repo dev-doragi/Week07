@@ -5625,10 +5625,10 @@ MonoBehaviour:
   _wheelData: {fileID: 11400000, guid: 111364d3ed48f464aba10b441e66bf1a, type: 2}
   _coreData: {fileID: 11400000, guid: a20b726f5ee6fae40861df8b4ad0d6d3, type: 2}
   _wheelCells:
+  - {x: 3, y: 0}
   - {x: 4, y: 0}
   - {x: 5, y: 0}
-  - {x: 6, y: 0}
-  _coreCell: {x: 4, y: 1}
+  _coreCell: {x: 3, y: 1}
   _ghostCellPrefab: {fileID: 2592798566633237559, guid: 7db8010cc69d69f4891d2f51170cd300, type: 3}
   _validColor: {r: 0, g: 0, b: 0, a: 0.39607844}
   _invalidColor: {r: 1, g: 0.2, b: 0.2, a: 0.5}
@@ -9057,7 +9057,7 @@ MonoBehaviour:
   _width: 11
   _height: 12
   _cellSize: 1
-  _origin: {x: -6, y: -1, z: 0}
+  _origin: {x: -7, y: -1, z: 0}
   _failureTextFont: {fileID: 11400000, guid: e4dba54daa22213498a58638f5792dcd, type: 2}
   _failureFeedbackCooldown: 0.5
   _capacityFailureTextColor: {r: 1, g: 0, b: 0, a: 1}
