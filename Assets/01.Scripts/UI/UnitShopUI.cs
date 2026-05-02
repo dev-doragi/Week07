@@ -42,9 +42,11 @@ public class UnitShopUI : MonoBehaviour
         if(GridManager.Instance != null)
             GridManager.Instance.OnCapacityChanged += UpdateCapacityText;
 
-        UnlockManager unlockManager = FindFirstObjectByType<UnlockManager>();
-        if (unlockManager != null)
-            unlockManager.UnitUnlocked += OnUnitUnlocked;
+        if(UnlockManager.Instance != null)
+            UnlockManager.Instance.UnitUnlocked += OnUnitUnlocked;
+        
+        if(_currentCategory != UnitCategory.None && _allUnits != null && _allUnits.Count > 0)
+            PopulateCards(_currentCategory);
     }
 
     private void OnDisable()
@@ -52,9 +54,8 @@ public class UnitShopUI : MonoBehaviour
         if(GridManager.Instance != null)
             GridManager.Instance.OnCapacityChanged -= UpdateCapacityText;
 
-        UnlockManager unlockManager = FindFirstObjectByType<UnlockManager>();
-        if (unlockManager != null)
-            unlockManager.UnitUnlocked -= OnUnitUnlocked;
+        if (UnlockManager.Instance != null)
+            UnlockManager.Instance.UnitUnlocked -= OnUnitUnlocked;
     }
 
 
@@ -103,8 +104,15 @@ public class UnitShopUI : MonoBehaviour
         _selectedCard?.SetSelected(false);
         _selectedCard = null;
 
+        var toDestroy = new List<Transform>();
         foreach (Transform child in _cardContainer)
+            toDestroy.Add(child);
+        foreach(var child in toDestroy)
+        {
+            child.SetParent(null);      // 레이아웃에서 즉시제거
             Destroy(child.gameObject);
+        }
+
 
         //지원 탭일 때 설치 가능한 바퀴를 최상단에 먼저 추가
         if(category == UnitCategory.Support)
