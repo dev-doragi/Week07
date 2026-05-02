@@ -10950,6 +10950,22 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.x
       value: 13.3
       objectReference: {fileID: 0}
+    - target: {fileID: 3011964974960968034, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: _settlementPreviewColor.b
+      value: 0.8113208
+      objectReference: {fileID: 0}
+    - target: {fileID: 3011964974960968034, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: _settlementPreviewColor.g
+      value: 0.229049
+      objectReference: {fileID: 0}
+    - target: {fileID: 3011964974960968034, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: _settlementPreviewColor.r
+      value: 0.15690637
+      objectReference: {fileID: 0}
+    - target: {fileID: 3011964974960968034, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: _settlementPreviewFontSize
+      value: 32
+      objectReference: {fileID: 0}
     - target: {fileID: 3341330664907624637, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: _dragRoot
       value: 
