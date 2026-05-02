@@ -81,9 +81,9 @@ MonoBehaviour:
     CrossBottom: {fileID: 0}
     CrossLeft: {fileID: 0}
     CrossRight: {fileID: 0}
-  _dragHintLabel: "R \uD68C\uC804"
+  _dragHintLabel: "\uC6B0\uD074\uB9AD \uD68C\uC804"
   _dragHintOffset: {x: -40, y: 80}
-  _dragHintSize: {x: 120, y: 40}
+  _dragHintSize: {x: 200, y: 40}
   _dragHintFontSize: 32
   _dragHintColor: {r: 1, g: 1, b: 1, a: 1}
   _dragHintOutlineColor: {r: 0, g: 0, b: 0, a: 0.85}
