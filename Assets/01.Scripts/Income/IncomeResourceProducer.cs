@@ -157,15 +157,8 @@ public class IncomeResourceProducer : MonoBehaviour
 
     public int GrantProductionForDuration(float duration)
     {
-        if (_gridBoard == null)
-            return 0;
-
-        int occupied = _gridBoard.GetOccupiedCellCount();
-        if (occupied <= 0)
-            return 0;
-
-        float interval = Mathf.Max(0.1f, _scanInterval);
-        int amount = Mathf.FloorToInt(occupied * Mathf.Max(1f, _resourcePerCell) * Mathf.Max(0f, duration) / interval);
+        int occupied = GetOccupiedIncomeCellCount();
+        int amount = PreviewProductionForDuration(duration);
         if (amount <= 0)
             return 0;
 
@@ -174,12 +167,30 @@ public class IncomeResourceProducer : MonoBehaviour
 
         ResourceManager manager = ResolveResourceManager();
         if (manager != null)
+        {
             manager.AddMouseCount(amount, "income_skipped_wait");
+            manager.ShowDropRatRewardFeedback(amount);
+        }
 
         if (_logProduction)
             Debug.Log($"[IncomeResourceProducer] Granted {amount} resources for skipped wait ({duration:F1}s, occupied: {occupied}).");
 
         return amount;
+    }
+
+    public int PreviewProductionForDuration(float duration)
+    {
+        int occupied = GetOccupiedIncomeCellCount();
+        if (occupied <= 0)
+            return 0;
+
+        float interval = Mathf.Max(0.1f, _scanInterval);
+        return Mathf.FloorToInt(occupied * Mathf.Max(1f, _resourcePerCell) * Mathf.Max(0f, duration) / interval);
+    }
+
+    private int GetOccupiedIncomeCellCount()
+    {
+        return _gridBoard != null ? _gridBoard.GetOccupiedCellCount() : 0;
     }
 
     public void SetGridBoard(IncomeGridBoard gridBoard)
