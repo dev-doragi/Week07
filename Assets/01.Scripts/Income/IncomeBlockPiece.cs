@@ -42,7 +42,7 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     [SerializeField] private CoreBlockSprites _coreBlockSprites;
 
     [Header("Drag Hint")]
-    [SerializeField] private string _dragHintLabel = "R 회전";
+    [SerializeField] private string _dragHintLabel = "우클릭 회전";
     [SerializeField] private Vector2 _dragHintOffset = new Vector2(28f, 34f);
     [SerializeField] private Vector2 _dragHintSize = new Vector2(120f, 40f);
     [SerializeField] private int _dragHintFontSize = 24;
@@ -81,6 +81,7 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     private DragSnapshot _dragSnapshot;
     private Coroutine _rotationRoutine;
 
+    public static bool IsAnyDragging { get; private set; }
     public IncomeBlockType BlockType => _blockType;
     public Vector2 Size => _rectTransform != null ? _rectTransform.sizeDelta : Vector2.zero;
 
@@ -109,7 +110,11 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         }
 
         // v1.9 규정: Unity Input System (New) 사용
-        if (Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame)
+        bool rotatePressed =
+            (Mouse.current != null && Mouse.current.rightButton.wasPressedThisFrame) ||
+            (Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame);
+
+        if (rotatePressed)
         {
             TriggerRotation();
         }
@@ -160,6 +165,7 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         }
 
         _isDragging = true;
+        IsAnyDragging = true;
         _dragEventCamera = eventData.pressEventCamera;
         _lastPointerScreenPosition = eventData.position;
         _canvasGroup.blocksRaycasts = false;
@@ -199,12 +205,24 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
             return;
         }
 
+        Camera eventCamera = _dragEventCamera != null ? _dragEventCamera : eventData.pressEventCamera;
+        _lastPointerScreenPosition = eventData.position;
+
         _isDragging = false;
+        IsAnyDragging = false;
         _canvasGroup.blocksRaycasts = true;
         _gridBoard?.ClearPlacementPreview();
         HideDragHint();
 
-        bool placed = TryPlaceAtCurrentTransform(_dragEventCamera != null ? _dragEventCamera : eventData.pressEventCamera);
+        if (IsPointerOverHomeParent(eventCamera))
+        {
+            ResetToDefaultRotation();
+            ReturnToHome();
+            ApplyVisualState(_blockColor);
+            return;
+        }
+
+        bool placed = TryPlaceAtCurrentTransform(eventCamera);
         if (!placed)
         {
             RestoreFromSnapshot();
@@ -232,6 +250,7 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         if (!_isDragging) return;
 
         _isDragging = false;
+        IsAnyDragging = false;
         _canvasGroup.blocksRaycasts = true;
         _gridBoard?.ClearPlacementPreview();
         HideDragHint();
@@ -353,6 +372,12 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         _rectTransform.pivot = Vector2.zero;
         _rectTransform.anchoredPosition = _homePosition;
         _rectTransform.SetAsLastSibling();
+    }
+
+    private bool IsPointerOverHomeParent(Camera eventCamera)
+    {
+        if (_homeParent == null) return false;
+        return RectTransformUtility.RectangleContainsScreenPoint(_homeParent, _lastPointerScreenPosition, eventCamera);
     }
 
     private DragSnapshot CaptureSnapshot()
@@ -828,6 +853,12 @@ public class IncomeBlockPiece : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
     private void OnDisable()
     {
+        if (_isDragging)
+        {
+            _isDragging = false;
+            IsAnyDragging = false;
+        }
+
         _gridBoard?.ClearPlacementPreview();
         HideDragHint();
     }

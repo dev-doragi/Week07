@@ -32,28 +32,10 @@ public class UnitShopUI : MonoBehaviour
     [SerializeField] private UnitTooltipUI _tooltip;
 
     [Header("Slide Settings")]
-    [SerializeField] private float _slideDuration = 0.25f;
     [SerializeField] private float _panelOpenX = 80f;
-    [SerializeField] private float _panelClosedX = -220f;
 
     private UnitCategory _currentCategory = UnitCategory.None;
-    private bool _isOpen = false;
-    private Coroutine _slideCoroutine;
-
-    private void Update()
-    {
-        if (!_isOpen) return;
-        if (_gridController.IsPlacingUnit) return;
-
-        var mouse = Mouse.current;
-        if (mouse == null) return;
-
-        if (mouse.leftButton.wasPressedThisFrame &&
-            !EventSystem.current.IsPointerOverGameObject())
-        {
-            ClosePanel();
-        }
-    }
+    private UnitCardUI _selectedCard;
 
     private void OnEnable()
     {
@@ -81,13 +63,16 @@ public class UnitShopUI : MonoBehaviour
         if (_allUnits == null || _allUnits.Count == 0)
             _allUnits = new List<UnitDataSO>(Resources.LoadAll<UnitDataSO>("UnitSO"));
 
-        _slidePanel.anchoredPosition = new Vector2(_panelClosedX, _slidePanel.anchoredPosition.y);
+        _slidePanel.anchoredPosition = new Vector2(_panelOpenX, _slidePanel.anchoredPosition.y);
 
         _attackBtn.onClick.AddListener(() => OnCategoryClicked(UnitCategory.Attack));
         _defenseBtn.onClick.AddListener(() => OnCategoryClicked(UnitCategory.Defense));
         _supportBtn.onClick.AddListener(() => OnCategoryClicked(UnitCategory.Support));
 
         UpdateCapacityText();
+
+        _currentCategory = UnitCategory.Attack;
+        PopulateCards(UnitCategory.Attack);
     }
 
     private void UpdateCapacityText()
@@ -107,21 +92,17 @@ public class UnitShopUI : MonoBehaviour
             actor: gameObject,
             metadata: new Dictionary<string, object> { { "button", category + "Tab" } });
 
-        if (_isOpen && _currentCategory == category)
-        {
-            ClosePanel();
-            return;
-        }
-
         _currentCategory = category;
         PopulateCards(category);
 
-        if (!_isOpen)
-            OpenPanel();
+
     }
 
     private void PopulateCards(UnitCategory category)
     {
+        _selectedCard?.SetSelected(false);
+        _selectedCard = null;
+
         foreach (Transform child in _cardContainer)
             Destroy(child.gameObject);
 
@@ -133,7 +114,12 @@ public class UnitShopUI : MonoBehaviour
                 if(data.Category != UnitCategory.Wheel) continue;
                 if(data.PlacementRule == PlacementRule.InitialOnly) continue;
                 var card = Instantiate(_cardPrefab, _cardContainer);
-                card.Setup(data, OnUnitSelected, _tooltip);
+                var capturedCard = card;
+                card.Setup(data, (d) =>
+                {
+                    SelectCard(capturedCard);
+                    OnUnitSelected(d);
+                }, _tooltip);
             }
         }
 
@@ -141,8 +127,20 @@ public class UnitShopUI : MonoBehaviour
         {
             if (data.Category != category) continue;
             var card = Instantiate(_cardPrefab, _cardContainer);
-            card.Setup(data, OnUnitSelected, _tooltip, IsUnlocked(data));
+            var capturedCard = card;
+            card.Setup(data, (d) =>
+            {
+                SelectCard(capturedCard);
+                OnUnitSelected(d);
+            }, _tooltip, IsUnlocked(data));
         }
+    }
+
+    private void SelectCard(UnitCardUI card)
+    {
+        _selectedCard?.SetSelected(false);
+        _selectedCard = card;
+        _selectedCard?.SetSelected(true);
     }
 
     private bool IsUnlocked(UnitDataSO data)
@@ -153,7 +151,7 @@ public class UnitShopUI : MonoBehaviour
 
     private void OnUnitUnlocked(UnitDataSO unit)
     {
-        if (_isOpen && _currentCategory != UnitCategory.None)
+        if (_currentCategory != UnitCategory.None)
             PopulateCards(_currentCategory);
     }
 
@@ -173,41 +171,4 @@ public class UnitShopUI : MonoBehaviour
         _gridController.SelectByData(data);
     }
 
-    private void OpenPanel()
-    {
-        _isOpen = true;
-        GameCsvLogger.Instance.LogEvent(GameLogEventType.ShopOpened, actor: gameObject, metadata: new Dictionary<string, object> { { "shop", "UnitShop" } });
-        SlideToX(_panelOpenX);
-    }
-
-    private void ClosePanel()
-    {
-        _isOpen = false;
-        _currentCategory = UnitCategory.None;
-        GameCsvLogger.Instance.LogEvent(GameLogEventType.ShopClosed, actor: gameObject, metadata: new Dictionary<string, object> { { "shop", "UnitShop" } });
-        SlideToX(_panelClosedX);
-    }
-
-    private void SlideToX(float targetX)
-    {
-        if (_slideCoroutine != null) StopCoroutine(_slideCoroutine);
-        _slideCoroutine = StartCoroutine(SlideRoutine(targetX));
-    }
-
-    private IEnumerator SlideRoutine(float targetX)
-    {
-        float startX = _slidePanel.anchoredPosition.x;
-        float elapsed = 0f;
-
-        while (elapsed < _slideDuration)
-        {
-            elapsed += Time.unscaledDeltaTime;
-            float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / _slideDuration));
-            _slidePanel.anchoredPosition = new Vector2(Mathf.Lerp(startX, targetX, t), _slidePanel.anchoredPosition.y);
-            yield return null;
-        }
-
-        _slidePanel.anchoredPosition = new Vector2(targetX, _slidePanel.anchoredPosition.y);
-        _slideCoroutine = null;
-    }
 }
