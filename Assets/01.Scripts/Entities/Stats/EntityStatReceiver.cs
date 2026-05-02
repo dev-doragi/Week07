@@ -3,13 +3,13 @@ using UnityEngine;
 
 public class EntityStatReceiver : MonoBehaviour
 {
-    [Header("Diminishing Returns - Attack Damage")]
-    [SerializeField, Min(0f)] private float _attackDamageMaxBonus = 1f;
-    [SerializeField, Min(0f)] private float _attackDamageHalfPoint = 1f;
+    private const string DiminishingReturnConfigResourcePath = "StatDiminishingReturnConfig";
+    private const float DefaultAttackDamageMaxBonus = 1f;
+    private const float DefaultAttackDamageHalfPoint = 1f;
+    private const float DefaultAttackSpeedMaxBonus = 0.75f;
+    private const float DefaultAttackSpeedHalfPoint = 1f;
 
-    [Header("Diminishing Returns - Attack Speed")]
-    [SerializeField, Min(0f)] private float _attackSpeedMaxBonus = 0.75f;
-    [SerializeField, Min(0f)] private float _attackSpeedHalfPoint = 1f;
+    private static StatDiminishingReturnConfig _cachedDiminishingReturnConfig;
 
     // 출처별 버프 저장: supporter → (statType → (modifierType, value))
     private Dictionary<object, List<(SupportStatType type, ModifierType mod, float value)>> _sourceModifiers = new();
@@ -63,22 +63,35 @@ public class EntityStatReceiver : MonoBehaviour
 
     private float ApplyDiminishingReturns(SupportStatType type, float rawPercent, float firstBonus)
     {
+        StatDiminishingReturnConfig config = ResolveDiminishingReturnConfig();
+
         return type switch
         {
             SupportStatType.AttackDamage => ApplyConvergingBonusAfterFirst(
                 rawPercent,
                 firstBonus,
-                _attackDamageMaxBonus,
-                _attackDamageHalfPoint),
+                config != null ? config.AttackDamageMaxBonus : DefaultAttackDamageMaxBonus,
+                config != null ? config.AttackDamageHalfPoint : DefaultAttackDamageHalfPoint),
 
             SupportStatType.AttackSpeed => ApplyConvergingBonusAfterFirst(
                 rawPercent,
                 firstBonus,
-                _attackSpeedMaxBonus,
-                _attackSpeedHalfPoint),
+                config != null ? config.AttackSpeedMaxBonus : DefaultAttackSpeedMaxBonus,
+                config != null ? config.AttackSpeedHalfPoint : DefaultAttackSpeedHalfPoint),
 
             _ => rawPercent
         };
+    }
+
+    private StatDiminishingReturnConfig ResolveDiminishingReturnConfig()
+    {
+        if (_cachedDiminishingReturnConfig == null)
+        {
+            _cachedDiminishingReturnConfig =
+                Resources.Load<StatDiminishingReturnConfig>(DiminishingReturnConfigResourcePath);
+        }
+
+        return _cachedDiminishingReturnConfig;
     }
 
     private static float ApplyConvergingBonusAfterFirst(
@@ -104,11 +117,4 @@ public class EntityStatReceiver : MonoBehaviour
         return firstBonus + remainingCap * excess / (excess + safeHalfPoint);
     }
 
-    private void OnValidate()
-    {
-        _attackDamageMaxBonus = Mathf.Max(0f, _attackDamageMaxBonus);
-        _attackSpeedMaxBonus = Mathf.Max(0f, _attackSpeedMaxBonus);
-        _attackDamageHalfPoint = Mathf.Max(_attackDamageMaxBonus, _attackDamageHalfPoint);
-        _attackSpeedHalfPoint = Mathf.Max(_attackSpeedMaxBonus, _attackSpeedHalfPoint);
-    }
 }
