@@ -184,7 +184,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87cf09c3ca41e7142892a57a8fe7ab5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RatArcProjectile
-  _lifeTime: 5
+  _lifeTime: 10
   _impactSFX: {fileID: 8300000, guid: cd06bc7a1a3259e4c9598579a29dd741, type: 3}
   _fragmentPoolKey: 
   _fragmentCount: 3

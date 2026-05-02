@@ -11,6 +11,10 @@ public class UnitCardUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     [SerializeField] private TextMeshProUGUI _costText;
     [SerializeField] private Button _button;
 
+    [SerializeField] private Image _backGround;
+    [SerializeField] private Color _selectedColor = new Color(1f, 0.85f, 0f, 1f);
+    private Color _defaultColor;
+
     private Action<UnitDataSO> _onSelect;
     private UnitDataSO _data;
     private UnitTooltipUI _tooltip;
@@ -21,8 +25,17 @@ public class UnitCardUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         Setup(data, onSelect, tooltip, true);
     }
 
+    public void SetSelected(bool selected)
+    {
+        if(_backGround == null) return;
+        _backGround.color = selected ? _selectedColor : _defaultColor;
+    }
+
     public void Setup(UnitDataSO data, Action<UnitDataSO> onSelect, UnitTooltipUI tooltip, bool isUnlocked)
     {
+        if(_backGround == null) _backGround = GetComponent<Image>();
+        if(_backGround != null) _defaultColor = _backGround.color;
+
         _data = data;
         _tooltip = tooltip;
         _onSelect = onSelect;

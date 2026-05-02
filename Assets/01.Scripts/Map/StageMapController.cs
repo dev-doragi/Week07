@@ -26,6 +26,9 @@ public class StageMapController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _titleText;
     [SerializeField] private GameObject _doctrinePanelPrefab;
     [SerializeField] private RectTransform _doctrinePanelRoot;
+    [Header("Stage Rewards")]
+    [Tooltip("Stage indices that grant a doctrine point and open the doctrine selection panel after clear.")]
+    [SerializeField] private List<int> _doctrineRewardStageIndices = new List<int> { 0, 2, 4, 6, 8 };
     [Header("Reward Choice UI")]
     [SerializeField] private RectTransform _choiceRewardPanelRoot;
     [SerializeField] private Button _productionChoiceButton;
@@ -338,7 +341,7 @@ public class StageMapController : MonoBehaviour
 
     private bool ShouldGrantDoctrinePoint(int stageIndex)
     {
-        return stageIndex == 0 || stageIndex == 2 || stageIndex == 4 || stageIndex == 6 || stageIndex == 8;
+        return _doctrineRewardStageIndices != null && _doctrineRewardStageIndices.Contains(stageIndex);
     }
 
     private bool ShouldShowChoiceReward(int stageIndex)
