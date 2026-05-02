@@ -70,6 +70,9 @@ public class UnitShopUI : MonoBehaviour
         _supportBtn.onClick.AddListener(() => OnCategoryClicked(UnitCategory.Support));
 
         UpdateCapacityText();
+
+        _currentCategory = UnitCategory.Attack;
+        PopulateCards(UnitCategory.Attack);
     }
 
     private void UpdateCapacityText()
