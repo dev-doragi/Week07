@@ -234,7 +234,7 @@ public class GridManager : Singleton<GridManager>
             {
                 Debug.Log($"[GridManager] 수용량 초과 | {CurrentUnitCount}/{MaxCapacity}");
                 ShowPlacementFailureFeedback(
-                    "수용량 초과",
+                    "최대 배치수 초과",
                     data,
                     origin,
                     _capacityFailureTextColor,

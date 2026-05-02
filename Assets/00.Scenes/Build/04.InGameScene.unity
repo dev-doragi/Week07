@@ -5625,10 +5625,10 @@ MonoBehaviour:
   _wheelData: {fileID: 11400000, guid: 111364d3ed48f464aba10b441e66bf1a, type: 2}
   _coreData: {fileID: 11400000, guid: a20b726f5ee6fae40861df8b4ad0d6d3, type: 2}
   _wheelCells:
-  - {x: 3, y: 0}
   - {x: 4, y: 0}
   - {x: 5, y: 0}
-  _coreCell: {x: 3, y: 1}
+  - {x: 6, y: 0}
+  _coreCell: {x: 4, y: 1}
   _ghostCellPrefab: {fileID: 2592798566633237559, guid: 7db8010cc69d69f4891d2f51170cd300, type: 3}
   _validColor: {r: 0, g: 0, b: 0, a: 0.39607844}
   _invalidColor: {r: 1, g: 0.2, b: 0.2, a: 0.5}
@@ -9054,10 +9054,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GridManager
   _isDontDestroyOnLoad: 0
-  _width: 9
+  _width: 11
   _height: 12
   _cellSize: 1
-  _origin: {x: -7, y: -1, z: 0}
+  _origin: {x: -6, y: -1, z: 0}
   _failureTextFont: {fileID: 11400000, guid: e4dba54daa22213498a58638f5792dcd, type: 2}
   _failureFeedbackCooldown: 0.5
   _capacityFailureTextColor: {r: 1, g: 0, b: 0, a: 1}
@@ -10922,6 +10922,18 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2259783339666999415, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_text
+      value: "\uCD5C\uB300\uBC30\uCE58\uC218 \uC99D\uAC00"
+      objectReference: {fileID: 0}
+    - target: {fileID: 2259783339666999415, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_fontSize
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 2259783339666999415, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 18
+      objectReference: {fileID: 0}
     - target: {fileID: 2419784750767299302, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: m_Name
       value: InGamePanel
@@ -10999,7 +11011,11 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 1636082297391915218, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+    - {fileID: 9086875885521234822, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+    - {fileID: 3632551245297051720, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+    - {fileID: 7960235085275179982, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
