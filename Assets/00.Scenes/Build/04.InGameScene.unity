@@ -664,7 +664,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6819421978890148908, guid: a3107d3e4dee9804f9dff29c2f348b09, type: 3}
       propertyPath: _maxMouseCount
-      value: 1000
+      value: 2000
       objectReference: {fileID: 0}
     - target: {fileID: 6819421978890148908, guid: a3107d3e4dee9804f9dff29c2f348b09, type: 3}
       propertyPath: _countDisplayText
@@ -1763,7 +1763,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 334810730}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: defc35c3a9b572d4c9691d85859b54dc, type: 3}
   m_Name: 
@@ -4954,6 +4954,22 @@ PrefabInstance:
       value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 5701285067502101643, guid: 7c499f19c34edce40a8a4f4fdbd124e9, type: 3}
+      propertyPath: '_doctrineRewardStageIndices.Array.data[1]'
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5701285067502101643, guid: 7c499f19c34edce40a8a4f4fdbd124e9, type: 3}
+      propertyPath: '_doctrineRewardStageIndices.Array.data[2]'
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5701285067502101643, guid: 7c499f19c34edce40a8a4f4fdbd124e9, type: 3}
+      propertyPath: '_doctrineRewardStageIndices.Array.data[3]'
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5701285067502101643, guid: 7c499f19c34edce40a8a4f4fdbd124e9, type: 3}
+      propertyPath: '_doctrineRewardStageIndices.Array.data[4]'
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 5701285067502101643, guid: 7c499f19c34edce40a8a4f4fdbd124e9, type: 3}
       propertyPath: _nodeLayoutOverrides.Array.data[0].NodeId
       value: start
       objectReference: {fileID: 0}
@@ -5609,10 +5625,10 @@ MonoBehaviour:
   _wheelData: {fileID: 11400000, guid: 111364d3ed48f464aba10b441e66bf1a, type: 2}
   _coreData: {fileID: 11400000, guid: a20b726f5ee6fae40861df8b4ad0d6d3, type: 2}
   _wheelCells:
+  - {x: 3, y: 0}
   - {x: 4, y: 0}
   - {x: 5, y: 0}
-  - {x: 6, y: 0}
-  _coreCell: {x: 4, y: 1}
+  _coreCell: {x: 3, y: 1}
   _ghostCellPrefab: {fileID: 2592798566633237559, guid: 7db8010cc69d69f4891d2f51170cd300, type: 3}
   _validColor: {r: 0, g: 0, b: 0, a: 0.39607844}
   _invalidColor: {r: 1, g: 0.2, b: 0.2, a: 0.5}
@@ -9038,10 +9054,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GridManager
   _isDontDestroyOnLoad: 0
-  _width: 11
+  _width: 9
   _height: 12
   _cellSize: 1
-  _origin: {x: -6, y: -1, z: 0}
+  _origin: {x: -7, y: -1, z: 0}
   _failureTextFont: {fileID: 11400000, guid: e4dba54daa22213498a58638f5792dcd, type: 2}
   _failureFeedbackCooldown: 0.5
   _capacityFailureTextColor: {r: 1, g: 0, b: 0, a: 1}
@@ -10818,10 +10834,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1580394896270615189, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1816195939451451484, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -10954,18 +10966,6 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6674025877410107444, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
-      propertyPath: m_text
-      value: "\uCD5C\uB300 \uBC30\uCE58\uC218 \uC99D\uAC00"
-      objectReference: {fileID: 0}
-    - target: {fileID: 6674025877410107444, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
-      propertyPath: m_fontSize
-      value: 18
-      objectReference: {fileID: 0}
-    - target: {fileID: 6674025877410107444, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
-      propertyPath: m_fontSizeBase
-      value: 18
-      objectReference: {fileID: 0}
     - target: {fileID: 6905786238118524974, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
@@ -10998,16 +10998,8 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8831947599910992226, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 80
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects:
-    - {fileID: 8708103155720646453, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
-    - {fileID: 1416977784196312342, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
-    - {fileID: 7667532524044693654, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
-    - {fileID: 3139158830736047227, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+    m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
