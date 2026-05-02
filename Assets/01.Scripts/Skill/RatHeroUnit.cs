@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -55,6 +56,13 @@ public class RatHeroUnit : MonoBehaviour, IDamageable
     [Header("Laser Attack")]
     [SerializeField, Min(0.1f)] private float _laserRange = 7f;
     [SerializeField] private bool _laserHitAllTargetsOnLine = true;
+    [SerializeField, Min(0.05f)] private float _laserDuration = 1.2f;
+    [SerializeField, Min(0.05f)] private float _laserTickInterval = 0.2f;
+    [SerializeField, Min(0.01f)] private float _laserLineWidth = 0.2f;
+    [SerializeField, Min(0.1f)] private float _laserTilePerUnit = 3f;
+    [SerializeField] private Color _laserColor = new Color(1f, 0.2f, 0.2f, 0.9f);
+    [SerializeField] private Material _laserLineMaterial;
+    [SerializeField] private LineRenderer _laserLineRenderer;
 
     [Header("Chain Lightning Attack")]
     [SerializeField, Min(1)] private int _chainMaxJumps = 3;
@@ -87,6 +95,8 @@ public class RatHeroUnit : MonoBehaviour, IDamageable
     private float _attackTimer;
     private float _healTimer;
     private bool _isDead;
+    private Coroutine _laserRoutine;
+    private bool _isLaserFiring;
     private Dictionary<RatHeroAttackType, IHeroAttackExecutor> _attackExecutors;
 
     public TeamType Team => TeamType.Player;
@@ -210,6 +220,7 @@ public class RatHeroUnit : MonoBehaviour, IDamageable
             return;
 
         _isDead = true;
+        StopLaserRoutine();
         Debug.Log($"[RatHero] 소멸 | 사유: {reason}");
         Destroy(gameObject);
     }
@@ -395,40 +406,19 @@ public class RatHeroUnit : MonoBehaviour, IDamageable
 
     private bool TryLaserAttack(IDamageable target)
     {
+        if (_isLaserFiring)
+            return true;
+
         Component targetComponent = target as Component;
         if (targetComponent == null)
             return false;
 
-        Vector3 startPos = _projectileSpawnPoint != null ? _projectileSpawnPoint.position : transform.position;
-        Vector2 direction = (targetComponent.transform.position - startPos).normalized;
-        float range = Mathf.Max(0.1f, _laserRange > 0f ? _laserRange : _currentAttackRange);
-        RaycastHit2D[] hits = _enemyLayerMask.value == 0
-            ? Physics2D.RaycastAll(startPos, direction, range)
-            : Physics2D.RaycastAll(startPos, direction, range, _enemyLayerMask);
+        EnsureLaserLineRenderer();
+        if (_laserLineRenderer == null)
+            return false;
 
-        int hitCount = 0;
-        for (int i = 0; i < hits.Length; i++)
-        {
-            IDamageable hitTarget = hits[i].collider != null
-                ? hits[i].collider.GetComponentInParent<IDamageable>()
-                : null;
-
-            if (!CanAttackTarget(hitTarget))
-                continue;
-
-            hitTarget.TakeDamage(new DamageData
-            {
-                Damage = _currentAttackDamage,
-                AttackerTeam = TeamType.Player,
-                HitPoint = hits[i].point
-            });
-            hitCount++;
-
-            if (!_laserHitAllTargetsOnLine)
-                break;
-        }
-
-        return hitCount > 0;
+        _laserRoutine = StartCoroutine(LaserBeamRoutine(targetComponent));
+        return true;
     }
 
     private bool TryChainLightningAttack(IDamageable primaryTarget)
@@ -548,6 +538,158 @@ public class RatHeroUnit : MonoBehaviour, IDamageable
         root.gameObject.layer = layer;
         for (int i = 0; i < root.childCount; i++)
             SetLayerRecursively(root.GetChild(i), layer);
+    }
+
+    private void EnsureLaserLineRenderer()
+    {
+        if (_laserLineRenderer == null)
+            _laserLineRenderer = GetComponentInChildren<LineRenderer>(true);
+
+        if (_laserLineRenderer == null)
+        {
+            GameObject laserObject = new GameObject("LaserLineRenderer");
+            laserObject.transform.SetParent(transform, false);
+            _laserLineRenderer = laserObject.AddComponent<LineRenderer>();
+        }
+
+        _laserLineRenderer.enabled = false;
+        _laserLineRenderer.useWorldSpace = true;
+        _laserLineRenderer.positionCount = 2;
+        _laserLineRenderer.startWidth = _laserLineWidth;
+        _laserLineRenderer.endWidth = _laserLineWidth;
+        _laserLineRenderer.numCapVertices = 0;
+        _laserLineRenderer.numCornerVertices = 0;
+        _laserLineRenderer.textureMode = LineTextureMode.Tile;
+        _laserLineRenderer.alignment = LineAlignment.View;
+        _laserLineRenderer.startColor = _laserColor;
+        _laserLineRenderer.endColor = _laserColor;
+        _laserLineRenderer.sortingOrder = 20;
+
+        if (_laserLineMaterial != null)
+            _laserLineRenderer.material = _laserLineMaterial;
+        else if (_laserLineRenderer.material == null)
+            _laserLineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+    }
+
+    private IEnumerator LaserBeamRoutine(Component primaryTarget)
+    {
+        _isLaserFiring = true;
+        float elapsed = 0f;
+        float tickTimer = 0f;
+        float duration = Mathf.Max(0.05f, _laserDuration);
+
+        _laserLineRenderer.enabled = true;
+
+        while (!_isDead && elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            tickTimer -= Time.deltaTime;
+
+            Vector3 startPos = _projectileSpawnPoint != null ? _projectileSpawnPoint.position : transform.position;
+            Vector3 fallbackTargetPos = primaryTarget != null ? primaryTarget.transform.position : (startPos + transform.right * _laserRange);
+            Vector3 targetPos = ResolveLaserHitPoint(startPos, fallbackTargetPos, out List<IDamageable> hitTargets);
+
+            UpdateLaserLineVisual(startPos, targetPos);
+
+            if (tickTimer <= 0f)
+            {
+                tickTimer = Mathf.Max(0.05f, _laserTickInterval);
+                ApplyLaserTickDamage(hitTargets, targetPos);
+            }
+
+            yield return null;
+        }
+
+        _laserLineRenderer.enabled = false;
+        _isLaserFiring = false;
+        _laserRoutine = null;
+    }
+
+    private Vector3 ResolveLaserHitPoint(Vector3 startPos, Vector3 targetPosHint, out List<IDamageable> hitTargets)
+    {
+        hitTargets = new List<IDamageable>();
+
+        Vector2 direction = (targetPosHint - startPos).normalized;
+        if (direction.sqrMagnitude <= 0.0001f)
+            direction = transform.right;
+
+        float range = Mathf.Max(0.1f, _laserRange > 0f ? _laserRange : _currentAttackRange);
+        RaycastHit2D[] hits = _enemyLayerMask.value == 0
+            ? Physics2D.RaycastAll(startPos, direction, range)
+            : Physics2D.RaycastAll(startPos, direction, range, _enemyLayerMask);
+
+        float closestDistance = range;
+        for (int i = 0; i < hits.Length; i++)
+        {
+            RaycastHit2D hit = hits[i];
+            IDamageable hitTarget = hit.collider != null ? hit.collider.GetComponentInParent<IDamageable>() : null;
+            if (!CanAttackTarget(hitTarget))
+                continue;
+
+            hitTargets.Add(hitTarget);
+            if (hit.distance < closestDistance)
+                closestDistance = hit.distance;
+
+            if (!_laserHitAllTargetsOnLine)
+                break;
+        }
+
+        return startPos + (Vector3)(direction * closestDistance);
+    }
+
+    private void UpdateLaserLineVisual(Vector3 startPos, Vector3 endPos)
+    {
+        if (_laserLineRenderer == null)
+            return;
+
+        _laserLineRenderer.SetPosition(0, startPos);
+        _laserLineRenderer.SetPosition(1, endPos);
+
+        Material mat = _laserLineRenderer.material;
+        if (mat != null)
+        {
+            float length = Vector3.Distance(startPos, endPos);
+            float tileX = Mathf.Max(1f, length * Mathf.Max(0.1f, _laserTilePerUnit));
+            mat.SetTextureScale("_MainTex", new Vector2(tileX, 1f));
+        }
+    }
+
+    private void ApplyLaserTickDamage(List<IDamageable> targets, Vector2 hitPoint)
+    {
+        if (targets == null || targets.Count == 0)
+            return;
+
+        for (int i = 0; i < targets.Count; i++)
+        {
+            IDamageable target = targets[i];
+            if (!CanAttackTarget(target))
+                continue;
+
+            target.TakeDamage(new DamageData
+            {
+                Damage = _currentAttackDamage,
+                AttackerTeam = TeamType.Player,
+                HitPoint = hitPoint
+            });
+        }
+    }
+
+    private void StopLaserRoutine()
+    {
+        if (_laserRoutine != null)
+        {
+            StopCoroutine(_laserRoutine);
+            _laserRoutine = null;
+        }
+
+        _isLaserFiring = false;
+        if (_laserLineRenderer != null)
+            _laserLineRenderer.enabled = false;
+    }
+
+    private void OnDisable()
+    {
+        StopLaserRoutine();
     }
 
     private void EnsureAttackExecutors()

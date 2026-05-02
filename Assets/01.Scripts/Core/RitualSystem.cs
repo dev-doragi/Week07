@@ -554,4 +554,24 @@ public class RitualSystem : MonoBehaviour
         float value = levelMultipliers[index];
         return value > 0f ? value : defaultMultiplier;
     }
+
+    // 임시 디버깅용: 버튼 OnClick에 연결해서 교리 효과를 강제 적용
+    public void DebugApplyRitualNode0() => DebugApplyDoctrineEffect("Ritual_Node_0");
+    public void DebugApplyRitualNode1() => DebugApplyDoctrineEffect("Ritual_Node_1");
+    public void DebugApplyRitualNode2() => DebugApplyDoctrineEffect("Ritual_Node_2");
+    public void DebugApplyRitualNode3() => DebugApplyDoctrineEffect("Ritual_Node_3");
+    public void DebugApplyRitualNode4() => DebugApplyDoctrineEffect("Ritual_Node_4");
+
+    private void DebugApplyDoctrineEffect(string effectId)
+    {
+        DoctrineEffectApplier applier = FindAnyObjectByType<DoctrineEffectApplier>();
+        if (applier == null)
+        {
+            Debug.LogWarning($"[RitualSystem] 디버그 교리 적용 실패: DoctrineEffectApplier 없음 | effectId: {effectId}");
+            return;
+        }
+
+        Debug.Log($"[RitualSystem] 디버그 교리 적용 요청 | effectId: {effectId}");
+        applier.ApplyEffect(effectId);
+    }
 }
