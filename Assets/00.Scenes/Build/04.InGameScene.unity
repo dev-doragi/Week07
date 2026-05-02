@@ -10922,6 +10922,18 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2259783339666999415, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_text
+      value: "\uCD5C\uB300\uBC30\uCE58\uC218 \uC99D\uAC00"
+      objectReference: {fileID: 0}
+    - target: {fileID: 2259783339666999415, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_fontSize
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 2259783339666999415, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 18
+      objectReference: {fileID: 0}
     - target: {fileID: 2419784750767299302, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: m_Name
       value: InGamePanel
@@ -10999,7 +11011,11 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 1636082297391915218, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+    - {fileID: 9086875885521234822, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+    - {fileID: 3632551245297051720, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+    - {fileID: 7960235085275179982, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
