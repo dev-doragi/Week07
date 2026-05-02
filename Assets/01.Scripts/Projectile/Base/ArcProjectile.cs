@@ -47,6 +47,12 @@ public class ArcProjectile : ProjectileBase
     {
         if (!_isInitialized) return;
 
+        if (other.CompareTag("RitualWall") && _attackerTeam == TeamType.Enemy)
+        {
+            Despawn();
+            return;
+        }
+
         if (other.TryGetComponent(out IDamageable target))
         {
             ProcessHit(target, transform.position);
