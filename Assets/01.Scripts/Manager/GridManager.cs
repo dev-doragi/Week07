@@ -308,6 +308,67 @@ public class GridManager : Singleton<GridManager>
         return true;
     }
 
+    // 재배치 가능한지
+    public bool CanReplace(UnitDataSO newData, Vector2Int cell)
+    {
+        if(newData == null) return false;
+        if(newData.Size != Vector2Int.one) return false;
+        if(newData.Category != UnitCategory.Defense) return false;
+
+        var existing = GetUnitAt(cell);
+        if(existing == null) return false;
+        if(existing.Data.Size != Vector2Int.one) return false;
+        if(existing.Data.Category != UnitCategory.Defense) return false;
+        if(existing.Data.PlacementRule == PlacementRule.InitialOnly) return false;
+
+        return !WouldReplaceCollapse(existing, newData);
+    }
+
+    private bool WouldReplaceCollapse(PlacedUnit oldUnit, UnitDataSO newData)
+    {
+        if(!oldUnit.Data.ActsAsFoundation || newData.ActsAsFoundation)
+            return false;
+        
+        var origin = oldUnit.OriginCell;
+        _cells[origin.x, origin.y] = null;
+        var unsupported = FindUnsupportedUnits();
+        _cells[origin.x, origin.y] = oldUnit;
+        return unsupported.Count > 0;
+    }
+
+    public bool TryReplace(UnitDataSO newData, Vector2Int cell)
+    {
+        if(!CanReplace(newData, cell)) return false;
+
+        var existing = GetUnitAt(cell);
+        var origin = existing.OriginCell;
+
+        if(ResourceManager.Instance != null)
+        {
+            int refund = Mathf.CeilToInt(existing.Data.Cost * 0.5f);
+            int net = newData.Cost - refund;
+            if(net > 0)
+            {
+                if(!ResourceManager.Instance.SubtractMouseCount(net, "grid_replace:" + newData.UnitName))
+                {
+                    ShowPlacementFailureFeedback("자원 부족", newData, origin,
+                        _resourceFailureTextColor, _resourceFailureTextSize);
+                    return false;
+                }
+            }
+            else if(net < 0)
+            {
+            ResourceManager.Instance.AddMouseCount(-net, "grid_replace_refund:" + existing.Data.UnitName);
+            }
+        }
+
+        _cells[origin.x, origin.y] = null;
+        Destroy(existing.Instance);
+        CreateAndRegister(newData, origin);
+        return true;
+    }
+
+
     private bool WouldCauseCollapse(PlacedUnit unitToRemove)
     {
         for (int x = 0; x < unitToRemove.Data.Size.x; x++)

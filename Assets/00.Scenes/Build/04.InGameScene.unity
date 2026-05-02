@@ -1739,51 +1739,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 315006545}
   m_CullTransparentMesh: 1
---- !u!1 &334810730
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 334810732}
-  - component: {fileID: 334810731}
-  m_Layer: 0
-  m_Name: StageHealSystem
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &334810731
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 334810730}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: defc35c3a9b572d4c9691d85859b54dc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::StageHealSystem
-  _playerGrid: {fileID: 1950871294}
---- !u!4 &334810732
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 334810730}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &341923338
 GameObject:
   m_ObjectHideFlags: 0
@@ -5633,6 +5588,8 @@ MonoBehaviour:
   _validColor: {r: 0, g: 0, b: 0, a: 0.39607844}
   _invalidColor: {r: 1, g: 0.2, b: 0.2, a: 0.5}
   _hintColor: {r: 0.2, g: 1, b: 0.2, a: 0.3}
+  _replaceColor: {r: 1, g: 0.8, b: 0, a: 0.5}
+  _replaceHintColor: {r: 1, g: 0.8, b: 0, a: 0.3}
   _spritePreviewAlpha: 0.3
 --- !u!1 &1331588386
 GameObject:
@@ -11081,6 +11038,34 @@ PrefabInstance:
     - target: {fileID: 7994137606967216088, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: '_allUnits.Array.data[9]'
       value: 
+      objectReference: {fileID: 11400000, guid: 280c2bfe03897574da0eff2077b75ee1, type: 2}
+    - target: {fileID: 7994137606967216088, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: '_allUnits.Array.data[10]'
+      value: 
+      objectReference: {fileID: 11400000, guid: d2824f716f68a274b8ff20f2150b7642, type: 2}
+    - target: {fileID: 7994137606967216088, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: '_allUnits.Array.data[11]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 490fc92c8802a2f43b605456cd67ef8e, type: 2}
+    - target: {fileID: 7994137606967216088, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: '_allUnits.Array.data[12]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 227b08e28dd0ccb42b712cdf6504d363, type: 2}
+    - target: {fileID: 7994137606967216088, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: '_allUnits.Array.data[13]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 3a6c2837145a3f148bdf0cc5d5edbb69, type: 2}
+    - target: {fileID: 7994137606967216088, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: '_allUnits.Array.data[14]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 0bf8fb6a6b632e440a5754fc12dcc176, type: 2}
+    - target: {fileID: 7994137606967216088, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: '_allUnits.Array.data[15]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 67e1321594bd8034783162a4c27fcbd3, type: 2}
+    - target: {fileID: 7994137606967216088, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
+      propertyPath: '_allUnits.Array.data[16]'
+      value: 
       objectReference: {fileID: 11400000, guid: 2e5c66f10c6378f4f8808be2c71a07c1, type: 2}
     - target: {fileID: 8046754958094877094, guid: 1638af1072d6d844a83d0b03fac05658, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -11151,7 +11136,6 @@ SceneRoots:
   - {fileID: 1187777830}
   - {fileID: 1018384668}
   - {fileID: 1024365162}
-  - {fileID: 334810732}
   - {fileID: 1073840656}
   - {fileID: 1842864015}
   - {fileID: 1950871295}

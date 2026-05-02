@@ -52,6 +52,8 @@ public class GridController : MonoBehaviour
     [SerializeField] private Color _validColor = new(0.2f, 0.5f, 1f, 0.5f);   // 설치 가능
     [SerializeField] private Color _invalidColor = new(1f, 0.2f, 0.2f, 0.5f); // 설치 불가
     [SerializeField] private Color _hintColor = new(0.2f, 1f, 0.2f, 0.3f);   //설치 가능 영역 녹색
+    [SerializeField] private Color _replaceColor = new(1f, 0.8f, 0f, 0.5f);
+    [SerializeField] private Color _replaceHintColor = new(1f, 0.8f, 0f, 0.3f);
     private readonly List<SpriteRenderer> _hintCells = new();
     private Transform _hintRoot;
 
@@ -163,6 +165,8 @@ public class GridController : MonoBehaviour
             for(int y = 0; y < _grid.Height; y++)
             {
                 var cell = new Vector2Int(x, y); 
+                bool isPlace = _grid.CanPlace(data, cell);
+                bool isReplace = !isPlace && _grid.CanReplace(data, cell);
                 if(!_grid.CanPlace(data, cell)) continue;
 
                 // 힌트 셀 재활용 또는 생성
@@ -180,7 +184,7 @@ public class GridController : MonoBehaviour
                 sr.transform.SetParent(_grid.transform);
                 sr.transform.position = _grid.CellToWorld(cell);
 
-                sr.color = _hintColor;
+                sr.color = isPlace ? _hintColor : _replaceColor;
                 sr.sortingOrder = 9;
                 sr.gameObject.SetActive(true);
             }
@@ -222,7 +226,10 @@ public class GridController : MonoBehaviour
             {
                 if(_grid.TryPlace(_selected, cell))
                     ShowValidCells(_selected);
+                else if(_grid.TryReplace(_selected, cell))
+                    ShowValidCells(_selected);
             }
+                
         }
 
         if (mouse.rightButton.wasPressedThisFrame)
@@ -342,7 +349,9 @@ public class GridController : MonoBehaviour
                             - new Vector3(_grid.CellSize * 0.5f, _grid.CellSize * 0.5f, 0f);
         
         bool CanPlace = _grid.CanPlace(_selected, cell); 
-        var color = CanPlace ? _validColor : _invalidColor;
+        bool canReplace = !CanPlace && _grid.CanReplace(_selected, cell);
+
+        var color = CanPlace ? _validColor : canReplace ? _replaceColor : _invalidColor;
 
         for (int i = 0; i < _ghostCells.Count; i++)
         {
@@ -351,7 +360,7 @@ public class GridController : MonoBehaviour
         }
 
         // 스프라이트 프리뷰 : 설치 가능할 때만 표시
-        if(CanPlace && _spritePreview.sprite != null)
+        if((CanPlace || canReplace )&& _spritePreview.sprite != null)
         {
             _spritePreview.enabled = true;
             var c = Color.white;
