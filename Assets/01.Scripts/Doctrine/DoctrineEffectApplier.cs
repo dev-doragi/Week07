@@ -139,7 +139,10 @@ public class DoctrineEffectApplier : MonoBehaviour
                 break;
 
             case "Ritual_Node_4":
-                ApplyRitualSkillLevelUpgrade(3, effectId, 1);
+                // 디버깅용: Ritual_Node_4 선택 시 의식 스킬 3종을 모두 2단계로 맞춤
+                ApplyRitualSkillLevelUpgrade(1, effectId, 99);
+                ApplyRitualSkillLevelUpgrade(2, effectId, 99);
+                ApplyRitualSkillLevelUpgrade(3, effectId, 99);
                 break;
 
             case "Tower_Node_1":

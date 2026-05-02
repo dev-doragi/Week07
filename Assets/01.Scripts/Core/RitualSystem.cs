@@ -56,6 +56,9 @@ public class RitualSystem : MonoBehaviour
     [SerializeField] private Image _skill2CooldownGauge;
     [SerializeField] private Image _skill3CooldownGauge;
 
+    [Header("Cutin UI")]
+    [SerializeField] private RitualCutinUI _ritualCutinUI;
+
     private Coroutine _wallRoutine;
     private Unit _playerCore;
     private Unit _enemyCore;
@@ -130,6 +133,7 @@ public class RitualSystem : MonoBehaviour
         if (!TryConsumeResource(_skill1Cost)) return;
         _skill1CooldownTimer = _skill1Cooldown;
         Debug.Log($"[RitualSystem] 스킬 사용 성공 | Skill1 Wall | 단계: {GetSkillLevel(1)}");
+        _ritualCutinUI?.Play(1);
         GameCsvLogger.Instance.LogEvent(GameLogEventType.SkillUsed, actor: gameObject, value: _skill1Cost, metadata: new System.Collections.Generic.Dictionary<string, object> { { "skillIndex", 1 }, { "skillName", "Wall" }, { "kind", "Ritual" } });
         GameCsvLogger.Instance.LogEvent(GameLogEventType.RitualUsed, actor: gameObject, value: _skill1Cost, metadata: new System.Collections.Generic.Dictionary<string, object> { { "skillIndex", 1 }, { "skillName", "Wall" } });
         ActivateWall();
@@ -145,6 +149,7 @@ public class RitualSystem : MonoBehaviour
         if (!TryConsumeResource(_skill2Cost)) return;
         _skill2CooldownTimer = _skill2Cooldown;
         Debug.Log($"[RitualSystem] 스킬 사용 성공 | Skill2 Meteor | 단계: {GetSkillLevel(2)}");
+        _ritualCutinUI?.Play(2);
         GameCsvLogger.Instance.LogEvent(GameLogEventType.SkillUsed, actor: gameObject, value: _skill2Cost, metadata: new System.Collections.Generic.Dictionary<string, object> { { "skillIndex", 2 }, { "skillName", "Meteor" }, { "kind", "Ritual" } });
         GameCsvLogger.Instance.LogEvent(GameLogEventType.RitualUsed, actor: gameObject, value: _skill2Cost, metadata: new System.Collections.Generic.Dictionary<string, object> { { "skillIndex", 2 }, { "skillName", "Meteor" } });
         OnSkill2();
@@ -160,6 +165,7 @@ public class RitualSystem : MonoBehaviour
         if (!TryConsumeResource(_skill3Cost)) return;
         _skill3CooldownTimer = _skill3Cooldown;
         Debug.Log($"[RitualSystem] 스킬 사용 성공 | Skill3 RatHero | 단계: {GetSkillLevel(3)}");
+        _ritualCutinUI?.Play(3);
         GameCsvLogger.Instance.LogEvent(GameLogEventType.SkillUsed, actor: gameObject, value: _skill3Cost, metadata: new System.Collections.Generic.Dictionary<string, object> { { "skillIndex", 3 }, { "skillName", "RatHero" }, { "kind", "Ritual" } });
         GameCsvLogger.Instance.LogEvent(GameLogEventType.RitualUsed, actor: gameObject, value: _skill3Cost, metadata: new System.Collections.Generic.Dictionary<string, object> { { "skillIndex", 3 }, { "skillName", "RatHero" } });
         OnSkill3();
@@ -564,14 +570,76 @@ public class RitualSystem : MonoBehaviour
 
     private void DebugApplyDoctrineEffect(string effectId)
     {
-        DoctrineEffectApplier applier = FindAnyObjectByType<DoctrineEffectApplier>();
-        if (applier == null)
+        DoctrineEffectApplier applier = FindFirstObjectByType<DoctrineEffectApplier>(FindObjectsInactive.Include);
+        if (applier != null)
         {
-            Debug.LogWarning($"[RitualSystem] 디버그 교리 적용 실패: DoctrineEffectApplier 없음 | effectId: {effectId}");
+            Debug.Log($"[RitualSystem] 디버그 교리 적용 요청(DoctrineEffectApplier 경유) | effectId: {effectId}");
+            applier.ApplyEffect(effectId);
             return;
         }
 
-        Debug.Log($"[RitualSystem] 디버그 교리 적용 요청 | effectId: {effectId}");
-        applier.ApplyEffect(effectId);
+        Debug.LogWarning($"[RitualSystem] DoctrineEffectApplier를 찾지 못해 로컬 디버그 적용으로 전환합니다. | effectId: {effectId}");
+        DebugApplyDoctrineEffectLocally(effectId);
+    }
+
+    private void DebugApplyDoctrineEffectLocally(string effectId)
+    {
+        switch (effectId)
+        {
+            case "Ritual_Node_0":
+                UpgradeSkillLevelFromDoctrine(2, effectId, 1);
+                break;
+
+            case "Ritual_Node_1":
+                DebugReduceSkillCosts(0.5f);
+                EventBus.Instance?.Publish(new RitualCostChangedEvnet());
+                break;
+
+            case "Ritual_Node_2":
+                UpgradeSkillLevelFromDoctrine(1, effectId, 1);
+                Debug.LogWarning("[RitualSystem] 로컬 디버그 적용에서는 Ritual wall heal(DoctrineEffectApplier 전용 모니터) 효과를 생략합니다.");
+                break;
+
+            case "Ritual_Node_3":
+                DebugReduceSkillCooldowns(0.5f);
+                break;
+
+            case "Ritual_Node_4":
+                // 현재 디버깅 룰: Ritual_Node_4 적용 시 의식 3종 모두 2단계
+                UpgradeSkillLevelFromDoctrine(1, effectId, 99);
+                UpgradeSkillLevelFromDoctrine(2, effectId, 99);
+                UpgradeSkillLevelFromDoctrine(3, effectId, 99);
+                break;
+
+            default:
+                Debug.LogWarning($"[RitualSystem] 로컬 디버그 적용 실패: 미지원 effectId | {effectId}");
+                break;
+        }
+    }
+
+    private void DebugReduceSkillCosts(float multiplier)
+    {
+        int before1 = _skill1Cost;
+        int before2 = _skill2Cost;
+        int before3 = _skill3Cost;
+
+        _skill1Cost = Mathf.Max(0, Mathf.CeilToInt(_skill1Cost * multiplier));
+        _skill2Cost = Mathf.Max(0, Mathf.CeilToInt(_skill2Cost * multiplier));
+        _skill3Cost = Mathf.Max(0, Mathf.CeilToInt(_skill3Cost * multiplier));
+
+        Debug.Log($"[RitualSystem] 로컬 디버그 적용 | 비용 감소 x{multiplier:0.##} | S1:{before1}->{_skill1Cost} S2:{before2}->{_skill2Cost} S3:{before3}->{_skill3Cost}");
+    }
+
+    private void DebugReduceSkillCooldowns(float multiplier)
+    {
+        float before1 = _skill1Cooldown;
+        float before2 = _skill2Cooldown;
+        float before3 = _skill3Cooldown;
+
+        _skill1Cooldown = Mathf.Max(0.01f, _skill1Cooldown * multiplier);
+        _skill2Cooldown = Mathf.Max(0.01f, _skill2Cooldown * multiplier);
+        _skill3Cooldown = Mathf.Max(0.01f, _skill3Cooldown * multiplier);
+
+        Debug.Log($"[RitualSystem] 로컬 디버그 적용 | 쿨다운 감소 x{multiplier:0.##} | S1:{before1:0.##}->{_skill1Cooldown:0.##} S2:{before2:0.##}->{_skill2Cooldown:0.##} S3:{before3:0.##}->{_skill3Cooldown:0.##}");
     }
 }
