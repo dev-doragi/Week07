@@ -458,6 +458,8 @@ public class EnemyGridManager : MonoBehaviour
 
         var falling = go.AddComponent<FallingUnit>();
         falling.Begin();
+
+        EventBus.Instance?.Publish(new EnemyGridChangedEvent());
     }
 
     private void ScheduleCollapseCheck()

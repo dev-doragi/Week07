@@ -99,10 +99,10 @@ public class CollisionPowerUIController : MonoBehaviour
     private void OnCollisionPowerUpdated(CollisionPowerUpdatedEvent e)
     {
         if (_playerCPText != null)
-            _playerCPText.text = $"{e.PlayerCP:F1}";
+            _playerCPText.text = $"{e.PlayerCP:0}";
 
         if (_enemyCPText != null)
-            _enemyCPText.text = $"{e.EnemyCP:F1}";
+            _enemyCPText.text = $"{e.EnemyCP:0}";
     }
 
     private void OnSiegeChargeStarted(SiegeChargeStartedEvent _)
