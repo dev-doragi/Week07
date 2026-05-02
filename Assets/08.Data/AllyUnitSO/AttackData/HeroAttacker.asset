@@ -10,39 +10,39 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 550f97df3c4ad9d44a36190b24e47c3b, type: 3}
-  m_Name: AllyWall_2
+  m_Name: HeroAttacker
   m_EditorClassIdentifier: Assembly-CSharp::UnitDataSO
-  Key: 2
-  UnitName: "\uC14B\uC774\uC950"
+  Key: 999
+  UnitName: "\uC950\uC2E0\uAD00\uCA29"
   Team: 1
-  Category: 4
-  Prefab: {fileID: 1932371422767412738, guid: d551bbfe7669c38479611c730c83c72d, type: 3}
-  Icon: {fileID: 5367596630024612521, guid: 9d44159c3a32c4f4ab6473218f52a5e6, type: 3}
-  Description: "\"\uC14B\uC774\uB77C \uC138\uBC30\uB85C \uC798 \uBC84\uD301\uB2C8\uB2E4\""
+  Category: 3
+  Prefab: {fileID: 7066181288335655898, guid: 940d0e3b82da04846ac94506a7d58c84, type: 3}
+  Icon: {fileID: 0}
+  Description: 
   Size: {x: 1, y: 1}
-  PlacementRule: 2
+  PlacementRule: 0
   ActsAsFoundation: 1
-  WheelCapacity: 5
-  MaxHp: 110
+  WheelCapacity: 0
+  MaxHp: 9999
   BaseDefenseRate: 0
-  Cost: 20
+  Cost: 0
   DeathSpawnKey: 
   BaseDeathSpawnCount: 0
   Attack:
-    Damage: 0
-    Speed: 0
-    Distance: 0
+    Damage: 20
+    Speed: 1
+    Distance: 50
     AttackCost: 0
-    Trajectory: 0
+    Trajectory: 1
     Targeting: 0
     Area: 0
     RangeRadius: 0
     PiercingCount: 0
     Penetration: 0
     PiercingDecay: 0
-    ProjectilePrefab: {fileID: 0}
+    ProjectilePrefab: {fileID: 849242292857146060, guid: 5d290aa95a4805c41a011ec34f385e5b, type: 3}
   Defense:
-    CollisionPower: 2
+    CollisionPower: 0
   Support:
     Radius: 0
     Effects: []

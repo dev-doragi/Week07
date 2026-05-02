@@ -96,8 +96,6 @@ public class DoctrineEffectApplier : MonoBehaviour
         switch (effectId)
         {
             case "Ram_Node_0":
-            case "Ritual_Node_0":
-            case "Ritual_Node_4":
             case "Tower_Node_0":
             case "Tower_Node_2":
             case "Tower_Node_4":
@@ -127,12 +125,21 @@ public class DoctrineEffectApplier : MonoBehaviour
                 ApplyRitualCostReduction(0.5f);
                 break;
 
+            case "Ritual_Node_0":
+                ApplyRitualSkillLevelUpgrade(2, effectId, 1);
+                break;
+
             case "Ritual_Node_2":
                 EnableRitualWallHeal();
+                ApplyRitualSkillLevelUpgrade(1, effectId, 1);
                 break;
 
             case "Ritual_Node_3":
                 ApplyRitualCooldownReduction(0.5f);
+                break;
+
+            case "Ritual_Node_4":
+                ApplyRitualSkillLevelUpgrade(3, effectId, 1);
                 break;
 
             case "Tower_Node_1":
@@ -231,11 +238,6 @@ public class DoctrineEffectApplier : MonoBehaviour
             case "Tower_Node_2":
             case "Tower_Node_4":
                 eventKind = UnlockEventKind.Rat;
-                return true;
-
-            case "Ritual_Node_0":
-            case "Ritual_Node_4":
-                eventKind = UnlockEventKind.Ritual;
                 return true;
 
             default:
@@ -361,6 +363,18 @@ public class DoctrineEffectApplier : MonoBehaviour
         ReducePrivateFloatField(ritualSystem, "_skill1Cooldown", multiplier);
         ReducePrivateFloatField(ritualSystem, "_skill2Cooldown", multiplier);
         ReducePrivateFloatField(ritualSystem, "_skill3Cooldown", multiplier);
+    }
+
+    private void ApplyRitualSkillLevelUpgrade(int skillIndex, string effectId, int amount)
+    {
+        if (ritualSystem == null)
+        {
+            Debug.LogWarning($"[DoctrineEffectApplier] RitualSystem not found. Ritual skill level upgrade skipped. skillIndex: {skillIndex}");
+            return;
+        }
+
+        int level = ritualSystem.UpgradeSkillLevelFromDoctrine(skillIndex, effectId, amount);
+        Debug.Log($"[DoctrineEffectApplier] 교리 선택으로 의식 강화 적용 | effectId: {effectId} | Skill{skillIndex} 현재 단계: {level}");
     }
 
     // EffectSummary: 伊먮꼍 ?섏떇??媛뺥솕 - ?ъ슜 ??紐⑤뱺 伊먯쓽 泥대젰 ?뚮웾 ?뚮났

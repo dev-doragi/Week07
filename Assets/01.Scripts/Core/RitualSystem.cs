@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -11,6 +12,7 @@ public class RitualSystem : MonoBehaviour
 {
     [Header("Doctrine Unlock")]
     [SerializeField] private bool _useDoctrineUnlockChecks = true;
+    [SerializeField] private bool _unlockAllRitualSkillsAtStart = true;
     [SerializeField] private UnlockManager _unlockManager;
 
     [Header("Skill Costs")]
@@ -27,8 +29,9 @@ public class RitualSystem : MonoBehaviour
     [Tooltip("물리적으로 켜고 끌 벽 오브젝트. 아군 투사체는 통과, 적 투사체는 차단.")]
     [SerializeField] private GameObject _wallObject;
     [SerializeField] private float _skill1Duration = 5f;
+    [SerializeField] private float[] _skill1DurationBonusByLevel = new float[2];
 
-    [Header("Skill 3 - Meteor")]
+    [Header("Skill 2 - Meteor")]
     [SerializeField] private string _meteorPoolKey  = "MeteorProjectile";
     [SerializeField] private int    _meteorCount    = 5;
     [SerializeField] private float  _meteorDamage   = 80f;
@@ -38,9 +41,15 @@ public class RitualSystem : MonoBehaviour
     [SerializeField] private float  _minDuration    = 0.8f;
     [SerializeField] private float  _maxDuration    = 1.4f;
     [SerializeField] private float  _meteorDelay    = 0.15f;
+    [SerializeField] private int[]   _meteorCountBonusByLevel = new int[2];
+    [SerializeField] private float[] _meteorDamageMultiplierByLevel = new float[2];
+    [SerializeField] private float[] _meteorSplashRadiusBonusByLevel = new float[2];
+    [SerializeField] private float[] _meteorTargetRadiusBonusByLevel = new float[2];
 
-    [Header("Skill 2 - Income Block")]
-    [SerializeField] private IncomeInventory _incomeInventory;
+    [Header("Skill 3 - RatHero")]
+    [SerializeField] private GameObject _ratHeroPrefab;
+    [SerializeField] private Transform _ratHeroSpawnPoint;
+    [SerializeField] private Vector3 _ratHeroSpawnOffset = Vector3.zero;
 
     [Header("Cooldown Gauges")]
     [SerializeField] private Image _skill1CooldownGauge;
@@ -55,6 +64,14 @@ public class RitualSystem : MonoBehaviour
     private float _skill2CooldownTimer = 0f;
     private float _skill3CooldownTimer = 0f;
 
+    private const int MaxSkillLevel = 2;
+    private readonly Dictionary<int, int> _skillLevels = new Dictionary<int, int>
+    {
+        { 1, 0 },
+        { 2, 0 },
+        { 3, 0 }
+    };
+
     private const string RitualSkill2UnlockId = "Ritual_Node_0";
     private const string RitualSkill3UnlockId = "Ritual_Node_4";
 
@@ -66,8 +83,8 @@ public class RitualSystem : MonoBehaviour
         return skillIndex switch
         {
             1 => true,
-            2 => IsDoctrineUnlockedForUI(RitualSkill2UnlockId),
-            3 => IsDoctrineUnlockedForUI(RitualSkill3UnlockId),
+            2 => !_useDoctrineUnlockChecks || IsDoctrineUnlockedForUI(RitualSkill2UnlockId),
+            3 => !_useDoctrineUnlockChecks || IsDoctrineUnlockedForUI(RitualSkill3UnlockId),
             _ => true
         };
     }
@@ -112,6 +129,7 @@ public class RitualSystem : MonoBehaviour
         if (!IsReady(1, _skill1CooldownTimer)) return;
         if (!TryConsumeResource(_skill1Cost)) return;
         _skill1CooldownTimer = _skill1Cooldown;
+        Debug.Log($"[RitualSystem] 스킬 사용 성공 | Skill1 Wall | 단계: {GetSkillLevel(1)}");
         GameCsvLogger.Instance.LogEvent(GameLogEventType.SkillUsed, actor: gameObject, value: _skill1Cost, metadata: new System.Collections.Generic.Dictionary<string, object> { { "skillIndex", 1 }, { "skillName", "Wall" }, { "kind", "Ritual" } });
         GameCsvLogger.Instance.LogEvent(GameLogEventType.RitualUsed, actor: gameObject, value: _skill1Cost, metadata: new System.Collections.Generic.Dictionary<string, object> { { "skillIndex", 1 }, { "skillName", "Wall" } });
         ActivateWall();
@@ -123,26 +141,30 @@ public class RitualSystem : MonoBehaviour
     {
         if (!IsDoctrineUnlocked(2, RitualSkill2UnlockId)) return;
         if (!IsReady(2, _skill2CooldownTimer)) return;
+        if (!CanCastSkill2()) return;
         if (!TryConsumeResource(_skill2Cost)) return;
         _skill2CooldownTimer = _skill2Cooldown;
-        GameCsvLogger.Instance.LogEvent(GameLogEventType.SkillUsed, actor: gameObject, value: _skill2Cost, metadata: new System.Collections.Generic.Dictionary<string, object> { { "skillIndex", 2 }, { "skillName", "IncomeBlock" }, { "kind", "Ritual" } });
-        GameCsvLogger.Instance.LogEvent(GameLogEventType.RitualUsed, actor: gameObject, value: _skill2Cost, metadata: new System.Collections.Generic.Dictionary<string, object> { { "skillIndex", 2 }, { "skillName", "IncomeBlock" } });
+        Debug.Log($"[RitualSystem] 스킬 사용 성공 | Skill2 Meteor | 단계: {GetSkillLevel(2)}");
+        GameCsvLogger.Instance.LogEvent(GameLogEventType.SkillUsed, actor: gameObject, value: _skill2Cost, metadata: new System.Collections.Generic.Dictionary<string, object> { { "skillIndex", 2 }, { "skillName", "Meteor" }, { "kind", "Ritual" } });
+        GameCsvLogger.Instance.LogEvent(GameLogEventType.RitualUsed, actor: gameObject, value: _skill2Cost, metadata: new System.Collections.Generic.Dictionary<string, object> { { "skillIndex", 2 }, { "skillName", "Meteor" } });
         OnSkill2();
         EventBus.Instance?.Publish(new TutorialSkillUsedEvent { SkillIndex = 2 });
-        GameLogger.Instance?.RecordRitualSkillUsed(2, "IncomeBlock");
+        GameLogger.Instance?.RecordRitualSkillUsed(2, "Meteor");
     }
 
     public void UseSkill3()
     {
         if (!IsDoctrineUnlocked(3, RitualSkill3UnlockId)) return;
         if (!IsReady(3, _skill3CooldownTimer)) return;
+        if (!CanCastSkill3()) return;
         if (!TryConsumeResource(_skill3Cost)) return;
         _skill3CooldownTimer = _skill3Cooldown;
-        GameCsvLogger.Instance.LogEvent(GameLogEventType.SkillUsed, actor: gameObject, value: _skill3Cost, metadata: new System.Collections.Generic.Dictionary<string, object> { { "skillIndex", 3 }, { "skillName", "Meteor" }, { "kind", "Ritual" } });
-        GameCsvLogger.Instance.LogEvent(GameLogEventType.RitualUsed, actor: gameObject, value: _skill3Cost, metadata: new System.Collections.Generic.Dictionary<string, object> { { "skillIndex", 3 }, { "skillName", "Meteor" } });
+        Debug.Log($"[RitualSystem] 스킬 사용 성공 | Skill3 RatHero | 단계: {GetSkillLevel(3)}");
+        GameCsvLogger.Instance.LogEvent(GameLogEventType.SkillUsed, actor: gameObject, value: _skill3Cost, metadata: new System.Collections.Generic.Dictionary<string, object> { { "skillIndex", 3 }, { "skillName", "RatHero" }, { "kind", "Ritual" } });
+        GameCsvLogger.Instance.LogEvent(GameLogEventType.RitualUsed, actor: gameObject, value: _skill3Cost, metadata: new System.Collections.Generic.Dictionary<string, object> { { "skillIndex", 3 }, { "skillName", "RatHero" } });
         OnSkill3();
         EventBus.Instance?.Publish(new TutorialSkillUsedEvent { SkillIndex = 3 });
-        GameLogger.Instance?.RecordRitualSkillUsed(3, "Meteor");
+        GameLogger.Instance?.RecordRitualSkillUsed(3, "RatHero");
     }
 
     // ──────────────────────────────────────────────
@@ -202,9 +224,11 @@ public class RitualSystem : MonoBehaviour
     private IEnumerator WallRoutine()
     {
         _wallObject.SetActive(true);
-        Debug.Log($"[RitualSystem] 스킬 1 - 벽 활성화 ({_skill1Duration}초)");
+        int level = GetSkillLevel(1);
+        float duration = Mathf.Max(0.1f, _skill1Duration + GetLevelBonus(_skill1DurationBonusByLevel, level));
+        Debug.Log($"[RitualSystem] 스킬 1 - 벽 활성화 ({duration}초, 단계: {level})");
 
-        yield return new WaitForSeconds(_skill1Duration);
+        yield return new WaitForSeconds(duration);
 
         _wallObject.SetActive(false);
         _wallRoutine = null;
@@ -213,21 +237,12 @@ public class RitualSystem : MonoBehaviour
 
     private void OnSkill2()
     {
-        if (_incomeInventory == null)
-            _incomeInventory = FindAnyObjectByType<IncomeInventory>();
-
-        if (_incomeInventory == null)
-        {
-            Debug.LogWarning("[RitualSystem] IncomeInventory not found. Skill 2 aborted.");
-            return;
-        }
-
-        _incomeInventory.AcquireRandomBlock();
+        StartCoroutine(MeteorRoutine());
     }
 
     private void OnSkill3()
     {
-        StartCoroutine(MeteorRoutine());                 //메테오 떨어트리기
+        SummonRatHero();
     }
 
     // ──────────────────────────────────────────────
@@ -249,7 +264,7 @@ public class RitualSystem : MonoBehaviour
     {
         if (timer > 0f)
         {
-            Debug.Log($"[RitualSystem] Skill {skillIndex} is on cooldown. Remaining: {timer:F1}s");
+            Debug.Log($"[RitualSystem] 스킬 사용 실패 | Skill{skillIndex} 쿨타임 | 남은 시간: {timer:F1}s");
             return false;
         }
         return true;
@@ -265,7 +280,7 @@ public class RitualSystem : MonoBehaviour
 
         if (!ResourceManager.Instance.SubtractMouseCount(cost, "ritual_cost"))
         {
-            Debug.Log($"[RitualSystem] 자원 부족 | 필요: {cost} / 보유: {ResourceManager.Instance.CurrentMouse}");
+            Debug.Log($"[RitualSystem] 스킬 사용 실패 | 남은 쥐 부족 | 필요: {cost} / 보유: {ResourceManager.Instance.CurrentMouse}");
             ShowResourceFailureFeedback();
             return false;
         }
@@ -294,7 +309,7 @@ public class RitualSystem : MonoBehaviour
         if (IsDoctrineUnlockedForUI(unlockId))
             return true;
 
-        Debug.Log($"[RitualSystem] Skill {skillIndex} locked. Required unlock: {unlockId}");
+        Debug.Log($"[RitualSystem] 스킬 사용 실패 | Skill{skillIndex} 잠금 상태 | 필요 해금: {unlockId}");
         return false;
     }
 
@@ -318,6 +333,12 @@ public class RitualSystem : MonoBehaviour
         EnsureGaugeType(_skill2CooldownGauge);
         EnsureGaugeType(_skill3CooldownGauge);
         UpdateCooldownGauges();
+    }
+
+    private void Start()
+    {
+        EnsureInitialRitualUnlocks();
+        LogAllSkillLevels("초기화");
     }
 
     private void OnValidate()
@@ -360,9 +381,17 @@ public class RitualSystem : MonoBehaviour
     {
         if(_enemyCore == null || _enemyCore.IsDead)
         {
-            Debug.LogWarning("[RitualSystem] 스킬 3: 적 코어 없음");
+            Debug.LogWarning("[RitualSystem] 스킬 2(Meteor) 사용 실패: 적 코어 없음");
             yield break;
         }
+
+        int level = GetSkillLevel(2);
+        int meteorCount = Mathf.Max(1, _meteorCount + GetLevelBonus(_meteorCountBonusByLevel, level));
+        float meteorDamage = _meteorDamage * GetLevelMultiplier(_meteorDamageMultiplierByLevel, level, 1f);
+        float splashRadius = Mathf.Max(0.1f, _splashRadius + GetLevelBonus(_meteorSplashRadiusBonusByLevel, level));
+        float targetRadius = Mathf.Max(0.1f, _targetRadius + GetLevelBonus(_meteorTargetRadiusBonusByLevel, level));
+
+        Debug.Log($"[RitualSystem] 스킬 2(Meteor) 시전 | 단계: {level} | 개수: {meteorCount} | 피해: {meteorDamage:0.##} | 범위: {splashRadius:0.##}");
 
         Vector3 corePos = _enemyCore.transform.position;
         
@@ -370,14 +399,14 @@ public class RitualSystem : MonoBehaviour
             ? _playerCore.transform.position
             : transform.position;       
 
-        for(int i = 0; i < _meteorCount; i++)
+        for(int i = 0; i < meteorCount; i++)
         {
             // 착탄 위치 : 코어 원 안 랜덤
-            Vector2 targetOffset = Random.insideUnitCircle * _targetRadius;
+            Vector2 targetOffset = Random.insideUnitCircle * targetRadius;
             Vector3 targetPos = corePos + new Vector3(targetOffset.x, targetOffset.y, 0f);
         
             // 스폰 위치 : 목표 플레이어 위 + 약간의 X 랜덤 (화면 벽)
-            float spawnOffsetX = Random.Range(-_targetRadius, _targetRadius);
+            float spawnOffsetX = Random.Range(-targetRadius, targetRadius);
             Vector3 spawnPos = new Vector3(
                 playerPos.x + spawnOffsetX,
                 playerPos.y + _spawnHeight, 0f
@@ -388,9 +417,141 @@ public class RitualSystem : MonoBehaviour
 
             var go = PoolManager.Instance?.Spawn(_meteorPoolKey, spawnPos, Quaternion.identity);
             if(go != null && go.TryGetComponent(out MeteorProjectile meteor))
-                meteor.Launch(spawnPos, targetPos, duration, _meteorDamage, _splashRadius); 
+                meteor.Launch(spawnPos, targetPos, duration, meteorDamage, splashRadius); 
         
             yield return new WaitForSeconds(_meteorDelay);
         }
+    }
+
+    public int GetSkillLevel(int skillIndex)
+    {
+        if (_skillLevels.TryGetValue(skillIndex, out int level))
+            return level;
+
+        return 0;
+    }
+
+    public int UpgradeSkillLevelFromDoctrine(int skillIndex, string effectId, int amount = 1)
+    {
+        if (!_skillLevels.ContainsKey(skillIndex))
+            return 0;
+
+        int before = _skillLevels[skillIndex];
+        int after = Mathf.Clamp(before + Mathf.Max(0, amount), 0, MaxSkillLevel);
+        _skillLevels[skillIndex] = after;
+
+        Debug.Log($"[RitualSystem] 교리 강화 적용 | effectId: {effectId} | Skill{skillIndex} 단계: {before} -> {after}");
+        Debug.Log($"[RitualSystem] 스킬별 현재 강화 단계 | Wall:{GetSkillLevel(1)} Meteor:{GetSkillLevel(2)} RatHero:{GetSkillLevel(3)}");
+        return after;
+    }
+
+    public void LogAllSkillLevels(string reason)
+    {
+        Debug.Log($"[RitualSystem] 스킬별 현재 강화 단계 ({reason}) | Wall:{GetSkillLevel(1)} Meteor:{GetSkillLevel(2)} RatHero:{GetSkillLevel(3)}");
+    }
+
+    private void EnsureInitialRitualUnlocks()
+    {
+        if (!_unlockAllRitualSkillsAtStart)
+            return;
+
+        if (_unlockManager == null)
+            _unlockManager = FindAnyObjectByType<UnlockManager>();
+
+        if (_unlockManager == null)
+        {
+            Debug.LogWarning("[RitualSystem] UnlockManager를 찾지 못해 초기 의식 해금 등록을 건너뜁니다.");
+            return;
+        }
+
+        _unlockManager.Unlock(RitualSkill2UnlockId);
+        _unlockManager.Unlock(RitualSkill3UnlockId);
+        Debug.Log("[RitualSystem] 초기 의식 스킬 해금 등록 완료 (Skill1/2/3 사용 가능)");
+    }
+
+    private void SummonRatHero()
+    {
+        if (_ratHeroPrefab == null)
+        {
+            Debug.LogWarning("[RitualSystem] 스킬 3(RatHero) 사용 실패: RatHero 프리팹 미지정");
+            return;
+        }
+
+        Vector3 spawnPos = _ratHeroSpawnPoint != null
+            ? _ratHeroSpawnPoint.position + _ratHeroSpawnOffset
+            : transform.position + _ratHeroSpawnOffset;
+
+        GameObject heroObject = Instantiate(_ratHeroPrefab, spawnPos, Quaternion.identity);
+        if (heroObject == null)
+        {
+            Debug.LogWarning("[RitualSystem] 스킬 3(RatHero) 사용 실패: 소환 생성 실패");
+            return;
+        }
+
+        if (!heroObject.TryGetComponent(out RatHeroUnit heroUnit))
+        {
+            heroUnit = heroObject.GetComponentInChildren<RatHeroUnit>();
+        }
+
+        if (heroUnit == null)
+        {
+            Debug.LogWarning("[RitualSystem] 스킬 3(RatHero) 사용 실패: RatHeroUnit 컴포넌트 없음");
+            Destroy(heroObject);
+            return;
+        }
+
+        int level = GetSkillLevel(3);
+        heroUnit.Initialize(level);
+        Debug.Log($"[RitualSystem] RatHero 소환 성공 | 단계: {level} | 위치: {spawnPos}");
+    }
+
+    private bool CanCastSkill2()
+    {
+        bool hasEnemyCore = _enemyCore != null && !_enemyCore.IsDead;
+        if (hasEnemyCore)
+            return true;
+
+        Debug.Log("[RitualSystem] 스킬 사용 실패 | Skill2 Meteor | 적 코어를 찾지 못했습니다.");
+        return false;
+    }
+
+    private bool CanCastSkill3()
+    {
+        if (_ratHeroPrefab != null)
+            return true;
+
+        Debug.Log("[RitualSystem] 스킬 사용 실패 | Skill3 RatHero | RatHero 프리팹 미지정");
+        return false;
+    }
+
+    private static int GetLevelBonus(int[] levelBonuses, int level)
+    {
+        if (levelBonuses == null || level <= 0)
+            return 0;
+
+        int index = Mathf.Min(level - 1, levelBonuses.Length - 1);
+        return index >= 0 ? levelBonuses[index] : 0;
+    }
+
+    private static float GetLevelBonus(float[] levelBonuses, int level)
+    {
+        if (levelBonuses == null || level <= 0)
+            return 0f;
+
+        int index = Mathf.Min(level - 1, levelBonuses.Length - 1);
+        return index >= 0 ? levelBonuses[index] : 0f;
+    }
+
+    private static float GetLevelMultiplier(float[] levelMultipliers, int level, float defaultMultiplier)
+    {
+        if (levelMultipliers == null || level <= 0)
+            return defaultMultiplier;
+
+        int index = Mathf.Min(level - 1, levelMultipliers.Length - 1);
+        if (index < 0)
+            return defaultMultiplier;
+
+        float value = levelMultipliers[index];
+        return value > 0f ? value : defaultMultiplier;
     }
 }
