@@ -260,7 +260,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -641.59, y: 489}
-  m_SizeDelta: {x: 593.75, y: 906.25}
+  m_SizeDelta: {x: 590.4762, y: 795.2381}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8153353961854676096
 CanvasRenderer:
@@ -472,9 +472,9 @@ RectTransform:
   - {fileID: 5386302736405704101}
   m_Father: {fileID: 200397352298499964}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 513.5, y: -66.4978}
   m_SizeDelta: {x: 300, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6159004171885337661
@@ -857,6 +857,9 @@ MonoBehaviour:
   _typingSpeed: 0.05
   _pulseScale: 1.1
   _pulseSpeed: 4
+  _portraitIdleSprite: {fileID: 8899148781485230619, guid: 60f266acb3869a14ba62e3f4d5077414, type: 3}
+  _portraitTalkingSprite: {fileID: 2396058389828874781, guid: 60f266acb3869a14ba62e3f4d5077414, type: 3}
+  _portraitBlinkInterval: 0.12
 --- !u!1 &2511805315824757954
 GameObject:
   m_ObjectHideFlags: 0
@@ -892,7 +895,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 511.53, y: 489}
-  m_SizeDelta: {x: 593.75, y: 906.25}
+  m_SizeDelta: {x: 590.4762, y: 795.2381}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1201555515703639179
 CanvasRenderer:
@@ -1511,7 +1514,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.00002207, y: 558}
+  m_AnchoredPosition: {x: -0.00002207, y: 350}
   m_SizeDelta: {x: 762.1616, y: 83.9968}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4495590776649191647
@@ -1536,7 +1539,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -1965,7 +1968,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 1337, y: 489}
-  m_SizeDelta: {x: 593.75, y: 906.25}
+  m_SizeDelta: {x: 590.4762, y: 795.2381}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3334920757976695259
 CanvasRenderer:
@@ -2811,7 +2814,7 @@ MonoBehaviour:
       PulseScale: 1.1
       PulseSpeed: 4
     AutoAdvanceConfig:
-      AutoAdvanceDelay: 0
+      AutoAdvanceDelay: 5
     Condition: 0
   - StepName: 
     UIStateConfig:
@@ -2867,7 +2870,7 @@ MonoBehaviour:
       PulseScale: 1.1
       PulseSpeed: 4
     AutoAdvanceConfig:
-      AutoAdvanceDelay: 0
+      AutoAdvanceDelay: 5
     Condition: 0
   - StepName: 
     UIStateConfig:
@@ -2925,7 +2928,7 @@ MonoBehaviour:
       PulseScale: 1.05
       PulseSpeed: 4
     AutoAdvanceConfig:
-      AutoAdvanceDelay: 0
+      AutoAdvanceDelay: 5
     Condition: 0
   - StepName: 
     UIStateConfig:
@@ -2983,7 +2986,7 @@ MonoBehaviour:
       PulseScale: 1.05
       PulseSpeed: 4
     AutoAdvanceConfig:
-      AutoAdvanceDelay: 0
+      AutoAdvanceDelay: 5
     Condition: 0
   - StepName: 
     UIStateConfig:
@@ -3040,7 +3043,7 @@ MonoBehaviour:
       PulseScale: 1.05
       PulseSpeed: 4
     AutoAdvanceConfig:
-      AutoAdvanceDelay: 0
+      AutoAdvanceDelay: 5
     Condition: 0
   - StepName: 
     UIStateConfig:
@@ -3099,7 +3102,7 @@ MonoBehaviour:
       PulseScale: 0
       PulseSpeed: 0
     AutoAdvanceConfig:
-      AutoAdvanceDelay: 0
+      AutoAdvanceDelay: 5
     Condition: 0
   - StepName: 
     UIStateConfig:
@@ -3157,7 +3160,7 @@ MonoBehaviour:
       PulseScale: 0
       PulseSpeed: 0
     AutoAdvanceConfig:
-      AutoAdvanceDelay: 0
+      AutoAdvanceDelay: 5
     Condition: 0
   - StepName: 
     UIStateConfig:
@@ -3270,7 +3273,7 @@ MonoBehaviour:
       PulseScale: 0
       PulseSpeed: 0
     AutoAdvanceConfig:
-      AutoAdvanceDelay: 0
+      AutoAdvanceDelay: 3
     Condition: 0
   - StepName: 
     UIStateConfig:
@@ -3385,7 +3388,7 @@ MonoBehaviour:
       PulseScale: 1.2
       PulseSpeed: 4
     AutoAdvanceConfig:
-      AutoAdvanceDelay: 0
+      AutoAdvanceDelay: 3
     Condition: 0
   - StepName: 
     UIStateConfig:
@@ -3442,7 +3445,7 @@ MonoBehaviour:
       PulseScale: 0
       PulseSpeed: 0
     AutoAdvanceConfig:
-      AutoAdvanceDelay: 0
+      AutoAdvanceDelay: 5
     Condition: 0
   - StepName: 
     UIStateConfig:
@@ -3499,7 +3502,7 @@ MonoBehaviour:
       PulseScale: 0.1
       PulseSpeed: 0.1
     AutoAdvanceConfig:
-      AutoAdvanceDelay: 0
+      AutoAdvanceDelay: 5
     Condition: 0
   - StepName: 
     UIStateConfig:
@@ -3558,7 +3561,7 @@ MonoBehaviour:
       PulseScale: 0.1
       PulseSpeed: 0.1
     AutoAdvanceConfig:
-      AutoAdvanceDelay: 0
+      AutoAdvanceDelay: 5
     Condition: 0
   - StepName: 
     UIStateConfig:
@@ -3671,7 +3674,7 @@ MonoBehaviour:
       PulseScale: 1.05
       PulseSpeed: 4
     AutoAdvanceConfig:
-      AutoAdvanceDelay: 3
+      AutoAdvanceDelay: 5
     Condition: 0
   - StepName: 
     UIStateConfig:
@@ -3729,7 +3732,7 @@ MonoBehaviour:
       PulseScale: 1.05
       PulseSpeed: 4
     AutoAdvanceConfig:
-      AutoAdvanceDelay: 0
+      AutoAdvanceDelay: 5
     Condition: 0
   - StepName: 
     UIStateConfig:
@@ -3787,7 +3790,7 @@ MonoBehaviour:
       PulseScale: 0
       PulseSpeed: 0
     AutoAdvanceConfig:
-      AutoAdvanceDelay: 0
+      AutoAdvanceDelay: 5
     Condition: 0
   - StepName: 
     UIStateConfig:
@@ -3844,7 +3847,7 @@ MonoBehaviour:
       PulseScale: 1.05
       PulseSpeed: 4
     AutoAdvanceConfig:
-      AutoAdvanceDelay: 0
+      AutoAdvanceDelay: 5
     Condition: 0
   - StepName: 
     UIStateConfig:
@@ -3902,7 +3905,7 @@ MonoBehaviour:
       PulseScale: 0
       PulseSpeed: 0
     AutoAdvanceConfig:
-      AutoAdvanceDelay: 0
+      AutoAdvanceDelay: 5
     Condition: 0
   - StepName: 
     UIStateConfig:
@@ -3960,7 +3963,7 @@ MonoBehaviour:
       PulseScale: 0
       PulseSpeed: 0
     AutoAdvanceConfig:
-      AutoAdvanceDelay: 0
+      AutoAdvanceDelay: 5
     Condition: 0
   - StepName: 
     UIStateConfig:
@@ -4072,7 +4075,7 @@ MonoBehaviour:
       PulseScale: 0
       PulseSpeed: 0
     AutoAdvanceConfig:
-      AutoAdvanceDelay: 0
+      AutoAdvanceDelay: 5
     Condition: 0
   - StepName: 
     UIStateConfig:
@@ -4129,7 +4132,7 @@ MonoBehaviour:
       PulseScale: 0
       PulseSpeed: 0
     AutoAdvanceConfig:
-      AutoAdvanceDelay: 0
+      AutoAdvanceDelay: 5
     Condition: 0
   _startOnAwake: 1
   _dialoguePresenter: {fileID: 7348342623763710469}
