@@ -3124,14 +3124,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 284887922}
     m_Modifications:
-    - target: {fileID: 596326778444841623, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: -0.00002207
-      objectReference: {fileID: 0}
-    - target: {fileID: 596326778444841623, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 350
-      objectReference: {fileID: 0}
     - target: {fileID: 1442253882853090380, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -3248,90 +3240,6 @@ PrefabInstance:
       propertyPath: _steps.Array.data[10].HighlightConfig.TargetUI
       value: 
       objectReference: {fileID: 849164741}
-    - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
-      propertyPath: _steps.Array.data[0].AutoAdvanceConfig.AutoAdvanceDelay
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
-      propertyPath: _steps.Array.data[1].AutoAdvanceConfig.AutoAdvanceDelay
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
-      propertyPath: _steps.Array.data[2].AutoAdvanceConfig.AutoAdvanceDelay
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
-      propertyPath: _steps.Array.data[3].AutoAdvanceConfig.AutoAdvanceDelay
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
-      propertyPath: _steps.Array.data[4].AutoAdvanceConfig.AutoAdvanceDelay
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
-      propertyPath: _steps.Array.data[5].AutoAdvanceConfig.AutoAdvanceDelay
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
-      propertyPath: _steps.Array.data[6].AutoAdvanceConfig.AutoAdvanceDelay
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
-      propertyPath: _steps.Array.data[8].AutoAdvanceConfig.AutoAdvanceDelay
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
-      propertyPath: _steps.Array.data[10].AutoAdvanceConfig.AutoAdvanceDelay
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
-      propertyPath: _steps.Array.data[11].AutoAdvanceConfig.AutoAdvanceDelay
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
-      propertyPath: _steps.Array.data[12].AutoAdvanceConfig.AutoAdvanceDelay
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
-      propertyPath: _steps.Array.data[13].AutoAdvanceConfig.AutoAdvanceDelay
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
-      propertyPath: _steps.Array.data[15].AutoAdvanceConfig.AutoAdvanceDelay
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
-      propertyPath: _steps.Array.data[16].AutoAdvanceConfig.AutoAdvanceDelay
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
-      propertyPath: _steps.Array.data[17].AutoAdvanceConfig.AutoAdvanceDelay
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
-      propertyPath: _steps.Array.data[18].AutoAdvanceConfig.AutoAdvanceDelay
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
-      propertyPath: _steps.Array.data[19].AutoAdvanceConfig.AutoAdvanceDelay
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
-      propertyPath: _steps.Array.data[20].AutoAdvanceConfig.AutoAdvanceDelay
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
-      propertyPath: _steps.Array.data[22].AutoAdvanceConfig.AutoAdvanceDelay
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1655755262998851112, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
-      propertyPath: _steps.Array.data[23].AutoAdvanceConfig.AutoAdvanceDelay
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 2119152732316717486, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
-      propertyPath: m_RaycastTarget
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7692762135819565366, guid: 61cb6a74f4454b2418936eaa10b7d3b1, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 

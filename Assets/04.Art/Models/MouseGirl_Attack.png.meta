@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: e37bae4aaa7e5504f976e3425f937749
+guid: 7b4d201e81ab66a4fa622bae28847917
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -704158218213166912
-    second: MouseGirl_Pixel-export_0
+      213: -643357465817584928
+    second: MouseGirl_Attack_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -46,12 +46,12 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 21
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -75,7 +75,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: MouseGirl_Pixel-export_0
+      name: MouseGirl_Attack_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 77
-        height: 116
+        width: 109
+        height: 157
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 0c07bb1d4d35a36f0800000000000000
-      internalID: -704158218213166912
+      spriteID: 0eae8522bc55217f0800000000000000
+      internalID: -643357465817584928
       vertices: []
       indices: 
       edges: []
@@ -125,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      MouseGirl_Pixel-export_0: -704158218213166912
+      MouseGirl_Attack_0: -643357465817584928
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
