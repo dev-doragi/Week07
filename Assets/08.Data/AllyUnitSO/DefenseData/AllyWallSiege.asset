@@ -21,10 +21,10 @@ MonoBehaviour:
   Description: "\"\uB124\uC624 \uC554\uC2A4\uD2B8\uB871 \uC0AC\uC774\uD074\uB860
     \uD3EC\""
   Size: {x: 2, y: 1}
-  PlacementRule: 1
+  PlacementRule: 2
   ActsAsFoundation: 1
   WheelCapacity: 5
-  MaxHp: 150
+  MaxHp: 250
   BaseDefenseRate: 0
   Cost: 100
   DeathSpawnKey: 
@@ -43,7 +43,7 @@ MonoBehaviour:
     PiercingDecay: 0
     ProjectilePrefab: {fileID: 0}
   Defense:
-    CollisionPower: 20
+    CollisionPower: 10
   Support:
     Radius: 0
     Effects: []
