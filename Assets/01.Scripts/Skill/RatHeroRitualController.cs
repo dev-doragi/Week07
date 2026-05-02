@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 
 public class RatHeroRitualController : MonoBehaviour
@@ -26,6 +27,13 @@ public class RatHeroRitualController : MonoBehaviour
     [SerializeField] private bool _useSkill3MoveTarget = true;
     [SerializeField] private Vector3 _skill3MovePosition;
 
+    [Header("Sprite Swap Motion")]
+    [SerializeField] private bool _useSwapMotion = true;
+    [SerializeField, Min(0.01f)] private float _swapMotionDuration = 0.2f;
+    [SerializeField] private Vector3 _swapPunchScale = new Vector3(0.12f, 0.12f, 0f);
+    [SerializeField, Min(1)] private int _swapPunchVibrato = 8;
+    [SerializeField, Range(0f, 1f)] private float _swapPunchElasticity = 0.75f;
+
     private readonly Dictionary<int, int> _skillLevels = new Dictionary<int, int>
     {
         { 1, 0 },
@@ -36,6 +44,9 @@ public class RatHeroRitualController : MonoBehaviour
     private Sprite _defaultSprite;
     private Coroutine _spriteRoutine;
     private int _spriteChangeVersion;
+    private Tween _swapMotionTween;
+    private Vector3 _defaultVisualScale = Vector3.one;
+    private bool _hasDefaultVisualScale;
 
     private void Awake()
     {
@@ -74,6 +85,9 @@ public class RatHeroRitualController : MonoBehaviour
             StopCoroutine(_spriteRoutine);
             _spriteRoutine = null;
         }
+
+        _swapMotionTween?.Kill();
+        _swapMotionTween = null;
     }
 
     public void OnSkill1CastFromRitual(int skillLevel)
@@ -151,14 +165,27 @@ public class RatHeroRitualController : MonoBehaviour
         else
             _targetSpriteRenderer = GetComponent<SpriteRenderer>();
 
-        if (_targetSpriteRenderer != null && _defaultSprite == null)
-            _defaultSprite = _targetSpriteRenderer.sprite;
+        if (_targetSpriteRenderer != null)
+        {
+            if (_defaultSprite == null)
+                _defaultSprite = _targetSpriteRenderer.sprite;
+
+            if (!_hasDefaultVisualScale)
+            {
+                _defaultVisualScale = _targetSpriteRenderer.transform.localScale;
+                _hasDefaultVisualScale = true;
+            }
+        }
     }
 
     private void CacheDefaultSprite()
     {
         if (_targetSpriteRenderer != null)
+        {
             _defaultSprite = _targetSpriteRenderer.sprite;
+            _defaultVisualScale = _targetSpriteRenderer.transform.localScale;
+            _hasDefaultVisualScale = true;
+        }
     }
 
     private void MoveToSkill3Position()
@@ -196,6 +223,7 @@ public class RatHeroRitualController : MonoBehaviour
         }
 
         _targetSpriteRenderer.sprite = sprite;
+        PlaySwapMotion();
         Debug.Log($"[RatHeroRitualController] Skill{skillIndex} 연출 시작 | 단계: {skillLevel} | 지속: {duration:0.##}초");
 
         if (duration <= 0f)
@@ -212,7 +240,10 @@ public class RatHeroRitualController : MonoBehaviour
             yield break;
 
         if (_targetSpriteRenderer != null)
+        {
             _targetSpriteRenderer.sprite = _defaultSprite;
+            PlaySwapMotion();
+        }
 
         _spriteRoutine = null;
         Debug.Log($"[RatHeroRitualController] Skill{skillIndex} 연출 종료");
@@ -224,5 +255,24 @@ public class RatHeroRitualController : MonoBehaviour
             return;
 
         _skillLevels[skillIndex] = Mathf.Max(0, skillLevel);
+    }
+
+    private void PlaySwapMotion()
+    {
+        if (!_useSwapMotion || _targetSpriteRenderer == null)
+            return;
+
+        Transform visual = _targetSpriteRenderer.transform;
+        _swapMotionTween?.Kill();
+        visual.localScale = _defaultVisualScale;
+
+        _swapMotionTween = visual
+            .DOPunchScale(_swapPunchScale, _swapMotionDuration, _swapPunchVibrato, _swapPunchElasticity)
+            .SetUpdate(UpdateType.Normal)
+            .OnKill(() =>
+            {
+                if (visual != null)
+                    visual.localScale = _defaultVisualScale;
+            });
     }
 }
